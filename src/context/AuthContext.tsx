@@ -29,8 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     const login = (username: string, pass: string) => {
-        // Validate shared guild password via environment variable
-        const GUILD_PASSWORD = import.meta.env.VITE_GUILD_PASSWORD;
+        // Validate shared guild password via environment variable (with fallback for production)
+        const GUILD_PASSWORD = import.meta.env.VITE_GUILD_PASSWORD || 'quimica7';
 
         if (pass !== GUILD_PASSWORD) {
             return false;
