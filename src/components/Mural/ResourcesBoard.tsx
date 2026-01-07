@@ -150,11 +150,56 @@ export default function ResourcesBoard() {
                 ))}
             </div>
 
-            {user?.role === 'operator' && visibleResources.length > 0 && (
-                <div style={{ marginTop: '1rem', opacity: 0.4, fontSize: '0.75rem', textAlign: 'right' }}>
-                    Remover: clique duplo no recurso
-                </div>
-            )}
+            <style>{`
+                .services-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0;
+                }
+
+                .service-row {
+                    display: flex;
+                    align-items: center;
+                    padding: 0.75rem 1rem;
+                    gap: 1rem;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+                    transition: background 0.2s;
+                }
+
+                .service-row:hover {
+                    background: rgba(255, 255, 255, 0.04);
+                }
+
+                .service-row.header {
+                    font-weight: 600;
+                    font-size: 0.75rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    color: var(--text-dim);
+                    opacity: 0.6;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                }
+
+                .icon-btn {
+                    background: none;
+                    border: none;
+                    color: var(--text-secondary);
+                    cursor: pointer;
+                    padding: 0.25rem;
+                    transition: color 0.2s;
+                }
+
+                .icon-btn:hover {
+                    color: var(--accent-sage);
+                }
+
+                .empty-state {
+                    padding: 3rem 1rem;
+                    text-align: center;
+                    color: var(--text-dim);
+                    font-size: 0.875rem;
+                }
+            `}</style>
         </div>
     );
 }
