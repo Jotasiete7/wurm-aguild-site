@@ -21,7 +21,7 @@ const ACCESS_LABELS: Record<Resource['access'], string> = {
 
 export default function ResourcesBoard() {
     const { user } = useAuth();
-    const { data: resources, loading, create, remove } = useSupabase<Resource>('resources');
+    const { data: resources, loading, create } = useSupabase<Resource>('resources');
 
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [formData, setFormData] = useState<Partial<Resource>>({
@@ -41,12 +41,6 @@ export default function ResourcesBoard() {
 
         setIsFormOpen(false);
         setFormData({ type: 'tool', access: 'public' });
-    };
-
-    const handleDelete = async (id: string) => {
-        if (confirm('Remover recurso?')) {
-            await remove(id);
-        }
     };
 
     // Filter by access level
