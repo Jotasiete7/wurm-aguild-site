@@ -1,8 +1,8 @@
 
 import { useState } from 'react';
-import { LayoutGrid, Download, Map as MapIcon } from 'lucide-react';
+import { LayoutGrid, Archive, Map as MapIcon } from 'lucide-react';
 import ServicesBoard from './ServicesBoard';
-import Downloads from './Downloads';
+import ResourcesBoard from './ResourcesBoard';
 import GuildMap from './GuildMap';
 import SystemStatus from './SystemStatus';
 import { useAuth } from '../../context/AuthContext';
@@ -11,7 +11,7 @@ import './Mural.css';
 export default function Mural() {
     const { user } = useAuth();
     // Default to 'services'
-    const [activeTab, setActiveTab] = useState<'services' | 'downloads' | 'map'>('services');
+    const [activeTab, setActiveTab] = useState<'services' | 'resources' | 'map'>('services');
 
     // Only Operators and Cartographers can see the Map tab
     const showMap = user?.role === 'operator' || user?.role === 'cartographer';
@@ -34,10 +34,10 @@ export default function Mural() {
                     <LayoutGrid size={18} /> Log Operacional
                 </button>
                 <button
-                    className={`tab-btn ${activeTab === 'downloads' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('downloads')}
+                    className={`tab-btn ${activeTab === 'resources' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('resources')}
                 >
-                    <Download size={18} /> Downloads
+                    <Archive size={18} /> Recursos
                 </button>
 
                 {showMap && (
@@ -52,7 +52,7 @@ export default function Mural() {
 
             <div className="mural-content">
                 {activeTab === 'services' && <ServicesBoard />}
-                {activeTab === 'downloads' && <Downloads />}
+                {activeTab === 'resources' && <ResourcesBoard />}
                 {activeTab === 'map' && showMap && <GuildMap />}
             </div>
         </div>

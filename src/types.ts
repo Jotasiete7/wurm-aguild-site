@@ -40,3 +40,11 @@ export interface MapPin extends BaseEntity {
     author: string;
     timestamp: number;
 }
+
+export interface Resource {
+    id: string;
+    name: string;
+    type: 'tool' | 'map' | 'sheet' | 'doc' | 'external';
+    access: 'public' | 'members' | 'admins';
+    url: string;
+}
