@@ -1,14 +1,18 @@
 
-export interface ServiceItem {
+export interface BaseEntity {
     id: string;
+    created_at?: string;
+}
+
+export interface ServiceItem extends BaseEntity {
     title: string;
     description: string;
     price: string;
-    provider: string; // Nickname
+    provider: string;
     type: 'service' | 'material';
     intent: 'buy' | 'sell';
     status: 'open' | 'in_progress';
-    assignedTo?: string; // Nick of who is working on it
+    assigned_to?: string | null;
 }
 
 export interface Message {
@@ -27,8 +31,7 @@ export interface DownloadItem {
 
 export type UserRole = 'operator' | 'cartographer' | 'member';
 
-export interface MapPin {
-    id: string;
+export interface MapPin extends BaseEntity {
     x: number;
     y: number;
     type: 'resource' | 'infra' | 'project' | 'poi' | 'warning';

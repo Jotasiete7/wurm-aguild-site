@@ -42,7 +42,7 @@ export default function ServicesBoard() {
                 type: formData.type as 'service' | 'material',
                 intent: formData.intent as 'buy' | 'sell',
                 status: formData.status || 'open',
-                assigned_to: formData.assignedTo
+                assigned_to: formData.assigned_to
             };
             // Remove undefined assigned_to to avoid DB errors if column expects null
             if (!item.assigned_to) delete item.assigned_to;
@@ -68,7 +68,7 @@ export default function ServicesBoard() {
         const newStatus = service.status === 'open' ? 'in_progress' : 'open';
         await update(id, {
             status: newStatus,
-            assignedTo: newStatus === 'in_progress' ? user.username : null // Send null to DB
+            assigned_to: newStatus === 'in_progress' ? user.username : null // Send null to DB
         } as any);
     };
 
@@ -148,8 +148,8 @@ export default function ServicesBoard() {
                             {formData.status === 'in_progress' && (
                                 <input
                                     placeholder="Técnico responsável"
-                                    value={formData.assignedTo || ''}
-                                    onChange={e => setFormData({ ...formData, assignedTo: e.target.value })}
+                                    value={formData.assigned_to || ''}
+                                    onChange={e => setFormData({ ...formData, assigned_to: e.target.value })}
                                     style={{ flex: 1 }}
                                 />
                             )}
@@ -186,7 +186,7 @@ export default function ServicesBoard() {
 
                             {service.status === 'in_progress' && (
                                 <span className="assigned-text">
-                                    &gt;&gt; assigned: {service.assignedTo}
+                                    &gt;&gt; assigned: {service.assigned_to}
                                 </span>
                             )}
 

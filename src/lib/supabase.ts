@@ -1,10 +1,12 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// NOTA: Em produção, usar import.meta.env
-const supabaseUrl = 'https://gzhvqprdrtudyokhgxlj.supabase.co';
-// A chave fornecida parece curta/diferente do padrão JWT (ey...), mas vamos configurar.
-// Se falhar, pediremos para verificar a chave 'anon key' no dashboard.
-const supabaseKey = 'sb_publishable_B3Gpy22WDnp9PIXP99hvKA_KDy79Qmx';
+// Use environment variables for credentials
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Variáveis de ambiente do Supabase não configuradas! Verifique .env.local');
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

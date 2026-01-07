@@ -15,6 +15,12 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Map of allowed users and their roles
+const ALLOWED_USERS: Record<string, UserRole> = {
+    'jotasiete': 'operator',
+    'calvos': 'operator',
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
     // Initialize from localStorage if available
     const [user, setUser] = useState<User | null>(() => {
@@ -23,19 +29,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     const login = (username: string, pass: string) => {
-        let userObj: User | null = null;
+        // Validate shared guild password via environment variable
+        const GUILD_PASSWORD = import.meta.env.VITE_GUILD_PASSWORD;
 
-        if (username.toLowerCase() === 'jotasiete' && pass === 'quimica7') {
-            userObj = { username: 'jotasiete', role: 'operator' };
-        } else if (username.toLowerCase() === 'calvos' && pass === 'calvette') {
-            userObj = { username: 'calvos', role: 'operator' };
+        if (pass !== GUILD_PASSWORD) {
+            return false;
         }
 
-        if (userObj) {
+        // Check if user is in allowed list
+        const normalizedUsername = username.toLowerCase();
+        const role = ALLOWED_USERS[normalizedUsername];
+
+        if (role) {
+            const userObj = { username: normalizedUsername, role };
             setUser(userObj);
             localStorage.setItem('guild_user', JSON.stringify(userObj));
             return true;
         }
+
         return false;
     };
 

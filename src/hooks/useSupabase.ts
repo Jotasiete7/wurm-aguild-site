@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
 export function useSupabase<T extends { id: string }>(tableName: string) {
@@ -7,7 +7,7 @@ export function useSupabase<T extends { id: string }>(tableName: string) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const { data: result, error } = await supabase
                 .from(tableName)
@@ -22,7 +22,7 @@ export function useSupabase<T extends { id: string }>(tableName: string) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [tableName]);
 
     useEffect(() => {
         fetchData();
@@ -50,22 +50,20 @@ export function useSupabase<T extends { id: string }>(tableName: string) {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [tableName]);
+    }, [tableName, fetchData]);
 
-    const create = async (item: Partial<T>) => {
+    const create = useCallback(async (item: Partial<T>) => {
         // Optimistic update impossible without ID, so we wait for DB return
-        const { data: created, error } = await supabase.from(tableName).insert([item]).select().single();
+        const { error } = await supabase.from(tableName).insert([item]).select().single();
 
         if (error) {
             console.error('Error creating:', error);
             alert('Erro ao salvar: ' + error.message);
-        } else if (created) {
-            // Immediate update for the user who created it
-            setData(prev => [created as T, ...prev]);
         }
-    };
+        // Subscription handles adding the item automatically via realtime event
+    }, [tableName]);
 
-    const update = async (id: string, updates: Partial<T>) => {
+    const update = useCallback(async (id: string, updates: Partial<T>) => {
         // Optimistic Update
         setData(prev => prev.map(i => i.id === id ? { ...i, ...updates } as T : i));
 
@@ -75,9 +73,9 @@ export function useSupabase<T extends { id: string }>(tableName: string) {
             // Revert on error (optional, but good practice)
             fetchData();
         }
-    };
+    }, [tableName, fetchData]);
 
-    const remove = async (id: string) => {
+    const remove = useCallback(async (id: string) => {
         // Optimistic Update
         setData(prev => prev.filter(i => i.id !== id));
 
@@ -86,7 +84,10 @@ export function useSupabase<T extends { id: string }>(tableName: string) {
             console.error('Error deleting:', error);
             fetchData();
         }
-    };
+    }, [tableName, fetchData]);
 
-    return { data, loading, error, create, update, remove };
+    return useMemo(
+        () => ({ data, loading, error, create, update, remove }),
+        [data, loading, error, create, update, remove]
+    );
 }
