@@ -56,6 +56,37 @@
 .hero-actions {
     display: flex;
     gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.hero-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.hero-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.hero-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-sage);
+    color: var(--accent-sage);
+    transform: translateY(-2px);
 }
 
 .btn {

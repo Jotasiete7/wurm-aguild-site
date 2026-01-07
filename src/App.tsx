@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import Navbar from './components/Navbar';
-import Hero from './components/Hero';
+import { Hero } from './components/Hero';
 import Mural from './components/Mural/Mural';
 import GuildArea from './components/Admin/GuildArea';
 import { AuthProvider } from './context/AuthContext';
