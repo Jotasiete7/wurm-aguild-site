@@ -27,22 +27,24 @@ export function useSupabase<T extends { id: string }>(tableName: string) {
     useEffect(() => {
         fetchData();
 
+        const channel = supabase
+            .channel(`public:${tableName}`)
             .on('postgres_changes', { event: '*', schema: 'public', table: tableName }, (payload) => {
-            const { eventType, new: newRow, old: oldRow } = payload;
+                const { eventType, new: newRow, old: oldRow } = payload;
 
-            setData((currentData) => {
-                if (eventType === 'INSERT') {
-                    // Prevent duplicates if we already added it optimistically
-                    if (currentData.some(item => item.id === (newRow as T).id)) return currentData;
-                    return [newRow as T, ...currentData];
-                } else if (eventType === 'UPDATE') {
-                    return currentData.map(item => item.id === (newRow as T).id ? (newRow as T) : item);
-                } else if (eventType === 'DELETE') {
-                    return currentData.filter(item => item.id !== (oldRow as T).id);
-                }
-                return currentData;
-            });
-        })
+                setData((currentData) => {
+                    if (eventType === 'INSERT') {
+                        // Prevent duplicates if we already added it optimistically
+                        if (currentData.some(item => item.id === (newRow as T).id)) return currentData;
+                        return [newRow as T, ...currentData];
+                    } else if (eventType === 'UPDATE') {
+                        return currentData.map(item => item.id === (newRow as T).id ? (newRow as T) : item);
+                    } else if (eventType === 'DELETE') {
+                        return currentData.filter(item => item.id !== (oldRow as T).id);
+                    }
+                    return currentData;
+                });
+            })
             .subscribe();
 
         return () => {
