@@ -15,10 +15,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Map of allowed users and their roles
-const ALLOWED_USERS: Record<string, UserRole> = {
-    'jotasiete': 'operator',
-    'calvos': 'operator',
+// Map of allowed users with their passwords and roles
+const ALLOWED_USERS: Record<string, { password: string; role: UserRole }> = {
+    'jotasiete': { password: 'quimica7', role: 'operator' },
+    'calvos': { password: 'calvette', role: 'operator' },
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -29,19 +29,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     const login = (username: string, pass: string) => {
-        // Validate shared guild password via environment variable (with fallback for production)
-        const GUILD_PASSWORD = import.meta.env.VITE_GUILD_PASSWORD || 'quimica7';
-
-        if (pass !== GUILD_PASSWORD) {
-            return false;
-        }
-
-        // Check if user is in allowed list
+        // Check if user exists and password matches
         const normalizedUsername = username.toLowerCase();
-        const role = ALLOWED_USERS[normalizedUsername];
+        const userConfig = ALLOWED_USERS[normalizedUsername];
 
-        if (role) {
-            const userObj = { username: normalizedUsername, role };
+        if (userConfig && userConfig.password === pass) {
+            const userObj = { username: normalizedUsername, role: userConfig.role };
             setUser(userObj);
             localStorage.setItem('guild_user', JSON.stringify(userObj));
             return true;
