@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Plus, X, Eye, Lock, Shield, ExternalLink } from 'lucide-react';
+import { Plus, X, ExternalLink } from 'lucide-react';
 import { useSupabase } from '../../hooks/useSupabase';
 import { useAuth } from '../../context/AuthContext';
 import type { Resource } from '../../types';
@@ -13,10 +13,10 @@ const TYPE_LABELS: Record<Resource['type'], string> = {
     external: 'externo',
 };
 
-const ACCESS_ICONS = {
-    public: <Eye size={14} />,
-    members: <Lock size={14} />,
-    admins: <Shield size={14} />,
+const ACCESS_LABELS: Record<Resource['access'], string> = {
+    public: 'público',
+    members: 'membros',
+    admins: 'admins',
 };
 
 export default function ResourcesBoard() {
@@ -62,13 +62,10 @@ export default function ResourcesBoard() {
     return (
         <div className="services-board">
             <div className="board-actions">
-                <div>
-                    <h3>Recursos Operacionais</h3>
-                    <p className="board-subtitle">Ferramentas e referências mantidas pela Guilda.</p>
-                </div>
+                <h3>Recursos Operacionais</h3>
                 {user?.role === 'operator' && (
-                    <button className="btn-add icon-only" onClick={() => setIsFormOpen(true)} title="Novo Recurso">
-                        <Plus size={16} />
+                    <button className="btn-add" onClick={() => setIsFormOpen(true)}>
+                        <Plus size={16} /> Novo Recurso
                     </button>
                 )}
             </div>
@@ -124,9 +121,9 @@ export default function ResourcesBoard() {
             <div className="services-list">
                 <div className="service-row header">
                     <span style={{ flex: 2 }}>Recurso</span>
-                    <span style={{ width: '100px' }}>Tipo</span>
-                    <span style={{ width: '60px', textAlign: 'center' }}>Acesso</span>
-                    <span style={{ width: '80px', textAlign: 'center' }}>Ação</span>
+                    <span style={{ width: '120px' }}>Tipo</span>
+                    <span style={{ width: '100px' }}>Acesso</span>
+                    <span style={{ width: '60px', textAlign: 'center' }}>Ação</span>
                 </div>
 
                 {visibleResources.length === 0 && (
@@ -137,14 +134,14 @@ export default function ResourcesBoard() {
 
                 {visibleResources.map(resource => (
                     <div key={resource.id} className="service-row">
-                        <span style={{ flex: 2, fontWeight: 500 }}>{resource.name}</span>
-                        <span style={{ width: '100px', opacity: 0.6, fontSize: '0.875rem' }}>
+                        <span style={{ flex: 2 }}>{resource.name}</span>
+                        <span style={{ width: '120px', opacity: 0.6, fontSize: '0.875rem' }}>
                             {TYPE_LABELS[resource.type]}
                         </span>
-                        <span style={{ width: '60px', textAlign: 'center', opacity: 0.6 }}>
-                            {ACCESS_ICONS[resource.access]}
+                        <span style={{ width: '100px', opacity: 0.6, fontSize: '0.875rem' }}>
+                            {ACCESS_LABELS[resource.access]}
                         </span>
-                        <div style={{ width: '80px', display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                        <div style={{ width: '60px', display: 'flex', justifyContent: 'center' }}>
                             <a
                                 href={resource.url}
                                 target="_blank"
@@ -154,19 +151,16 @@ export default function ResourcesBoard() {
                             >
                                 <ExternalLink size={16} />
                             </a>
-                            {user?.role === 'operator' && (
-                                <button
-                                    className="icon-btn danger"
-                                    onClick={() => handleDelete(resource.id)}
-                                    title="Remover"
-                                >
-                                    <X size={16} />
-                                </button>
-                            )}
                         </div>
                     </div>
                 ))}
             </div>
+
+            {user?.role === 'operator' && visibleResources.length > 0 && (
+                <div style={{ marginTop: '1rem', opacity: 0.4, fontSize: '0.75rem', textAlign: 'right' }}>
+                    Remover: clique duplo no recurso
+                </div>
+            )}
         </div>
     );
 }
