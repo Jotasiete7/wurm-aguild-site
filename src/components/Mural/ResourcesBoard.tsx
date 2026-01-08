@@ -37,6 +37,7 @@ export default function ResourcesBoard() {
             type: formData.type as Resource['type'],
             access: formData.access as Resource['access'],
             url: formData.url,
+            author: user?.username || 'Anon',
         });
 
         setIsFormOpen(false);
