@@ -232,3 +232,42 @@
 .provider {
     color: var(--text-dim);
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .mural-page {
+        padding-top: 4rem;
+    }
+
+    .mural-header h2 {
+        font-size: 1.75rem;
+    }
+
+    .mural-header p {
+        font-size: 0.875rem;
+    }
+
+    .mural-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        width: calc(100% - 2rem);
+    }
+
+    .mural-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-btn {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}

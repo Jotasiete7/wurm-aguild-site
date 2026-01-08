@@ -160,6 +160,24 @@ export default function SystemStatus() {
                     50% { opacity: 0.5; }
                     100% { opacity: 1; }
                 }
+
+                /* Mobile Responsiveness */
+                @media (max-width: 768px) {
+                    .status-content {
+                        flex-wrap: wrap;
+                        font-size: 0.8rem;
+                    }
+
+                    .status-meta {
+                        margin-left: 0;
+                        width: 100%;
+                        margin-top: 0.5rem;
+                    }
+
+                    .status-editor input {
+                        font-size: 0.85rem;
+                    }
+                }
             `}</style>
         </div>
     );

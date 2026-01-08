@@ -199,6 +199,40 @@ export default function ResourcesBoard() {
                     color: var(--text-dim);
                     font-size: 0.875rem;
                 }
+
+                /* Mobile Responsiveness */
+                @media (max-width: 768px) {
+                    .service-row.header {
+                        display: none;
+                    }
+
+                    .service-row {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        padding: 1rem;
+                        gap: 0.75rem;
+                    }
+
+                    .service-row > span,
+                    .service-row > div {
+                        width: 100% !important;
+                        flex: unset !important;
+                    }
+
+                    .icon-btn {
+                        padding: 0.5rem;
+                    }
+
+                    .form-row {
+                        flex-direction: column;
+                    }
+
+                    .form-row input,
+                    .form-row select {
+                        flex: unset !important;
+                        width: 100% !important;
+                    }
+                }
             `}</style>
         </div>
     );

@@ -59,3 +59,30 @@
     color: var(--bg-primary);
     background: var(--accent-sage);
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .navbar {
+        top: 1rem;
+        min-width: unset;
+        width: calc(100% - 2rem);
+        padding: 0.4rem 0.75rem;
+    }
+
+    .logo {
+        font-size: 1rem;
+    }
+
+    .logo-icon {
+        font-size: 1.25rem;
+    }
+
+    .nav-links {
+        gap: 0.25rem;
+    }
+
+    .nav-item {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}

@@ -3,17 +3,17 @@
   --bg-primary: #0a0a0a;
   --bg-secondary: #121212;
   --bg-card: #181818;
-  
+
   --text-primary: #e5e5e5;
   --text-secondary: #a3a3a3;
   --text-dim: #525252;
-  
+
   --accent-sage: #9AB09A;
   --accent-sage-dim: #5A6B5A;
   --accent-sage-light: #C5D6C5;
-  
+
   --border-subtle: #2a2a2a;
-  
+
   /* Typography */
   --font-serif: 'Playfair Display', serif;
   --font-sans: 'Inter', sans-serif;
@@ -34,7 +34,12 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-serif);
   font-weight: 500;
   color: var(--text-primary);
@@ -69,6 +74,14 @@ button {
 
 .text-gradient {
   background: linear-gradient(to right, #fff, #999);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
 }

@@ -147,3 +147,38 @@
     color: var(--bg-primary);
     border-color: var(--accent-sage);
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .login-card {
+        padding: 2rem;
+    }
+
+    .lock-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 1rem;
+    }
+
+    .login-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-container {
+        padding-top: 4rem;
+    }
+
+    .dashboard-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .logout-btn {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+}

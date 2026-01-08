@@ -261,6 +261,87 @@ export default function ServicesBoard() {
         .form-row { display: flex; gap: 1rem; }
         .add-form { border-radius: 0; border: 1px solid var(--border-subtle); }
         .add-form h4 { font-family: 'Playfair Display', serif; font-weight: 400; font-style: italic; }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .board-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .board-actions h3 {
+                font-size: 1.25rem;
+            }
+
+            .service-row {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem;
+                gap: 0.75rem;
+            }
+
+            .status-indicator {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+
+            .row-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                width: 100%;
+                white-space: normal;
+            }
+
+            .intent-text {
+                font-size: 0.7rem;
+            }
+
+            .row-nick {
+                min-width: unset;
+                text-align: left;
+                font-size: 0.8rem;
+            }
+
+            .row-item {
+                font-size: 0.9rem;
+                word-break: break-word;
+            }
+
+            .dots-fill {
+                display: none;
+            }
+
+            .row-price {
+                min-width: unset;
+                text-align: left;
+                font-size: 0.85rem;
+            }
+
+            .assigned-text {
+                font-size: 0.7rem;
+            }
+
+            .row-actions {
+                opacity: 1;
+                margin-left: 0;
+                position: absolute;
+                bottom: 1rem;
+                right: 1rem;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .add-form input,
+            .add-form select {
+                width: 100% !important;
+            }
+        }
       `}</style>
         </div>
     );

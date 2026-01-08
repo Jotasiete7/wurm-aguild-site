@@ -200,6 +200,47 @@ export default function GuildMap() {
                 .pin-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--text-dim); border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.5rem; margin-top: 0.5rem; }
                 .delete-btn { color: #ff6b6b; background: none; border: none; cursor: pointer; padding: 0; }
                 .delete-btn:hover { text-decoration: underline; }
+
+                /* Mobile Responsiveness */
+                @media (max-width: 768px) {
+                    .guild-map-container {
+                        height: 400px;
+                    }
+
+                    .map-toolbar {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 0.75rem;
+                    }
+
+                    .map-toolbar h3 {
+                        font-size: 1.25rem;
+                    }
+
+                    .map-legend {
+                        flex-wrap: wrap;
+                        gap: 0.75rem;
+                        font-size: 0.75rem;
+                    }
+
+                    /* Critical: Bottom Sheet Modal Pattern */
+                    .pin-modal {
+                        position: fixed !important;
+                        bottom: 0 !important;
+                        left: 0 !important;
+                        top: auto !important;
+                        width: 100% !important;
+                        max-height: 70vh;
+                        overflow-y: auto;
+                        border-radius: 12px 12px 0 0;
+                        box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+                    }
+
+                    .pin-modal input,
+                    .pin-modal select {
+                        font-size: 1rem; /* Prevent zoom on iOS */
+                    }
+                }
             `}</style>
         </div>
     );
