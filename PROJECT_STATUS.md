@@ -55,3 +55,22 @@ Basta commitar e dar push para a `main`. O Netlify detecta e atualiza em ~1 minu
 Se perder acesso a esta pasta, clone o repositório novamente:
 `git clone [URL_DO_REPO]`
 E crie o arquivo `.env` com as chaves do Supabase novamente.
+
+## 6. Mapa do Código (Para Agentes/Devs)
+
+Se você é uma IA ou Dev entrando agora, aqui está onde as coisas acontecem:
+
+- **`src/`**: Raiz do código fonte.
+  - **`components/Mural/`**: Onde vivem os widgets principais.
+    - `ServicesBoard.tsx`: Mural de serviços (Compra/Venda). Lógica de CRUD complexa aqui.
+    - `ResourcesBoard.tsx`: Links úteis (Wiki, Mapas). CRUD simples.
+    - `GuildMap.tsx`: Mapa interativo com pinos.
+  - **`hooks/useSupabase.ts`**: O "cérebro" da comunicação com o banco. Abstrai SELECT/INSERT/UPDATE/DELETE e o Realtime. **Não edite sem cuidado.**
+  - **`context/AuthContext.tsx`**: O sistema de login "fake". Se precisar adicionar um admin, é aqui.
+  - **`types.ts`**: Tipagem central. Se mudar o banco, mude aqui primeiro.
+
+## 7. Diretrizes de Desenvolvimento (Anti-Perda)
+
+1.  **Autenticação**: Não tente usar `supabase.auth.user()`. O usuário logado está em `useAuth()`.
+2.  **Segurança**: Ao criar/editar dados, você **DEVE** enviar o campo `author` ou `provider` com o username do `useAuth`. Sem isso, o RLS do banco vai bloquear (Erro 403).
+3.  **UI**: Mantenha o estilo "Glassmorphism" (`className="glass"`). Use ícones do `lucide-react`.
