@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Plus, X, ExternalLink } from 'lucide-react';
+import { Plus, X, ExternalLink, Pencil, Trash2 } from 'lucide-react';
 import { useSupabase } from '../../hooks/useSupabase';
 import { useAuth } from '../../context/AuthContext';
 import type { Resource } from '../../types';
@@ -21,26 +21,60 @@ const ACCESS_LABELS: Record<Resource['access'], string> = {
 
 export default function ResourcesBoard() {
     const { user } = useAuth();
-    const { data: resources, loading, create } = useSupabase<Resource>('resources');
+    const { data: resources, loading, create, update, remove } = useSupabase<Resource>('resources');
 
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [formData, setFormData] = useState<Partial<Resource>>({
         type: 'tool',
         access: 'public'
     });
 
+    const openAdd = () => {
+        setEditingId(null);
+        setFormData({ type: 'tool', access: 'public' });
+        setIsFormOpen(true);
+    };
+
+    const openEdit = (resource: Resource) => {
+        setEditingId(resource.id);
+        setFormData({
+            name: resource.name,
+            type: resource.type,
+            access: resource.access,
+            url: resource.url
+        });
+        setIsFormOpen(true);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (confirm('Tem certeza que deseja remover este recurso?')) {
+            await remove(id);
+        }
+    };
+
     const handleSubmit = async () => {
         if (!formData.name || !formData.url) return;
 
-        await create({
-            name: formData.name,
-            type: formData.type as Resource['type'],
-            access: formData.access as Resource['access'],
-            url: formData.url,
-            author: user?.username || 'Anon',
-        });
+        if (editingId) {
+            await update(editingId, {
+                name: formData.name,
+                type: formData.type as Resource['type'],
+                access: formData.access as Resource['access'],
+                url: formData.url,
+            });
+        } else {
+            await create({
+                name: formData.name,
+                type: formData.type as Resource['type'],
+                access: formData.access as Resource['access'],
+                url: formData.url,
+                author: user?.username || 'Anon',
+            });
+        }
 
         setIsFormOpen(false);
+        setEditingId(null);
         setFormData({ type: 'tool', access: 'public' });
     };
 
@@ -59,7 +93,7 @@ export default function ResourcesBoard() {
             <div className="board-actions">
                 <h3>Recursos Operacionais</h3>
                 {user?.role === 'operator' && (
-                    <button className="btn-add" onClick={() => setIsFormOpen(true)}>
+                    <button className="btn-add" onClick={openAdd}>
                         <Plus size={16} /> Novo Recurso
                     </button>
                 )}
@@ -68,7 +102,7 @@ export default function ResourcesBoard() {
             {isFormOpen && (
                 <div className="add-form glass">
                     <div className="form-header">
-                        <h4>Novo Recurso</h4>
+                        <h4>{editingId ? 'Editar Recurso' : 'Novo Recurso'}</h4>
                         <button onClick={() => setIsFormOpen(false)}><X size={18} /></button>
                     </div>
 
@@ -108,7 +142,9 @@ export default function ResourcesBoard() {
                     </div>
 
                     <div className="form-actions">
-                        <button className="btn-submit" onClick={handleSubmit}>Adicionar</button>
+                        <button className="btn-submit" onClick={handleSubmit}>
+                            {editingId ? 'Salvar Alterações' : 'Adicionar'}
+                        </button>
                     </div>
                 </div>
             )}
@@ -118,7 +154,7 @@ export default function ResourcesBoard() {
                     <span style={{ flex: 2 }}>Recurso</span>
                     <span style={{ width: '120px' }}>Tipo</span>
                     <span style={{ width: '100px' }}>Acesso</span>
-                    <span style={{ width: '60px', textAlign: 'center' }}>Ação</span>
+                    <span style={{ width: '100px', textAlign: 'center' }}>Ação</span>
                 </div>
 
                 {visibleResources.length === 0 && (
@@ -136,7 +172,7 @@ export default function ResourcesBoard() {
                         <span style={{ width: '100px', opacity: 0.6, fontSize: '0.875rem' }}>
                             {ACCESS_LABELS[resource.access]}
                         </span>
-                        <div style={{ width: '60px', display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ width: '100px', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
                             <a
                                 href={resource.url}
                                 target="_blank"
@@ -146,6 +182,25 @@ export default function ResourcesBoard() {
                             >
                                 <ExternalLink size={16} />
                             </a>
+
+                            {user?.role === 'operator' && (
+                                <>
+                                    <button
+                                        className="icon-btn"
+                                        onClick={() => openEdit(resource)}
+                                        title="Editar"
+                                    >
+                                        <Pencil size={16} />
+                                    </button>
+                                    <button
+                                        className="icon-btn delete"
+                                        onClick={() => handleDelete(resource.id)}
+                                        title="Remover"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
                 ))}
@@ -188,10 +243,17 @@ export default function ResourcesBoard() {
                     cursor: pointer;
                     padding: 0.25rem;
                     transition: color 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
 
                 .icon-btn:hover {
                     color: var(--accent-sage);
+                }
+                
+                .icon-btn.delete:hover {
+                    color: #ff6b6b;
                 }
 
                 .empty-state {
@@ -218,6 +280,11 @@ export default function ResourcesBoard() {
                     .service-row > div {
                         width: 100% !important;
                         flex: unset !important;
+                    }
+                    
+                    .service-row > div {
+                        justify-content: flex-end !important;
+                        margin-top: 0.5rem;
                     }
 
                     .icon-btn {

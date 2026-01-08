@@ -54,13 +54,15 @@ export function useSupabase<T extends { id: string }>(tableName: string) {
 
     const create = useCallback(async (item: Partial<T>) => {
         // Optimistic update impossible without ID, so we wait for DB return
-        const { error } = await supabase.from(tableName).insert([item]).select().single();
+        const { data: newItem, error } = await supabase.from(tableName).insert([item]).select().single();
 
         if (error) {
             console.error('Error creating:', error);
             alert('Erro ao salvar: ' + error.message);
+        } else if (newItem) {
+            // Manually add to state to ensure immediate UI update
+            setData(prev => [newItem as T, ...prev]);
         }
-        // Subscription handles adding the item automatically via realtime event
     }, [tableName]);
 
     const update = useCallback(async (id: string, updates: Partial<T>) => {
