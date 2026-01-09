@@ -16,7 +16,7 @@ Este projeto é o Mural Digital e site institucional da guilda. Ele serve como h
 ## 3. Credenciais e Contas
 **Importante**: Nunca armazene senhas neste arquivo ou no repositório.
 
-- **Repositório GitHub**: Privado/Organização da Guilda.
+- **Repositório GitHub**: [Jotasiete7/wurm-aguild-site](https://github.com/Jotasiete7/wurm-aguild-site)
 - **Cloudflare Pages**: Vinculado à conta (dash.cloudflare.com). O deploy é automático ao dar push na branch `main`.
 - **Supabase**: Projeto `wurm-guild`.
     - **URL do Banco**: Definida em `.env` (VITE_SUPABASE_URL).
