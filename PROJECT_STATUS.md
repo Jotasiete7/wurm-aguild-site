@@ -25,10 +25,16 @@ Este projeto é o Mural Digital e site institucional da guilda. Ele serve como h
 
 ## 4. Decisões de Design & Arquitetura
 
-### 4.1. Design Visual (Glassmorphism)
-O site utiliza um tema escuro com transparências (glassmorphism) para manter uma estética moderna e "premium".
-- **Cores Principais**: Tons de verde sálvia (Sage) para ações positivas e acentos.
-- **Componentes**: Fundo escuro com "noise" (ruído) sutil e bordas semitransparentes.
+### 4.1. Filosofia de UX: Infraestrutura Silenciosa
+O site foi desenhado para ser uma ferramenta de trabalho, não uma rede social.
+- **Minimalismo Operacional**: Sem ruído, sem onboarding longo, sem textos desnecessários.
+- **Gateways de Intenção**: Botões e links deixam claro qual ação técnica será realizada (ex: "Ver mural" vs "Entrar").
+- **Navegação Funcional**: O usuário deve entender em 5 segundos onde estão os Serviços, Recursos e Mapa.
+
+### 4.2. Design Visual (Glassmorphism + Minimalismo)
+Utiliza um tema escuro com transparências para manter o ar "premium", mas com redução drástica de elementos decorativos.
+- **Cores**: Tons de verde sálvia (Sage) para ações, cinza para estrutura.
+- **Tipografia**: Hierarquia clara, usando opacidade para guiar a leitura (menos importante = mais transparente).
 
 ### 4.2. Segurança e Permissões (Role-Based Access)
 Ao invés de usar o sistema complexo de Auth do Supabase com emails, optamos por um **Auth Local Simplificado** para facilitar o uso pelos membros.
