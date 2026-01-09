@@ -10,14 +10,14 @@ Este projeto é o Mural Digital e site institucional da guilda. Ele serve como h
 - **Frontend**: React 19 + TypeScript + Vite.
 - **Estilização**: CSS Modules / Vanilla CSS com design "Glassmorphism" (vidro fosco).
 - **Banco de Dados**: Supabase (PostgreSQL).
-- **Hospedagem (Deploy)**: Netlify (Conectado ao GitHub `main`).
+- **Hospedagem (Deploy)**: Cloudflare Pages (Conectado ao GitHub `main`).
 - **Ícones**: Lucide React.
 
 ## 3. Credenciais e Contas
 **Importante**: Nunca armazene senhas neste arquivo ou no repositório.
 
 - **Repositório GitHub**: Privado/Organização da Guilda.
-- **Netlify**: Vinculado à conta do Jotasiete. O deploy é automático ao dar push na branch `main`.
+- **Cloudflare Pages**: Vinculado à conta (dash.cloudflare.com). O deploy é automático ao dar push na branch `main`.
 - **Supabase**: Projeto `wurm-guild`.
     - **URL do Banco**: Definida em `.env` (VITE_SUPABASE_URL).
     - **Chave Anônima**: Definida em `.env` (VITE_SUPABASE_ANON_KEY).
@@ -54,7 +54,7 @@ Para evitar a sensação de lentidão, o frontend atualiza a tela **imediatament
 2. Adicione o nome do usuário nas Políticas RLS do Supabase (SQL Editor).
 
 ### Deploy
-Basta commitar e dar push para a `main`. O Netlify detecta e atualiza em ~1 minuto.
+Basta commitar e dar push para a `main`. O Cloudflare Pages detecta e atualiza em ~1 minuto.
 `git push origin main`
 
 ### Recuperação de Desastre
