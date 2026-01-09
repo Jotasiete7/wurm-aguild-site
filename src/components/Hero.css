@@ -166,3 +166,28 @@
         justify-content: center;
     }
 }
+
+.hero-micro-nav {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    opacity: 0.8;
+}
+
+.hero-micro-nav span {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.hero-micro-nav span:hover:not(.separator) {
+    color: var(--detect-sage);
+    text-decoration: underline;
+    opacity: 1;
+}
+
+.hero-micro-nav .separator {
+    cursor: default;
+    opacity: 0.5;
+}

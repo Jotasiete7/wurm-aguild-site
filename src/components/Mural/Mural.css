@@ -18,11 +18,16 @@
     color: var(--text-secondary);
 }
 
+.mural-tabs-container {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
 .mural-tabs {
     display: flex;
     justify-content: center;
     gap: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
     background: rgba(255, 255, 255, 0.03);
     padding: 0.5rem;
     border-radius: 50px;
@@ -30,6 +35,14 @@
     margin-left: auto;
     margin-right: auto;
     border: 1px solid var(--border-subtle);
+}
+
+.mural-tab-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-top: 0.5rem;
+    height: 1.2em; /* Prevent layout shift */
+    animation: fadeIn 0.3s ease-out;
 }
 
 .tab-btn {

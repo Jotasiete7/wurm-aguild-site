@@ -8,10 +8,21 @@ import SystemStatus from './SystemStatus';
 import { useAuth } from '../../context/AuthContext';
 import './Mural.css';
 
-export default function Mural() {
+
+interface MuralProps {
+    initialTab?: 'services' | 'resources' | 'map';
+}
+
+const tabSubtitles = {
+    services: "Ofertas e demandas da guilda",
+    resources: "Ferramentas, links e wiki",
+    map: "Pontos de interesse e marcações"
+} as const;
+
+export default function Mural({ initialTab }: MuralProps) {
     const { user } = useAuth();
-    // Default to 'services'
-    const [activeTab, setActiveTab] = useState<'services' | 'resources' | 'map'>('services');
+    // Default to 'services' or provided initialTab
+    const [activeTab, setActiveTab] = useState<'services' | 'resources' | 'map'>(initialTab || 'services');
 
     // Only Operators and Cartographers can see the Map tab
     const showMap = user?.role === 'operator' || user?.role === 'cartographer';
@@ -26,28 +37,33 @@ export default function Mural() {
             {/* System Status Banner - Always visible at top of content area */}
             <SystemStatus />
 
-            <div className="mural-tabs">
-                <button
-                    className={`tab-btn ${activeTab === 'services' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('services')}
-                >
-                    <LayoutGrid size={18} /> Log Operacional
-                </button>
-                <button
-                    className={`tab-btn ${activeTab === 'resources' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('resources')}
-                >
-                    <Archive size={18} /> Recursos
-                </button>
-
-                {showMap && (
+            <div className="mural-tabs-container">
+                <div className="mural-tabs">
                     <button
-                        className={`tab-btn ${activeTab === 'map' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('map')}
+                        className={`tab-btn ${activeTab === 'services' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('services')}
                     >
-                        <MapIcon size={18} /> Mapa Especial
+                        <LayoutGrid size={18} /> Log Operacional
                     </button>
-                )}
+                    <button
+                        className={`tab-btn ${activeTab === 'resources' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('resources')}
+                    >
+                        <Archive size={18} /> Recursos
+                    </button>
+
+                    {showMap && (
+                        <button
+                            className={`tab-btn ${activeTab === 'map' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('map')}
+                        >
+                            <MapIcon size={18} /> Mapa Especial
+                        </button>
+                    )}
+                </div>
+                <div className="mural-tab-subtitle fade-in" key={activeTab}>
+                    {tabSubtitles[activeTab]}
+                </div>
             </div>
 
             <div className="mural-content">

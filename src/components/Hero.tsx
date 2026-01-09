@@ -2,7 +2,7 @@ import './Hero.css';
 
 
 interface HeroProps {
-    onNavigate: (page: 'home' | 'mural' | 'guild') => void;
+    onNavigate: (page: 'home' | 'mural' | 'guild', tab?: 'services' | 'resources' | 'map') => void;
 }
 
 export function Hero({ onNavigate }: HeroProps) {
@@ -15,23 +15,30 @@ export function Hero({ onNavigate }: HeroProps) {
                     <span className="serif-italic text-sage">Legado</span> no Wurm.
                 </h1>
                 <p className="hero-subtitle">
-                    Artesãos, guerreiros e comerciantes unidos por um propósito.
-                    Serviços de qualidade e uma comunidade unida.
+                    Serviços, ferramentas e recursos operacionais.
                 </p>
 
                 <div className="hero-actions">
-                    <button className="btn btn-primary" onClick={() => onNavigate('mural')}>
-                        Acessar Mural
+                    <button className="btn btn-primary" onClick={() => onNavigate('mural', 'services')}>
+                        Ver mural de serviços
                     </button>
                     <button className="btn btn-secondary" onClick={() => onNavigate('guild')}>
-                        Acesso Restrito
+                        Área Restrita
                     </button>
                 </div>
 
-
+                <nav className="hero-micro-nav">
+                    <span onClick={() => onNavigate('mural', 'services')}>Serviços</span>
+                    <span className="separator">·</span>
+                    <span onClick={() => onNavigate('mural', 'resources')}>Recursos</span>
+                    <span className="separator">·</span>
+                    <span onClick={() => onNavigate('mural', 'map')}>Mapa</span>
+                </nav>
             </div>
 
+
+
             <div className="hero-background"></div>
-        </div>
+        </div >
     );
 }
