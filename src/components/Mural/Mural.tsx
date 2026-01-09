@@ -14,9 +14,9 @@ interface MuralProps {
 }
 
 const tabSubtitles = {
-    services: "Ofertas e demandas da guilda",
-    resources: "Ferramentas, links e wiki",
-    map: "Pontos de interesse e marcações"
+    services: "Ofertas e demandas operacionais",
+    resources: "Ferramentas e links úteis",
+    map: "Pontos de interesse marcados"
 } as const;
 
 export default function Mural({ initialTab }: MuralProps) {
