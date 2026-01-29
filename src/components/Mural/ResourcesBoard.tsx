@@ -228,7 +228,8 @@ export default function ResourcesBoard() {
                                 )}
                             </div>
                         </div>
-                    ))}
+                    );
+                })}
             </div>
 
             <style>{`
