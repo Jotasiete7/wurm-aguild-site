@@ -1,16 +1,24 @@
 
 import { useState } from 'react';
-import { Plus, X, ExternalLink, Pencil, Trash2 } from 'lucide-react';
+import { Plus, X, ExternalLink, Pencil, Trash2, Hammer, Map, FileSpreadsheet, FileText, Globe } from 'lucide-react';
 import { useSupabase } from '../../hooks/useSupabase';
 import { useAuth } from '../../context/AuthContext';
 import type { Resource } from '../../types';
 
+const TYPE_ICONS: Record<Resource['type'], React.ElementType> = {
+    tool: Hammer,
+    map: Map,
+    sheet: FileSpreadsheet,
+    doc: FileText,
+    external: Globe,
+};
+
 const TYPE_LABELS: Record<Resource['type'], string> = {
-    tool: 'ferramenta',
-    map: 'mapa',
-    sheet: 'planilha',
-    doc: 'documento',
-    external: 'externo',
+    tool: 'Ferramenta',
+    map: 'Mapa',
+    sheet: 'Planilha',
+    doc: 'Documento',
+    external: 'Externo',
 };
 
 const ACCESS_LABELS: Record<Resource['access'], string> = {
@@ -163,59 +171,72 @@ export default function ResourcesBoard() {
                     </div>
                 )}
 
-                {visibleResources.map(resource => (
-                    <div
-                        key={resource.id}
-                        className="service-row"
-                        onClick={() => window.open(resource.url, '_blank', 'noopener,noreferrer')}
-                        role="button"
-                        tabIndex={0}
-                    >
-                        <span style={{ flex: 2, fontWeight: 500 }}>{resource.name}</span>
-                        <span style={{ width: '120px', opacity: 0.6, fontSize: '0.875rem' }}>
-                            {TYPE_LABELS[resource.type]}
-                        </span>
-                        <span style={{ width: '100px', opacity: 0.6, fontSize: '0.875rem' }}>
-                            {ACCESS_LABELS[resource.access]}
-                        </span>
+                {visibleResources.map((resource, index) => {
+                    const Icon = TYPE_ICONS[resource.type];
+                    return (
                         <div
-                            style={{ width: '100px', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}
-                            onClick={(e) => e.stopPropagation()}
+                            key={resource.id}
+                            className="service-row"
+                            onClick={() => window.open(resource.url, '_blank', 'noopener,noreferrer')}
+                            role="button"
+                            tabIndex={0}
+                            style={{ animationDelay: `${index * 0.05}s` }}
                         >
-                            <a
-                                href={resource.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="icon-btn"
-                                title="Abrir"
-                            >
-                                <ExternalLink size={16} />
-                            </a>
+                            <span style={{ flex: 2, fontWeight: 500, color: 'var(--text-primary)' }}>{resource.name}</span>
 
-                            {user?.role === 'operator' && (
-                                <>
-                                    <button
-                                        className="icon-btn"
-                                        onClick={() => openEdit(resource)}
-                                        title="Editar"
-                                    >
-                                        <Pencil size={16} />
-                                    </button>
-                                    <button
-                                        className="icon-btn delete"
-                                        onClick={() => handleDelete(resource.id)}
-                                        title="Remover"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </>
-                            )}
+                            <span style={{ width: '130px', display: 'flex', alignItems: 'center', gap: '0.5rem', opacity: 0.8, fontSize: '0.875rem' }}>
+                                <Icon size={16} style={{ opacity: 0.7 }} />
+                                {TYPE_LABELS[resource.type]}
+                            </span>
+
+                            <span style={{ width: '100px' }}>
+                                <span className={`badge ${resource.access}`}>
+                                    {ACCESS_LABELS[resource.access]}
+                                </span>
+                            </span>
+                            <div
+                                style={{ width: '100px', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <a
+                                    href={resource.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="icon-btn"
+                                    title="Abrir"
+                                >
+                                    <ExternalLink size={16} />
+                                </a>
+
+                                {user?.role === 'operator' && (
+                                    <>
+                                        <button
+                                            className="icon-btn"
+                                            onClick={() => openEdit(resource)}
+                                            title="Editar"
+                                        >
+                                            <Pencil size={16} />
+                                        </button>
+                                        <button
+                                            className="icon-btn delete"
+                                            onClick={() => handleDelete(resource.id)}
+                                            title="Remover"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
             </div>
 
             <style>{`
+                @keyframes slideIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
                 .services-list {
                     display: flex;
                     flex-direction: column;
@@ -233,14 +254,35 @@ export default function ResourcesBoard() {
                     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                     cursor: pointer;
                     position: relative;
+                    
+                    /* Animation */
+                    opacity: 0;
+                    animation: slideIn 0.3s ease-out forwards;
                 }
 
                 .service-row:hover {
-                    background: rgba(255, 255, 255, 0.05);
-                    border-color: rgba(255, 255, 255, 0.1);
+                    background: rgba(255, 255, 255, 0.04);
+                    border-color: rgba(154, 176, 154, 0.3); /* accent-sage-dim */
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(154, 176, 154, 0.1);
                     transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                 }
+                
+                .badge {
+                    display: inline-block;
+                    padding: 0.25rem 0.5rem;
+                    font-size: 0.7rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    border-radius: 4px;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    background: rgba(255, 255, 255, 0.03);
+                    color: var(--text-secondary);
+                }
+
+                .badge.public { color: var(--text-secondary); }
+                .badge.members { color: var(--accent-sage); border-color: rgba(154, 176, 154, 0.2); background: rgba(154, 176, 154, 0.05); }
+                .badge.admins { color: #d4a373; border-color: rgba(212, 163, 115, 0.2); background: rgba(212, 163, 115, 0.05); }
 
                 .service-row.header {
                     background: transparent;
