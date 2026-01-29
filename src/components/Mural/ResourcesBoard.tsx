@@ -164,15 +164,24 @@ export default function ResourcesBoard() {
                 )}
 
                 {visibleResources.map(resource => (
-                    <div key={resource.id} className="service-row">
-                        <span style={{ flex: 2 }}>{resource.name}</span>
+                    <div
+                        key={resource.id}
+                        className="service-row"
+                        onClick={() => window.open(resource.url, '_blank', 'noopener,noreferrer')}
+                        role="button"
+                        tabIndex={0}
+                    >
+                        <span style={{ flex: 2, fontWeight: 500 }}>{resource.name}</span>
                         <span style={{ width: '120px', opacity: 0.6, fontSize: '0.875rem' }}>
                             {TYPE_LABELS[resource.type]}
                         </span>
                         <span style={{ width: '100px', opacity: 0.6, fontSize: '0.875rem' }}>
                             {ACCESS_LABELS[resource.access]}
                         </span>
-                        <div style={{ width: '100px', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+                        <div
+                            style={{ width: '100px', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
                             <a
                                 href={resource.url}
                                 target="_blank"
@@ -210,23 +219,36 @@ export default function ResourcesBoard() {
                 .services-list {
                     display: flex;
                     flex-direction: column;
-                    gap: 0;
+                    gap: 0.5rem;
                 }
 
                 .service-row {
                     display: flex;
                     align-items: center;
-                    padding: 0.75rem 1rem;
+                    padding: 1rem;
                     gap: 1rem;
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-                    transition: background 0.2s;
+                    background: rgba(255, 255, 255, 0.02);
+                    border-radius: 8px;
+                    border: 1px solid transparent;
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                    cursor: pointer;
+                    position: relative;
                 }
 
                 .service-row:hover {
-                    background: rgba(255, 255, 255, 0.04);
+                    background: rgba(255, 255, 255, 0.05);
+                    border-color: rgba(255, 255, 255, 0.1);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                 }
 
                 .service-row.header {
+                    background: transparent;
+                    border: none;
+                    cursor: default;
+                    pointer-events: none;
+                    padding: 0.5rem 1rem;
+                    margin-bottom: 0;
                     font-weight: 600;
                     font-size: 0.75rem;
                     text-transform: uppercase;
@@ -234,25 +256,32 @@ export default function ResourcesBoard() {
                     color: var(--text-dim);
                     opacity: 0.6;
                     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 0;
+                    box-shadow: none !important;
+                    transform: none !important;
                 }
 
                 .icon-btn {
-                    background: none;
+                    background: rgba(255, 255, 255, 0.05);
                     border: none;
                     color: var(--text-secondary);
                     cursor: pointer;
-                    padding: 0.25rem;
-                    transition: color 0.2s;
+                    padding: 0.5rem;
+                    border-radius: 4px;
+                    transition: all 0.2s;
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    z-index: 2;
                 }
 
                 .icon-btn:hover {
+                    background: rgba(255, 255, 255, 0.1);
                     color: var(--accent-sage);
                 }
                 
                 .icon-btn.delete:hover {
+                    background: rgba(255, 77, 77, 0.1);
                     color: #ff6b6b;
                 }
 
@@ -272,7 +301,7 @@ export default function ResourcesBoard() {
                     .service-row {
                         flex-direction: column;
                         align-items: flex-start;
-                        padding: 1rem;
+                        padding: 1.25rem;
                         gap: 0.75rem;
                     }
 
@@ -285,10 +314,13 @@ export default function ResourcesBoard() {
                     .service-row > div {
                         justify-content: flex-end !important;
                         margin-top: 0.5rem;
+                        border-top: 1px solid rgba(255, 255, 255, 0.05);
+                        padding-top: 1rem;
                     }
 
                     .icon-btn {
-                        padding: 0.5rem;
+                        padding: 0.75rem;
+                        /* Larger touch target */
                     }
 
                     .form-row {
