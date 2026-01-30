@@ -104,7 +104,7 @@ export default function ServicesBoard() {
                             <option value="sell">VENDA</option>
                         </select>
 
-                        {user?.role === 'operator' ? (
+                        {['superadmin', 'admin', 'operator'].includes(user?.role || '') ? (
                             <input
                                 placeholder="Responsável"
                                 value={formData.provider || ''}
@@ -131,7 +131,7 @@ export default function ServicesBoard() {
                         onChange={e => setFormData({ ...formData, title: e.target.value })}
                     />
 
-                    {(user?.role === 'operator' || user?.username === formData.provider) && (
+                    {(['superadmin', 'admin', 'operator'].includes(user?.role || '') || user?.username === formData.provider) && (
                         <div className="form-row" style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                             <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                                 STATUS
@@ -193,7 +193,7 @@ export default function ServicesBoard() {
                             <span className="row-price">{service.price}</span>
                         </div>
 
-                        {user?.role === 'operator' && (
+                        {['superadmin', 'admin', 'operator'].includes(user?.role || '') && (
                             <div className="row-actions">
                                 <button className="icon-btn edit" onClick={() => openEdit(service)}>
                                     <Pencil size={12} />

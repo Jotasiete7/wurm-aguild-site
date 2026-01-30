@@ -90,7 +90,7 @@ export default function ResourcesBoard() {
     const visibleResources = resources.filter(r => {
         if (r.access === 'public') return true;
         if (r.access === 'members' && user) return true;
-        if (r.access === 'admins' && user?.role === 'operator') return true;
+        if (r.access === 'admins' && ['superadmin', 'admin', 'operator'].includes(user?.role || '')) return true;
         return false;
     });
 
@@ -100,7 +100,7 @@ export default function ResourcesBoard() {
         <div className="services-board">
             <div className="board-actions">
                 <h3>Recursos Operacionais</h3>
-                {user?.role === 'operator' && (
+                {['superadmin', 'admin', 'operator'].includes(user?.role || '') && (
                     <button className="btn-add" onClick={openAdd}>
                         <Plus size={16} /> Novo Recurso
                     </button>
@@ -208,7 +208,7 @@ export default function ResourcesBoard() {
                                     <ExternalLink size={16} />
                                 </a>
 
-                                {user?.role === 'operator' && (
+                                {['superadmin', 'admin', 'operator'].includes(user?.role || '') && (
                                     <>
                                         <button
                                             className="icon-btn"
