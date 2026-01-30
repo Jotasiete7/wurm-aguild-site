@@ -45,6 +45,7 @@ export default function GuildArea() {
         }
     };
 
+    if (authLoading) return <div className="loading-screen">Carregando...</div>;
     if (!user) return null;
 
     return (
@@ -64,7 +65,7 @@ export default function GuildArea() {
                                     placeholder="Seu Nick In-Game"
                                     autoFocus
                                 />
-                                <button onClick={handleUpdateNick} disabled={loading} className="icon-btn save">
+                                <button onClick={handleUpdateNick} disabled={saving} className="icon-btn save">
                                     <Check size={18} />
                                 </button>
                                 <button onClick={() => setIsEditing(false)} className="icon-btn cancel">
@@ -84,7 +85,10 @@ export default function GuildArea() {
                             </div>
                         )}
 
-                        <p className="role-badge">{user.role === 'superadmin' ? '👑 Superadmin' : 'Membro'}</p>
+                        <p className="role-badge">
+                            {(user.role === 'superadmin') ? '👑 Superadmin' :
+                                (user.role === 'admin') ? '🛡️ Admin' : 'Membro'}
+                        </p>
                     </div>
 
                     <button onClick={() => { signOut(); navigate('/'); }} className="logout-btn">
