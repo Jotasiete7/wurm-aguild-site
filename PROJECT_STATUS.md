@@ -83,6 +83,7 @@ Se você é uma IA ou Dev entrando agora, aqui está onde as coisas acontecem:
 - **`src/`**: Raiz do código fonte.
   - **`components/Mural/`**: Onde vivem os widgets principais.
     - `ServicesBoard.tsx`: Mural de serviços (Compra/Venda). Lógica de CRUD complexa aqui.
+    - `RecipeManagement.tsx`: **[NEW]** Aprovação de receitas pendentes (Admin).
     - `ResourcesBoard.tsx`: Links úteis (Wiki, Mapas). CRUD simples. **[UPDATED]** UI refinada com ícones, badges e animações.
     - `GuildMap.tsx`: Mapa interativo com pinos.
   - **`hooks/useSupabase.ts`**: O "cérebro" da comunicação com o banco. Abstrai SELECT/INSERT/UPDATE/DELETE e o Realtime. **Não edite sem cuidado.**
@@ -94,3 +95,11 @@ Se você é uma IA ou Dev entrando agora, aqui está onde as coisas acontecem:
 1. **Autenticação**: Não tente usar `supabase.auth.user()`. O usuário logado está em `useAuth()`.
 2. **Segurança**: Ao criar/editar dados, você **DEVE** enviar o campo `author` ou `provider` com o username do `useAuth`. Sem isso, o RLS do banco vai bloquear (Erro 403).
 3. **UI**: Mantenha o estilo "Glassmorphism" (`className="glass"`). Use ícones do `lucide-react`.
+
+## 8. Próximos Passos: SSO (A Guilda ID)
+
+Iniciamos o design do sistema de Single Sign-On para unificar o login entre o Hub e as ferramentas (Recipes, Mining).
+
+- **Documento de Arquitetura**: Veja `SSO_ARCHITECTURE.md` na raiz.
+- **Status**: Design aprovado. Implementação pendente.
+- **Objetivo**: Permitir que satélites usem "Login com A Guilda". (Authorization Code Flow).
