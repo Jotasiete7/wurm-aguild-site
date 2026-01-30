@@ -42,7 +42,7 @@ export default function Navbar() {
                         {isMenuOpen && (
                             <div className="dropdown-menu animate-in">
                                 <div className="dropdown-header">ECOSSISTEMA</div>
-                                <a href="https://wurm-recipes.pages.dev" className="dropdown-item">
+                                <a href="https://wurm-recipe-tool.pages.dev" className="dropdown-item">
                                     <BookOpen size={14} /> Receitas
                                 </a>
                                 <a href="https://wurm-mining-tool.pages.dev" className="dropdown-item">
