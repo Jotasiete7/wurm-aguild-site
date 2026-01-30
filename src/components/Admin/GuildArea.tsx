@@ -1,69 +1,31 @@
-
-import React, { useState } from 'react';
-import { Lock, Map, Lightbulb } from 'lucide-react';
+import { useEffect } from 'react'; // Added import
+import { Map, Lightbulb } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './GuildArea.css';
 
 export default function GuildArea() {
-    const { user, login, logout } = useAuth();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const { user, signOut } = useAuth(); // Changed logout to signOut
+    const navigate = useNavigate();
 
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (login(username, password)) {
-            setError('');
-        } else {
-            setError('Credenciais inválidas.');
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
         }
-    };
+    }, [user, navigate]);
 
-    if (!user) {
-        return (
-            <div className="login-container container fade-in">
-                <div className="login-card glass">
-                    <div className="lock-icon">
-                        <Lock size={32} />
-                    </div>
-                    <h2>Área Restrita</h2>
-                    <p>Faça login para acessar.</p>
-
-                    <form onSubmit={handleLogin} className="login-form">
-                        <input
-                            type="text"
-                            placeholder="Usuário"
-                            value={username}
-                            onChange={e => setUsername(e.target.value)}
-                            className="password-input"
-                        />
-                        <input
-                            type="password"
-                            placeholder="Senha"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                            className="password-input"
-                        />
-                        {error && <span className="error-msg">{error}</span>}
-                        <button type="submit" className="login-btn">Entrar</button>
-                    </form>
-                </div>
-            </div>
-        );
-    }
-
-    const roleLabel = user.role === 'operator' ? 'adm' : user.role;
+    if (!user) return null;
 
     return (
         <div className="dashboard-container container fade-in">
             <header className="dashboard-header">
                 <div className="header-content">
                     <div>
-                        <h2>Olá, {user.username}</h2>
+                        <h2>Olá, {user.email}</h2>
                         <p>Bem-vindo à central da guilda.</p>
                     </div>
-                    <button onClick={logout} className="logout-btn">
-                        Sair ({roleLabel} {user.username})
+                    <button onClick={() => { signOut(); navigate('/'); }} className="logout-btn">
+                        Sair
                     </button>
                 </div>
             </header>

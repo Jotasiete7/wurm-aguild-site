@@ -1,64 +1,121 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
+import { supabase } from '../supabaseClient';
 
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import type { UserRole } from '../types';
-
-interface User {
+// Compatible User interface for the app
+export interface AppUser {
+    id: string;
+    email?: string;
     username: string;
-    role: UserRole;
+    role: string;
 }
 
 interface AuthContextType {
-    user: User | null;
-    login: (username: string, password: string) => boolean;
-    logout: () => void;
+    session: Session | null;
+    user: AppUser | null;
+    loading: boolean;
+    isAdmin: boolean;
+    signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Map of allowed users with their passwords and roles
-const ALLOWED_USERS: Record<string, { password: string; role: UserRole }> = {
-    'jotasiete': { password: 'quimica7', role: 'operator' },
-    'calvos': { password: 'calvette', role: 'operator' },
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [session, setSession] = useState<Session | null>(null);
+    const [user, setUser] = useState<AppUser | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setSession(session);
+            if (session?.user) {
+                fetchUserProfile(session.user);
+            } else {
+                setUser(null);
+                setLoading(false);
+            }
+        });
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+            if (session?.user) {
+                fetchUserProfile(session.user);
+            } else {
+                setUser(null);
+                setIsAdmin(false);
+                setLoading(false);
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const fetchUserProfile = async (authUser: SupabaseUser) => {
+        try {
+            // Default fallback if no profile exists
+            let newItem: AppUser = {
+                id: authUser.id,
+                email: authUser.email,
+                username: authUser.email?.split('@')[0] || 'Anon',
+                role: 'member'
+            };
+
+            // Try to fetch profile from DB
+            const { data } = await supabase
+                .from('profiles')
+                .select('role, username') // Assuming username might be in profiles too
+                .eq('id', authUser.id)
+                .single();
+
+            if (data) {
+                newItem.role = data.role || 'member';
+                if (data.username) newItem.username = data.username;
+
+                if (newItem.role === 'admin' || newItem.role === 'operator') {
+                    setIsAdmin(true);
+                } else {
+                    setIsAdmin(false);
+                }
+            }
+
+            setUser(newItem);
+
+        } catch (e) {
+            console.error('Error fetching user profile:', e);
+            // Fallback to basic info even on error
+            setUser({
+                id: authUser.id,
+                email: authUser.email,
+                username: authUser.email?.split('@')[0] || 'Anon',
+                role: 'member'
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const signOut = async () => {
+        await supabase.auth.signOut();
+        setUser(null);
+        setIsAdmin(false);
+    };
+
+    const value = {
+        session,
+        user,
+        loading,
+        isAdmin,
+        signOut,
+    };
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-    // Initialize from localStorage if available
-    const [user, setUser] = useState<User | null>(() => {
-        const saved = localStorage.getItem('guild_user');
-        return saved ? JSON.parse(saved) : null;
-    });
-
-    const login = (username: string, pass: string) => {
-        // Check if user exists and password matches
-        const normalizedUsername = username.toLowerCase();
-        const userConfig = ALLOWED_USERS[normalizedUsername];
-
-        if (userConfig && userConfig.password === pass) {
-            const userObj = { username: normalizedUsername, role: userConfig.role };
-            setUser(userObj);
-            localStorage.setItem('guild_user', JSON.stringify(userObj));
-            return true;
-        }
-
-        return false;
-    };
-
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('guild_user');
-    };
-
-    return (
-        <AuthContext.Provider value={{ user, login, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
-}
-
-export function useAuth() {
+export const useAuth = () => {
     const context = useContext(AuthContext);
     if (context === undefined) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
-}
+};
