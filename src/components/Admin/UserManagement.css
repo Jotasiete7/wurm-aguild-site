@@ -20,6 +20,17 @@
     color: var(--accent-sage);
 }
 
+.subtitle-architecture {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+    font-family: var(--font-sans);
+    opacity: 0.7;
+}
+
 .search-box {
     display: flex;
     align-items: center;

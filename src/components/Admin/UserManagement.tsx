@@ -48,10 +48,12 @@ export default function UserManagement() {
 
         try {
             setUpdating(userId);
-            const { error } = await supabase
-                .from('profiles')
-                .update({ global_role: newRole })
-                .eq('id', userId);
+
+            // ARCHITECTURAL CHANGE: Use RPC instead of direct update
+            const { error } = await supabase.rpc('promote_user', {
+                target_user_id: userId,
+                new_role: newRole
+            });
 
             if (error) throw error;
 
@@ -62,7 +64,7 @@ export default function UserManagement() {
 
         } catch (error) {
             console.error('Error updating role:', error);
-            alert('Erro ao atualizar cargo.');
+            alert('Erro ao atualizar cargo: ' + error.message);
         } finally {
             setUpdating(null);
         }
@@ -91,7 +93,10 @@ export default function UserManagement() {
     return (
         <div className="user-management-container glass">
             <div className="um-header">
-                <h3>Gerenciamento de Guilda</h3>
+                <div>
+                    <h3>Gerenciamento de Guilda</h3>
+                    <span className="subtitle-architecture">Autoridade Global do Ecossistema</span>
+                </div>
                 <div className="search-box">
                     <Search size={16} />
                     <input
@@ -111,7 +116,8 @@ export default function UserManagement() {
                         <thead>
                             <tr>
                                 <th>Membro</th>
-                                <th>Email</th>
+                                {/* Privacy: Email only for Superadmins */}
+                                {user.role === 'superadmin' && <th>Email</th>}
                                 <th>Cargo Atual</th>
                                 <th>Ações</th>
                             </tr>
@@ -127,7 +133,10 @@ export default function UserManagement() {
                                             <span className="username">{profile.username || 'Sem Nick'}</span>
                                         </div>
                                     </td>
-                                    <td className="email-cell">{profile.email}</td>
+                                    {/* Privacy: Email only for Superadmins */}
+                                    {user.role === 'superadmin' && (
+                                        <td className="email-cell">{profile.email}</td>
+                                    )}
                                     <td>{getRoleBadge(profile.global_role)}</td>
                                     <td>
                                         <div className="action-buttons">
