@@ -18,14 +18,7 @@ export function Hero({ onNavigate }: HeroProps) {
                     Serviços, ferramentas e recursos operacionais.
                 </p>
 
-                <div className="hero-actions">
-                    <button className="btn btn-primary" onClick={() => onNavigate('mural', 'services')}>
-                        Ver mural de serviços
-                    </button>
-                    <button className="btn btn-secondary" onClick={() => onNavigate('guild')}>
-                        Área Restrita
-                    </button>
-                </div>
+                {/* Buttons removed as per request to avoid redundancy with Navbar */}
 
                 <nav className="hero-micro-nav">
                     <span onClick={() => onNavigate('mural', 'services')}>Serviços</span>
