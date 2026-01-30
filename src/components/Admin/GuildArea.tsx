@@ -3,28 +3,29 @@ import { Map, Edit2, Check, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../supabaseClient';
 import { useNavigate } from 'react-router-dom';
+import UserManagement from './UserManagement';
 import './GuildArea.css';
 
 export default function GuildArea() {
-    const { user, signOut } = useAuth();
+    const { user, signOut, refreshProfile, loading: authLoading } = useAuth();
     const navigate = useNavigate();
 
     // State for Nickname Editing
     const [isEditing, setIsEditing] = useState(false);
     const [newNick, setNewNick] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        if (!user) {
+        if (!authLoading && !user) {
             navigate('/login');
-        } else {
+        } else if (user) {
             setNewNick(user.username || '');
         }
-    }, [user, navigate]);
+    }, [user, authLoading, navigate]);
 
     const handleUpdateNick = async () => {
         if (!user || !newNick.trim()) return;
-        setLoading(true);
+        setSaving(true);
 
         try {
             const { error } = await supabase
@@ -34,13 +35,14 @@ export default function GuildArea() {
 
             if (error) throw error;
 
-            // Force reload to update context (simple way)
-            window.location.reload();
+            // Soft refresh using context
+            await refreshProfile();
+
         } catch (error) {
             console.error('Error updating nick:', error);
             alert('Erro ao atualizar nick. Tente novamente.');
         } finally {
-            setLoading(false);
+            setSaving(false);
             setIsEditing(false);
         }
     };
@@ -106,6 +108,11 @@ export default function GuildArea() {
                     </div>
                 </div>
             </div>
+
+            {/* Admin Section */}
+            {(user.role === 'superadmin' || user.role === 'admin') && (
+                <UserManagement />
+            )}
         </div>
     );
 }

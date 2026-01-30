@@ -65,15 +65,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             // Try to fetch profile from DB
             const { data } = await supabase
                 .from('profiles')
-                .select('role, username') // Assuming username might be in profiles too
+                .select('global_role, username')
                 .eq('id', authUser.id)
                 .single();
 
             if (data) {
-                newItem.role = data.role || 'member';
+                // Map global_role to internal role
+                newItem.role = data.global_role || 'member';
                 if (data.username) newItem.username = data.username;
 
-                if (newItem.role === 'admin' || newItem.role === 'operator') {
+                if (newItem.role === 'superadmin' || newItem.role === 'admin') {
                     setIsAdmin(true);
                 } else {
                     setIsAdmin(false);
@@ -102,12 +103,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAdmin(false);
     };
 
+    const refreshProfile = async () => {
+        if (session?.user) {
+            await fetchUserProfile(session.user);
+        }
+    };
+
     const value = {
         session,
         user,
         loading,
         isAdmin,
         signOut,
+        refreshProfile
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
