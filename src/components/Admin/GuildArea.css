@@ -15,6 +15,41 @@
     align-items: flex-start;
 }
 
+/* Tabs */
+.admin-tabs-section {
+    margin-top: 2rem;
+}
+
+.tabs-header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    position: relative;
+    top: 1px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    color: var(--accent-sage);
+    border-bottom: 2px solid var(--accent-sage);
+}
+
+
 /* User Welcome Section */
 .user-welcome {
     display: flex;

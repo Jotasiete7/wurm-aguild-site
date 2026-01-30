@@ -4,11 +4,14 @@ import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import UserManagement from './UserManagement';
+import RecipeManagement from './RecipeManagement';
 import './GuildArea.css';
 
 export default function GuildArea() {
     const { user, signOut, refreshProfile, loading: authLoading } = useAuth();
     const navigate = useNavigate();
+
+    const [activeTab, setActiveTab] = useState<'users' | 'recipes'>('users');
 
     // State for Nickname Editing
     const [isEditing, setIsEditing] = useState(false);
@@ -109,9 +112,29 @@ export default function GuildArea() {
                 </div>
             </div>
 
-            {/* Admin Section */}
+
+            {/* Admin Section with Tabs */}
             {(user.role === 'superadmin' || user.role === 'admin') && (
-                <UserManagement />
+                <div className="admin-tabs-section">
+                    <div className="tabs-header">
+                        <button
+                            className={`tab-btn ${activeTab === 'users' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('users')}
+                        >
+                            Membros ({user.role === 'superadmin' ? 'Total' : 'Visualização'})
+                        </button>
+                        <button
+                            className={`tab-btn ${activeTab === 'recipes' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('recipes')}
+                        >
+                            Aprovar Receitas
+                        </button>
+                    </div>
+
+                    <div className="tab-content">
+                        {activeTab === 'users' ? <UserManagement /> : <RecipeManagement />}
+                    </div>
+                </div>
             )}
         </div>
     );

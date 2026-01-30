@@ -48,3 +48,13 @@ export interface Resource extends BaseEntity {
     url: string;
     author?: string;
 }
+
+export interface Recipe extends BaseEntity {
+    name: string;
+    ingredients: string; // JSON or text list
+    steps: string;
+    skill: string;
+    difficulty?: number;
+    status: 'pending' | 'approved' | 'rejected';
+    author: string;
+}
