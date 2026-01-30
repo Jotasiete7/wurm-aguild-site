@@ -62,9 +62,9 @@ export default function UserManagement() {
                 p.id === userId ? { ...p, global_role: newRole as any } : p
             ));
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating role:', error);
-            alert('Erro ao atualizar cargo: ' + error.message);
+            alert('Erro ao atualizar cargo: ' + (error.message || 'Erro desconhecido'));
         } finally {
             setUpdating(null);
         }
