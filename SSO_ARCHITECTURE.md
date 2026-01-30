@@ -6,7 +6,7 @@
 
 ## 1. Visão Geral
 
-Este documento define a arquitetura do **Sistema de Single Sign-On (SSO)** centralizado para o ecossistema "A Guilda". O objetivo é transformar o site principal (Hub) em um **Identity Provider (IdP)** seguro, fornecendo autenticação para aplicações satélites (Recipes, Mining, etc.) via **Authorization Code Flow**, utilizando **Strict Validation** e **Supabase Edge Functions**.
+Este documento define a arquitetura do **Sistema de Single Sign-On (SSO)** centralizado para o ecossistema "A Guilda". O objetivo é transformar o site principal (Hub) em um **Identity Provider (IdP)** seguro, fornecendo autenticação para aplicações satélites (Recipes, Mining, etc.) via **Authorization Code–Inspired Flow (Custom SSO)**, utilizando **Strict Validation** e **Supabase Edge Functions**.
 
 ---
 
@@ -14,7 +14,7 @@ Este documento define a arquitetura do **Sistema de Single Sign-On (SSO)** centr
 
 1. **Identity Provider (IdP)**: O Hub (`live-site-check`) detém a base de usuários e a sessão "mestra".
 2. **Service Provider (SP)**: Apps satélites (Recipes, Mining). Eles não têm banco de usuários próprio.
-3. **Authorization Code Flow**: O padrão ouro. O cliente recebe um código temporário e o troca por tokens no backend (ou via função segura).
+3. **Authorization Code–Inspired Flow (Custom SSO)**: O padrão ouro adaptado. O cliente recebe um código temporário e o troca por tokens no backend (ou via função segura). Não buscamos compatibilidade estrita com OAuth2, mas seguimos seus princípios de segurança.
 4. **Security by Design**:
     * *Refresh Tokens* nunca chegam ao client-side dos satélites.
     * A sessão nos satélites é efêmera (curta duração), renovada validando a sessão no IdP.
@@ -70,7 +70,8 @@ create table sso_codes (
   user_id uuid references auth.users not null,
   client_id text references sso_clients(client_id),
   expires_at timestamptz not null,
-  used boolean default false
+  used boolean default false,
+  created_at timestamptz default now() -- Auditoria e Debug
 );
 ```
 
@@ -120,7 +121,8 @@ O Hub redireciona o usuário de volta:
     * `aud`: client_id
     * `exp`: 1 hora (Curta duração)
 5. Retorna o JWT para o Satellite.
-6. *Nota: Não retornamos Refresh Token. O Satellite deve confiar no JWT por 1h e depois redirecionar para Login novamente (Silencioso se possível).*
+6. *Nota: Não retornamos Refresh Token. O Satellite deve confiar no JWT por 1h.*
+    * **Renovação Silenciosa**: Satélites **NÃO** renovam tokens sozinhos. A renovação ocorre exclusivamente via redirect silencioso ao Hub para validar a sessão mestra.
 
 ---
 
@@ -138,8 +140,10 @@ A validação de permissão deve ser hierárquica (Downstream inherit permission
 ```json
 {
   "sub": "user-uuid",
-  "role": "superadmin",  // Global Role
-  "permissions": ["recipes:approve", "mining:view"] // Opcional: Scopes finos
+  "global_role": "superadmin",
+  "app_role": "editor",     // Role específico para o contexto do app (se aplicável)
+  "aud": "recipes_tool",
+  "exp": 1710000000
 }
 ```
 
