@@ -72,8 +72,11 @@ export default function SSOAuthorize() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) throw new Error('No active session');
 
-            // Call Edge Function
+            // Call Edge Function with auth header
             const { data, error } = await supabase.functions.invoke('sso-authorize', {
+                headers: {
+                    Authorization: `Bearer ${session.access_token}`
+                },
                 body: {
                     client_id: clientId,
                     user_id: user.id,
