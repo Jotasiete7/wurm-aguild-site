@@ -68,12 +68,18 @@ export default function SSOAuthorize() {
         setLoading(true);
 
         try {
+            // Get current session tokens
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error('No active session');
+
             // Call Edge Function
             const { data, error } = await supabase.functions.invoke('sso-authorize', {
                 body: {
                     client_id: clientId,
                     user_id: user.id,
-                    redirect_uri: redirectUri
+                    redirect_uri: redirectUri,
+                    access_token: session.access_token,
+                    refresh_token: session.refresh_token
                 }
             });
 

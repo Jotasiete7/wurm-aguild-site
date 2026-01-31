@@ -83,10 +83,11 @@ serve(async (req) => {
                 app_metadata: authUser?.user?.app_metadata,
                 user_metadata: authUser?.user?.user_metadata
             },
-            // We can add a short lived access_token here if we want the satellite to use it for RLS on the Hub directly,
-            // but Satellites usually have their own DBs or just need Identity.
-            // If Satellites need to access Hub DB, we'd need to mint a Supabase Token.
-            expires_in: 3600
+            session: {
+                access_token: ssoCode.access_token,
+                refresh_token: ssoCode.refresh_token,
+                expires_in: 3600
+            }
         };
 
         return new Response(JSON.stringify(payload), {

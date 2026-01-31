@@ -18,7 +18,7 @@ serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
-        const { client_id, user_id, redirect_uri } = await req.json();
+        const { client_id, user_id, redirect_uri, access_token, refresh_token } = await req.json();
 
         if (!client_id || !user_id) {
             throw new Error('Missing client_id or user_id');
@@ -41,7 +41,7 @@ serve(async (req) => {
         // If redirect_uri is provided, it must be in the whitelist.
         if (redirect_uri) {
             const allowed = client.redirect_uris.includes(redirect_uri) ||
-                client.redirect_uris.some(u => redirect_uri.startsWith(u)); // Allow sub-paths matching? Architecture said strict.
+                client.redirect_uris.some(u => redirect_uri.startsWith(u));
 
             // Strict as per architecture:
             if (!client.redirect_uris.includes(redirect_uri)) {
@@ -58,6 +58,8 @@ serve(async (req) => {
                 code,
                 user_id,
                 client_id,
+                access_token, // Store tokens
+                refresh_token, // Store tokens
                 expires_at: new Date(Date.now() + 30 * 1000).toISOString() // 30 seconds validity
             });
 

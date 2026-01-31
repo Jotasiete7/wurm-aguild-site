@@ -22,6 +22,10 @@ create table if not exists sso_codes (
     code text primary key,
     user_id uuid references auth.users not null,
     client_id text references sso_clients(client_id),
+    access_token text,
+    -- New: Store for handover
+    refresh_token text,
+    -- New: Store for handover
     expires_at timestamptz not null,
     used boolean default false,
     created_at timestamptz default now()
