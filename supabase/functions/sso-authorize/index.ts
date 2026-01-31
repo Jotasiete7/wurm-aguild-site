@@ -12,15 +12,17 @@ serve(async (req) => {
     }
 
     try {
-        // Extract and validate authorization header
+        console.log('1. Checking authorization header...');
         const authHeader = req.headers.get('Authorization');
         if (!authHeader) {
+            console.error('Missing authorization header');
             return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
                 status: 401,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
+        console.log('2. Creating user supabase client...');
         // Create client with anon key to validate user JWT
         const userSupabase = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
@@ -32,14 +34,18 @@ serve(async (req) => {
             }
         );
 
+        console.log('3. Verifying user authentication...');
         // Verify the user is authenticated
         const { data: { user }, error: authError } = await userSupabase.auth.getUser();
         if (authError || !user) {
-            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            console.error('Auth error:', authError);
+            return new Response(JSON.stringify({ error: 'Unauthorized', details: authError?.message }), {
                 status: 401,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
+
+        console.log('4. User authenticated:', user.id);
 
         // Create service role client for database operations
         const supabase = createClient(
