@@ -12,6 +12,10 @@ const Login: React.FC = () => {
     const [message, setMessage] = useState<string | null>(null);
     const { user } = useAuth();
 
+    // Check for redirect param
+    const queryParams = new URLSearchParams(window.location.search);
+    const redirectUrl = queryParams.get('redirect');
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -26,6 +30,7 @@ const Login: React.FC = () => {
         if (error) {
             setError(error.message);
         }
+        // Redirect will be handled by the effect or render below when user state updates
         setLoading(false);
     };
 
@@ -47,6 +52,14 @@ const Login: React.FC = () => {
         setLoading(false);
     }
 
+    // Auto-redirect if logged in
+    React.useEffect(() => {
+        if (user && redirectUrl) {
+            // Short delay to show success state or immediate
+            window.location.href = redirectUrl;
+        }
+    }, [user, redirectUrl]);
+
     if (user) {
         return (
             <div className="login-page">
@@ -57,6 +70,12 @@ const Login: React.FC = () => {
                         </div>
                         <h2 className="login-title">Bem-vindo, {user.username}</h2>
                         <p className="login-subtitle">Identidade confirmada no Ecossistema.</p>
+
+                        {redirectUrl && (
+                            <div className="mt-4 p-3 bg-blue-900/30 text-blue-200 rounded text-sm animate-pulse">
+                                Redirecionando de volta...
+                            </div>
+                        )}
 
                         <button
                             onClick={() => window.location.href = '/'}

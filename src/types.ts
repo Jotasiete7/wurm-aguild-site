@@ -29,7 +29,16 @@ export interface DownloadItem {
     description: string;
 }
 
-export type UserRole = 'operator' | 'cartographer' | 'member';
+export type GlobalRole = 'superadmin' | 'admin' | 'editor' | 'viewer';
+
+export interface UserProfile {
+    id: string;
+    username: string;
+    global_role: GlobalRole;
+    created_at: string;
+}
+
+export type UserRole = 'operator' | 'cartographer' | 'member'; // Legacy, migrating to GlobalRole
 
 export interface MapPin extends BaseEntity {
     x: number;
