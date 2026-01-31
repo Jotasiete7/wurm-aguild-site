@@ -128,48 +128,73 @@ export default function SSOAuthorize() {
     }
 
     return (
-        <div className="flex items-center justify-center h-screen bg-black text-white p-4">
-            <style>{`
-                .glass-panel {
-                    background: rgba(255, 255, 255, 0.05);
-                    backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                }
-            `}</style>
-            <div className="max-w-md w-full glass-panel p-8 rounded-xl shadow-2xl">
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-zinc-950 via-black to-zinc-900 text-white p-4">
+            <div className="max-w-md w-full bg-zinc-900/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-zinc-800">
+                {/* Header */}
                 <div className="text-center mb-8">
-                    <h2 className="text-2xl font-bold mb-2">A Guilda ID</h2>
-                    <div className="w-16 h-1 bg-green-500 mx-auto rounded"></div>
-                </div>
-
-                <div className="mb-8">
-                    <p className="text-gray-300 text-center mb-4">
-                        The application <strong className="text-white">{client?.client_name}</strong> wants to access your account information.
-                    </p>
-                    <div className="bg-zinc-900/50 p-4 rounded text-sm text-gray-400">
-                        <p>• View your Profile (Username, Role)</p>
-                        <p>• Verify your Guild Membership</p>
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/10 rounded-full mb-4">
+                        <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
                     </div>
+                    <h2 className="text-2xl font-bold mb-2">Autorização Necessária</h2>
+                    <p className="text-sm text-zinc-400">A Guilda ID</p>
                 </div>
 
-                <div className="flex flex-col gap-3">
+                {/* App Info */}
+                <div className="mb-8 p-4 bg-zinc-800/50 rounded-lg border border-zinc-700">
+                    <p className="text-sm text-zinc-300 mb-3">
+                        <strong className="text-white">{client?.client_name}</strong> deseja acessar suas informações:
+                    </p>
+                    <ul className="space-y-2 text-sm text-zinc-400">
+                        <li className="flex items-start gap-2">
+                            <svg className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            <span>Ver seu perfil (Nome, Cargo)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <svg className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            <span>Verificar sua participação na Guilda</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
                     <button
                         onClick={handleAuthorize}
                         disabled={loading}
-                        className="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded font-medium transition-colors disabled:opacity-50"
+                        className="w-full py-3.5 bg-green-600 hover:bg-green-500 text-white rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-600/20 hover:shadow-green-500/30"
                     >
-                        {loading ? 'Authorizing...' : 'Authorize'}
+                        {loading ? (
+                            <span className="flex items-center justify-center gap-2">
+                                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Autorizando...
+                            </span>
+                        ) : (
+                            'Autorizar Acesso'
+                        )}
                     </button>
                     <button
                         onClick={() => navigate('/')}
-                        className="w-full py-3 bg-transparent hover:bg-white/10 text-gray-400 hover:text-white rounded font-medium transition-colors"
+                        disabled={loading}
+                        className="w-full py-3.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded-lg font-medium transition-all duration-200 border border-zinc-700 hover:border-zinc-600"
                     >
-                        Cancel
+                        Cancelar
                     </button>
                 </div>
 
-                <div className="mt-6 text-center text-xs text-gray-600">
-                    Logged in as <span className="text-gray-500">{user?.username}</span>
+                {/* Footer */}
+                <div className="mt-6 pt-6 border-t border-zinc-800 text-center">
+                    <p className="text-xs text-zinc-500">
+                        Logado como <span className="text-zinc-400 font-medium">{user?.username}</span>
+                    </p>
                 </div>
             </div>
         </div>

@@ -12,16 +12,47 @@ serve(async (req) => {
     }
 
     try {
+        // Extract and validate authorization header
+        const authHeader = req.headers.get('Authorization');
+        if (!authHeader) {
+            return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
+                status: 401,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
         const supabase = createClient(
             // Access environment variables. These are automatically injected in Supabase Edge Functions.
             Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+            Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+            {
+                global: {
+                    headers: { Authorization: authHeader }
+                }
+            }
         );
+
+        // Verify the user is authenticated
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+                status: 401,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
 
         const { client_id, user_id, redirect_uri, access_token, refresh_token } = await req.json();
 
         if (!client_id || !user_id) {
             throw new Error('Missing client_id or user_id');
+        }
+
+        // Verify user_id matches authenticated user
+        if (user_id !== user.id) {
+            return new Response(JSON.stringify({ error: 'User ID mismatch' }), {
+                status: 403,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
         }
 
         // 1. Verify Client
