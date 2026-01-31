@@ -1,5 +1,5 @@
-
-import { Database } from './supabase'; // Assuming we might generate database types later, or keep it loose for now
+// Types for SSO (Single Sign-On)
+// Database types can be inferred or imported if needed later
 
 export interface SSOClient {
     id: string;

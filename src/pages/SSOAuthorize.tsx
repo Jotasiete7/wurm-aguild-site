@@ -1,9 +1,9 @@
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import { SSOClient } from '../types/sso';
+import type { SSOClient } from '../types/sso';
 
 export default function SSOAuthorize() {
     const [searchParams] = useSearchParams();
