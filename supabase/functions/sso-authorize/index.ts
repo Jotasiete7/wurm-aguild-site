@@ -21,8 +21,8 @@ serve(async (req) => {
             });
         }
 
-        const supabase = createClient(
-            // Access environment variables. These are automatically injected in Supabase Edge Functions.
+        // Create client with anon key to validate user JWT
+        const userSupabase = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
             Deno.env.get('SUPABASE_ANON_KEY') ?? '',
             {
@@ -33,13 +33,19 @@ serve(async (req) => {
         );
 
         // Verify the user is authenticated
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        const { data: { user }, error: authError } = await userSupabase.auth.getUser();
         if (authError || !user) {
             return new Response(JSON.stringify({ error: 'Unauthorized' }), {
                 status: 401,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
+
+        // Create service role client for database operations
+        const supabase = createClient(
+            Deno.env.get('SUPABASE_URL') ?? '',
+            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+        );
 
         const { client_id, user_id, redirect_uri, access_token, refresh_token } = await req.json();
 
