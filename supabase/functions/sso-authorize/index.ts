@@ -40,12 +40,19 @@ serve(async (req) => {
             });
         }
 
-        // Validate user JWT
-        const userSupabase = createClient(supabaseUrl!, anonKey, {
-            global: { headers: { Authorization: authHeader } }
+        // Validate user JWT using service_role_key for privileged operations
+        // This fixes the 401 error - service role has permission to validate user sessions
+        const supabaseServiceRole = createClient(supabaseUrl!, serviceKey!, {
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false
+            }
         });
 
-        const { data: { user }, error: authError } = await userSupabase.auth.getUser();
+        // Extract token without "Bearer " prefix
+        const token = authHeader.replace('Bearer ', '').trim();
+
+        const { data: { user }, error: authError } = await supabaseServiceRole.auth.getUser(token);
 
         if (authError) {
             console.error('Auth validation error:', authError);
@@ -67,10 +74,10 @@ serve(async (req) => {
 
         console.log('User authenticated:', user.id);
 
-        // Create service role client
+        // Create service role client for database operations
         const supabase = createClient(supabaseUrl!, serviceKey!);
 
-        const { client_id, user_id, redirect_uri, access_token, refresh_token } = await req.json();
+        const { client_id, user_id, redirect_uri } = await req.json();
 
         if (!client_id || !user_id) {
             throw new Error('Missing client_id or user_id');
@@ -110,14 +117,17 @@ serve(async (req) => {
         // Generate code
         const code = crypto.randomUUID();
 
+        // Get session info from the validated token
+        // The token we validated is the access_token
+        // Note: For security, we store the token temporarily for handover to satellite
         const { error: codeError } = await supabase
             .from('sso_codes')
             .insert({
                 code,
                 user_id,
                 client_id,
-                access_token,
-                refresh_token,
+                access_token: token, // Use the validated token
+                refresh_token: null, // Don't store refresh_token for security
                 expires_at: new Date(Date.now() + 30 * 1000).toISOString()
             });
 

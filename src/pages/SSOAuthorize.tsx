@@ -80,9 +80,8 @@ export default function SSOAuthorize() {
                 body: {
                     client_id: clientId,
                     user_id: user.id,
-                    redirect_uri: redirectUri,
-                    access_token: session.access_token,
-                    refresh_token: session.refresh_token
+                    redirect_uri: redirectUri
+                    // Tokens removed from body for security - extracted from header by Edge Function
                 }
             });
 
