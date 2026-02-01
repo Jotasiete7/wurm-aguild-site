@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+    // Handle CORS preflight
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
     }
@@ -14,15 +15,14 @@ serve(async (req) => {
     try {
         // Get environment variables
         const supabaseUrl = Deno.env.get('SUPABASE_URL');
-        const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
         const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
         console.log('Environment check:', {
             hasUrl: !!supabaseUrl,
-            hasAnonKey: !!anonKey,
             hasServiceKey: !!serviceKey
         });
 
+        // Validate authorization header
         const authHeader = req.headers.get('Authorization');
         console.log('Auth header present:', !!authHeader);
 
@@ -34,33 +34,31 @@ serve(async (req) => {
         }
 
         if (!serviceKey) {
-            return new Response(JSON.stringify({ error: 'Missing SUPABASE_SERVICE_ROLE_KEY env var' }), {
+            return new Response(JSON.stringify({ error: 'Server configuration error' }), {
                 status: 500,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        // Validate user JWT using service_role_key for privileged operations
-        const supabaseServiceRole = createClient(supabaseUrl!, serviceKey!, {
-            auth: {
-                autoRefreshToken: false,
-                persistSession: false
-            }
-        });
+        // Create service role client for all operations
+        const supabase = createClient(supabaseUrl!, serviceKey!);
 
-        // Extract token without "Bearer " prefix
+        // Extract token from Authorization header
         const token = authHeader.replace('Bearer ', '').trim();
 
-        console.log('Token length:', token.length);
-        console.log('Token starts with:', token.substring(0, 20) + '...');
+        console.log('Token validation - length:', token.length);
+        console.log('Token validation - preview:', token.substring(0, 20) + '...');
 
-        const { data: { user }, error: authError } = await supabaseServiceRole.auth.getUser(token);
+        // Validate the user's JWT token using service role privileges
+        // CRITICAL: Pass the token explicitly as parameter to getUser()
+        const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
         if (authError) {
             console.error('Auth validation error:', authError);
             return new Response(JSON.stringify({
                 error: 'Authentication failed',
-                details: authError.message
+                details: authError.message,
+                code: authError.code
             }), {
                 status: 401,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -68,31 +66,37 @@ serve(async (req) => {
         }
 
         if (!user) {
+            console.error('No user returned from auth validation');
             return new Response(JSON.stringify({ error: 'No user found' }), {
                 status: 401,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        console.log('User authenticated:', user.id);
+        console.log('✅ User authenticated successfully:', user.id);
 
-        // Create service role client for database operations
-        const supabase = createClient(supabaseUrl!, serviceKey!);
-
+        // Parse request body
         const { client_id, user_id, redirect_uri } = await req.json();
 
+        // Validate required fields
         if (!client_id || !user_id) {
-            throw new Error('Missing client_id or user_id');
+            console.error('Missing required fields:', { client_id: !!client_id, user_id: !!user_id });
+            return new Response(JSON.stringify({ error: 'Missing client_id or user_id' }), {
+                status: 400,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
         }
 
+        // Verify the user_id matches the authenticated user
         if (user_id !== user.id) {
+            console.error('User ID mismatch:', { provided: user_id, authenticated: user.id });
             return new Response(JSON.stringify({ error: 'User ID mismatch' }), {
                 status: 403,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        // Verify client
+        // Verify the SSO client exists and is active
         const { data: client, error: clientError } = await supabase
             .from('sso_clients')
             .select('*')
@@ -101,50 +105,67 @@ serve(async (req) => {
             .single();
 
         if (clientError || !client) {
-            console.error('Client error:', clientError);
-            return new Response(JSON.stringify({ error: 'Invalid client' }), {
+            console.error('Invalid client:', clientError);
+            return new Response(JSON.stringify({ error: 'Invalid or inactive client' }), {
                 status: 400,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        // Verify redirect URI
+        console.log('✅ Client verified:', client.client_name);
+
+        // Verify redirect URI if provided
         if (redirect_uri && !client.redirect_uris.includes(redirect_uri)) {
             console.error('Invalid redirect_uri:', redirect_uri);
-            console.error('Allowed URIs:', client.redirect_uris);
-            return new Response(JSON.stringify({ error: 'Invalid redirect_uri' }), {
+            console.error('Allowed redirect URIs:', client.redirect_uris);
+            return new Response(JSON.stringify({
+                error: 'Invalid redirect_uri',
+                allowed_uris: client.redirect_uris
+            }), {
                 status: 400,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        // Generate code
+        // Generate authorization code
         const code = crypto.randomUUID();
+        console.log('Generated authorization code:', code);
 
-        // Store the validated token for handover to satellite
+        // Store the authorization code with the user's token
+        // Code expires in 5 minutes for security
         const { error: codeError } = await supabase
             .from('sso_codes')
             .insert({
                 code,
-                user_id,
+                user_id: user.id,
                 client_id,
-                access_token: token, // Use the validated token
-                refresh_token: null, // Don't store refresh_token for security
-                expires_at: new Date(Date.now() + 30 * 1000).toISOString()
+                access_token: token, // Store the validated token for exchange
+                refresh_token: null, // Don't store refresh token for security
+                expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(), // 5 minutes
+                used: false
             });
 
         if (codeError) {
-            console.error('Code generation error:', codeError);
-            throw codeError;
+            console.error('Failed to store authorization code:', codeError);
+            return new Response(JSON.stringify({
+                error: 'Failed to generate authorization code',
+                details: codeError.message
+            }), {
+                status: 500,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
         }
 
+        console.log('✅ Authorization code stored successfully');
+
+        // Return the authorization code
         return new Response(JSON.stringify({ code }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
         });
 
     } catch (error: any) {
-        console.error('Handler error:', error);
+        console.error('❌ Unexpected error in sso-authorize:', error);
         return new Response(JSON.stringify({
             error: 'Internal server error',
             message: error?.message || String(error)
