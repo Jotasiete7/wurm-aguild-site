@@ -52,6 +52,9 @@ serve(async (req) => {
         // Extract token without "Bearer " prefix
         const token = authHeader.replace('Bearer ', '').trim();
 
+        console.log('Token length:', token.length);
+        console.log('Token preview:', token.substring(0, 50) + '...');
+
         const { data: { user }, error: authError } = await supabaseServiceRole.auth.getUser(token);
 
         if (authError) {
