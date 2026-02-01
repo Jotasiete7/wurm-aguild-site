@@ -33,15 +33,14 @@ serve(async (req) => {
             });
         }
 
-        if (!anonKey) {
-            return new Response(JSON.stringify({ error: 'Missing SUPABASE_ANON_KEY env var' }), {
+        if (!serviceKey) {
+            return new Response(JSON.stringify({ error: 'Missing SUPABASE_SERVICE_ROLE_KEY env var' }), {
                 status: 500,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
         // Validate user JWT using service_role_key for privileged operations
-        // This fixes the 401 error - service role has permission to validate user sessions
         const supabaseServiceRole = createClient(supabaseUrl!, serviceKey!, {
             auth: {
                 autoRefreshToken: false,
@@ -53,7 +52,7 @@ serve(async (req) => {
         const token = authHeader.replace('Bearer ', '').trim();
 
         console.log('Token length:', token.length);
-        console.log('Token preview:', token.substring(0, 50) + '...');
+        console.log('Token starts with:', token.substring(0, 20) + '...');
 
         const { data: { user }, error: authError } = await supabaseServiceRole.auth.getUser(token);
 
@@ -111,6 +110,8 @@ serve(async (req) => {
 
         // Verify redirect URI
         if (redirect_uri && !client.redirect_uris.includes(redirect_uri)) {
+            console.error('Invalid redirect_uri:', redirect_uri);
+            console.error('Allowed URIs:', client.redirect_uris);
             return new Response(JSON.stringify({ error: 'Invalid redirect_uri' }), {
                 status: 400,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -120,9 +121,7 @@ serve(async (req) => {
         // Generate code
         const code = crypto.randomUUID();
 
-        // Get session info from the validated token
-        // The token we validated is the access_token
-        // Note: For security, we store the token temporarily for handover to satellite
+        // Store the validated token for handover to satellite
         const { error: codeError } = await supabase
             .from('sso_codes')
             .insert({
