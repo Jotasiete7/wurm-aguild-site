@@ -127,72 +127,66 @@ export default function SSOAuthorize() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-zinc-950 via-black to-zinc-900 text-white p-4">
-            <div className="max-w-md w-full bg-zinc-900/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-zinc-800">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-14 h-14 bg-green-500/20 rounded-full mb-4">
-                        <svg className="w-7 h-7 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
+        <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 font-sans selection:bg-green-500/30">
+            <div className="max-w-md w-full bg-[#141414] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+                {/* Top Bar Decor */}
+                <div className="h-1 bg-gradient-to-r from-green-500 to-emerald-600" />
+
+                <div className="p-8">
+                    {/* Header */}
+                    <div className="flex flex-col items-center mb-8">
+                        <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4 border border-green-500/20">
+                            <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        <h1 className="text-2xl font-bold text-white tracking-tight">Autorização de Acesso</h1>
+                        <p className="text-zinc-500 text-sm mt-1">A Guilda ID • SSO</p>
                     </div>
-                    <h2 className="text-2xl font-bold mb-2">Autorização Necessária</h2>
-                    <p className="text-sm text-zinc-400">A Guilda ID</p>
-                </div>
 
-                {/* App Info */}
-                <div className="mb-8 p-4 bg-zinc-800/50 rounded-lg border border-zinc-700">
-                    <p className="text-sm text-zinc-300 mb-3">
-                        <strong className="text-white">{client?.client_name}</strong> deseja acessar suas informações:
-                    </p>
-                    <ul className="space-y-2 text-sm text-zinc-400">
-                        <li className="flex items-start gap-2">
-                            <svg className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                            <span>Ver seu perfil (Nome, Cargo)</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <svg className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                            <span>Verificar sua participação na Guilda</span>
-                        </li>
-                    </ul>
-                </div>
+                    {/* Content */}
+                    <div className="space-y-4 mb-8">
+                        <div className="bg-white/5 border border-white/5 rounded-xl p-4">
+                            <p className="text-zinc-300 text-sm leading-relaxed">
+                                O aplicativo <span className="text-white font-semibold">{client?.client_name || 'Wurm Recipes'}</span> solicita permissão para acessar seu perfil e validar sua identidade.
+                            </p>
+                        </div>
 
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                    <button
-                        onClick={handleAuthorize}
-                        disabled={loading}
-                        className="w-full py-3.5 bg-green-600 hover:bg-green-500 text-white rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-600/20 hover:shadow-green-500/30"
-                    >
-                        {loading ? (
-                            <span className="flex items-center justify-center gap-2">
-                                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Autorizando...
-                            </span>
-                        ) : (
-                            'Autorizar Acesso'
-                        )}
-                    </button>
-                    <button
-                        onClick={() => navigate('/')}
-                        disabled={loading}
-                        className="w-full py-3.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded-lg font-medium transition-all duration-200 border border-zinc-700 hover:border-zinc-600"
-                    >
-                        Cancelar
-                    </button>
+                        <div className="flex items-center gap-3 px-2 text-xs text-zinc-500">
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                            Logado como <span className="text-zinc-300">{user?.email || user?.username}</span>
+                        </div>
+                    </div>
+
+                    {/* Error Message */}
+                    {error && (
+                        <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs">
+                            {error}
+                        </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex flex-col gap-3">
+                        <button
+                            onClick={handleAuthorize}
+                            disabled={loading}
+                            className="w-full py-3.5 bg-green-600 hover:bg-green-500 disabled:bg-zinc-800 text-white rounded-xl font-bold transition-all transform active:scale-[0.98] shadow-lg shadow-green-900/20"
+                        >
+                            {loading ? 'Processando...' : 'Autorizar Acesso'}
+                        </button>
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="w-full py-3 text-zinc-500 hover:text-white text-sm font-medium transition-colors"
+                        >
+                            Cancelar e Voltar
+                        </button>
+                    </div>
                 </div>
 
                 {/* Footer */}
-                <div className="mt-6 pt-6 border-t border-zinc-800 text-center">
-                    <p className="text-xs text-zinc-500">
-                        Logado como <span className="text-zinc-400 font-medium">{user?.username}</span>
+                <div className="bg-black/20 p-4 border-t border-white/5 text-center">
+                    <p className="text-[10px] text-zinc-600 uppercase tracking-widest font-bold">
+                        Ambiente Seguro & Criptografado
                     </p>
                 </div>
             </div>

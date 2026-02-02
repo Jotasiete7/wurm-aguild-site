@@ -43,11 +43,16 @@ serve(async (req) => {
         // Create service role client for all operations
         const supabase = createClient(supabaseUrl!, serviceKey!);
 
-        // Extract token from Authorization header
-        const token = authHeader.replace('Bearer ', '').trim();
+        // Extract and rigorously clean the token
+        // Remove "Bearer " (case-insensitive), trim whitespace, and remove any surrounding quotes
+        const token = authHeader
+            .replace(/[Bb]earer\s+/, '')
+            .trim()
+            .replace(/^["'](.+)["']$/, '$1');
 
         console.log('Token validation - length:', token.length);
-        console.log('Token validation - preview:', token.substring(0, 20) + '...');
+        console.log('Token validation - starts with:', token.substring(0, 15) + '...');
+        console.log('Token validation - ends with:', '...' + token.substring(token.length - 15));
 
         // Validate the user's JWT token using service role privileges
         // CRITICAL: Pass the token explicitly as parameter to getUser()
