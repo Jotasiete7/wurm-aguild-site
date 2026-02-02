@@ -170,6 +170,8 @@ UPDATE
 -- ============================================
 -- 3. ROW LEVEL SECURITY (RLS) POLICIES
 -- ============================================
+-- NOTE: 'editor' role must be added to global_role_enum BEFORE running this migration
+-- Run migration 20260202_add_editor_role.sql first!
 -- Enable RLS on recipes table
 ALTER TABLE recipes ENABLE ROW LEVEL SECURITY;
 -- Drop existing policies if they exist
