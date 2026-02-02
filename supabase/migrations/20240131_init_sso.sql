@@ -1,5 +1,8 @@
 -- Migration: 20240131_init_sso.sql
 -- Description: Initialize SSO tables and update profiles
+-- ⚠️ DEPRECATED: This migration is obsolete as of 2026-02-02
+-- The SSO system was replaced with direct login authentication
+-- Tables created here (sso_clients, sso_codes) are removed in migration 20260202_cleanup_sso_tables.sql
 -- 1. Create Enum for User Roles if it doesn't exist
 do $$ begin create type user_role as enum ('superadmin', 'admin', 'editor', 'viewer');
 exception
