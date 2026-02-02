@@ -1,6 +1,9 @@
 -- ============================================
 -- CORREÇÃO DEFINITIVA SSO - Recipes Tool
 -- ============================================
+-- ⚠️ DEPRECATED: This migration is obsolete as of 2026-02-02
+-- The SSO system was replaced with direct login authentication
+-- Tables modified here (sso_clients) are removed in migration 20260202_cleanup_sso_tables.sql
 -- Execute este SQL no Supabase SQL Editor do projeto Hub
 -- Project: gzhvqprdrtudyokhgxlj
 -- 1. Limpar configuração antiga

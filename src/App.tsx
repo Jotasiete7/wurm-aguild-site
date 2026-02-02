@@ -5,7 +5,7 @@ import { Hero } from './components/Hero';
 import Mural from './components/Mural/Mural';
 import GuildArea from './components/Admin/GuildArea';
 import Login from './pages/Login';
-import SSOAuthorize from './pages/SSOAuthorize';
+
 import { AuthProvider } from './context/AuthContext';
 
 
@@ -36,7 +36,7 @@ function App() {
               <Route path="/mural" element={<Mural initialTab={muralInitialTab} />} />
               <Route path="/guild" element={<GuildArea />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/sso/authorize" element={<SSOAuthorize />} />
+
             </Routes>
           </main>
         </div>
