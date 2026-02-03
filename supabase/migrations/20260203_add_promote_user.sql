@@ -2,8 +2,8 @@
 -- Description: Add promote_user RPC function with role mapping
 -- Date: 2026-02-03
 CREATE OR REPLACE FUNCTION promote_user(target_user_id UUID, new_role TEXT) RETURNS VOID LANGUAGE plpgsql SECURITY DEFINER AS $$
-DECLARE executing_user_role user_role;
-target_role_enum user_role;
+DECLARE executing_user_role global_role_enum;
+target_role_enum global_role_enum;
 BEGIN -- 1. Check if the executing user is a superadmin
 SELECT global_role INTO executing_user_role
 FROM profiles
