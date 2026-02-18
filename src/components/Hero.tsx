@@ -11,11 +11,11 @@ export function Hero({ onNavigate }: HeroProps) {
             <div className="hero-content container">
                 <div className="hero-badge">Harmony • NFI Access</div>
                 <h1 className="hero-title">
-                    Construindo o <br />
-                    <span className="serif-italic text-sage">Legado</span> no Wurm.
+                    Construindo um <br />
+                    <span className="serif-italic text-sage">Ecossistema</span> no Wurm.
                 </h1>
                 <p className="hero-subtitle">
-                    Serviços, ferramentas e recursos operacionais.
+                    Organização, dados e infraestrutura para uma economia real.
                 </p>
 
                 {/* Buttons removed as per request to avoid redundancy with Navbar */}
