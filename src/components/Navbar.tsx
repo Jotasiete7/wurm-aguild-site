@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Hammer, Shield, Network, Home, Pickaxe, BookOpen } from 'lucide-react';
+import { Hammer, Shield, Network, Home, Pickaxe, BookOpen, LineChart } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
@@ -47,6 +47,9 @@ export default function Navbar() {
                                 </a>
                                 <a href="https://wurm-mining-tool.pages.dev" className="dropdown-item">
                                     <Pickaxe size={14} /> Mineração
+                                </a>
+                                <a href="https://wurm-analytics-journal.pages.dev" className="dropdown-item">
+                                    <LineChart size={14} /> Analytics
                                 </a>
                                 <div className="dropdown-item active">
                                     <Home size={14} /> Portal (Você está aqui)
