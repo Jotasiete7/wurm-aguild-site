@@ -139,12 +139,12 @@
 }
 
 .dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(212, 180, 131, 0.08);
     color: var(--accent-sage);
 }
 
 .dropdown-item.active {
-    background: rgba(212, 180, 131, 0.1);
+    background: rgba(212, 180, 131, 0.12);
     color: var(--accent-sage);
 }
 
