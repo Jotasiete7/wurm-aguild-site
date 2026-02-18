@@ -237,19 +237,19 @@ export default function ServicesBoard() {
         .status-indicator.in_progress { background-color: transparent; border: 1px solid #666; }
         .status-indicator.clickable:hover { cursor: pointer; transform: scale(1.2); }
 
-        .row-content { display: flex; flex: 1; gap: 1rem; align-items: center; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap; }
+        .row-content { display: flex; flex: 1; min-width: 0; gap: 1rem; align-items: center; font-size: 0.85rem; color: var(--text-secondary); overflow: hidden; }
         
-        .intent-text { display: flex; align-items: center; gap: 4px; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.05em; }
+        .intent-text { display: flex; align-items: center; gap: 4px; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.05em; flex-shrink: 0; }
         .intent-text.buy { color: #d4a5a5; } /* Muted Red */
         .intent-text.sell { color: #a5d4a5; } /* Muted Green */
 
-        .row-nick { color: var(--text-dim); min-width: 80px; text-align: right; }
-        .row-item { color: var(--text-primary); font-weight: 500; }
+        .row-nick { color: var(--text-dim); min-width: 80px; max-width: 100px; text-align: right; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .row-item { color: var(--text-primary); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
         
-        .assigned-text { font-size: 0.75rem; color: var(--text-dim); font-style: italic; }
+        .assigned-text { font-size: 0.75rem; color: var(--text-dim); font-style: italic; flex-shrink: 0; white-space: nowrap; }
         
-        .dots-fill { flex: 1; height: 1px; border-bottom: 1px dotted rgba(255,255,255,0.08); margin: 0 0.5rem; }
-        .row-price { color: var(--text-primary); min-width: 60px; text-align: right; letter-spacing: 0.05em; }
+        .dots-fill { flex: 1; min-width: 1rem; max-width: 4rem; height: 1px; border-bottom: 1px dotted rgba(255,255,255,0.08); margin: 0 0.25rem; flex-shrink: 1; }
+        .row-price { color: var(--text-primary); min-width: 60px; text-align: right; letter-spacing: 0.05em; flex-shrink: 0; white-space: nowrap; }
         
         .row-actions { display: flex; gap: 0.5rem; opacity: 0; transition: opacity 0.2s; margin-left: 0.5rem; }
         .icon-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px; }
