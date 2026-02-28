@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Network, Home, BookOpen, Pickaxe, LineChart, BookMarked } from 'lucide-react';
+import { Network, Home, BookOpen, Pickaxe, LineChart, BookMarked, Hammer } from 'lucide-react';
 import './EcosystemDropdown.css';
 
 // ─────────────────────────────────────────────────────────────
@@ -38,6 +38,12 @@ const ECOSYSTEM_TOOLS = [
         label: 'Liturgy',
         href: 'https://wurm-liturgy.pages.dev',
         icon: BookMarked,
+    },
+    {
+        id: 'carpentry',
+        label: 'Carpentry',
+        href: 'https://wurm-carpentry-tool.pages.dev',
+        icon: Hammer,
     },
 ] as const;
 
