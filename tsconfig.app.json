@@ -25,8 +25,8 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@antigravity/*": ["../antigravity/*"]
+      "@ecossistema-guilda/*": ["./ecossistema-guilda/*"]
     }
   },
-  "include": ["src", "../antigravity/**/*.ts", "../antigravity/**/*.tsx"]
+  "include": ["src", "ecossistema-guilda/**/*.ts", "ecossistema-guilda/**/*.tsx"]
 }
