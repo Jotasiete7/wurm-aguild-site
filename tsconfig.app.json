@@ -22,7 +22,11 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@antigravity/*": ["../antigravity/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "../antigravity/**/*.ts", "../antigravity/**/*.tsx"]
 }

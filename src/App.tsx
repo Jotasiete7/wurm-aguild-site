@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react-router-dom';
 import { Hero } from './components/Hero';
 import Mural from './components/Mural/Mural';
 import GuildArea from './components/Admin/GuildArea';
 import Login from './pages/Login';
+import { Header as AgHeader } from '@antigravity/layout/Header';
+import { useAuth } from './context/AuthContext';
+import { Home, Shield } from 'lucide-react';
 
 import { AuthProvider } from './context/AuthContext';
 
@@ -28,7 +30,14 @@ function App() {
     <AuthProvider>
       <Router>
         <div className="app">
-          <Navbar />
+          <AgHeader 
+            currentToolId="live-site-check"
+            LinkComponent={Link}
+            navigation={[
+              { label: <><Home size={16} /> Mural</>, href: '/mural' },
+              { label: <><Shield size={16} /> {user ? 'Área VIP' : 'Membros'}</>, href: user ? '/guild' : '/login' }
+            ]}
+          />
 
           <main>
             <Routes>
