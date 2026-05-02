@@ -1,24 +1,24 @@
 :root {
-  /* Colors */
+  /* Colors - Linked to Antigravity */
   --bg-primary: #050505;
   --bg-secondary: #0a0a0a;
   --bg-card: #111111;
 
-  --text-primary: #e5e5e5;
-  --text-secondary: #a3a3a3;
-  --text-dim: #525252;
+  --text-primary: var(--ag-text-main);
+  --text-secondary: var(--ag-text-muted);
+  --text-dim: var(--ag-text-dim);
 
-  /* Accent: Gold/Bronze — Wurm Identity */
-  --accent-sage: #d4b483;
-  --accent-sage-dim: #8a7453;
+  /* Accent: Gold/Bronze — Linked to Antigravity */
+  --accent-sage: var(--ag-accent);
+  --accent-sage-dim: var(--ag-accent-dim);
   --accent-sage-light: #e8d0a8;
 
-  --border-subtle: #1f1f1f;
+  --border-subtle: var(--ag-border-color);
 
-  /* Typography */
-  --font-serif: 'Playfair Display', serif;
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  /* Typography - Linked to Antigravity */
+  --font-serif: var(--ag-font-serif);
+  --font-sans: var(--ag-font-sans);
+  --font-mono: var(--ag-font-mono);
 }
 
 * {
