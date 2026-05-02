@@ -25,8 +25,8 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@ecossistema-guilda/*": ["./ecossistema-guilda/*"]
+      "@ecossistema-guilda/*": ["./src/ecossistema-guilda/*"]
     }
   },
-  "include": ["src", "ecossistema-guilda/**/*.ts", "ecossistema-guilda/**/*.tsx"]
+  "include": ["src"]
 }
