@@ -1,0 +1,22 @@
+.card {
+    position: relative;
+    overflow: hidden;
+}
+
+.cardPaused {
+    filter: grayscale(0.5);
+    opacity: 0.8;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, var(--color-wurm-accent) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card:hover::before {
+    opacity: 0.05;
+}

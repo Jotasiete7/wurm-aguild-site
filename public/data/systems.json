@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1",
+    "name": "Antigravity",
+    "description": "Hub central de navegação e identidade do ecossistema da Guilda.",
+    "status": "ativo",
+    "url": "https://wurm-aguild-site.pages.dev"
+  },
+  {
+    "id": "2",
+    "name": "Mural",
+    "description": "Sistema de eventos, badges e comunicados oficiais da Guilda.",
+    "status": "ativo",
+    "url": "/mural"
+  },
+  {
+    "id": "3",
+    "name": "Codex",
+    "description": "Base de conhecimento interna: guias, regras e documentação da Guilda.",
+    "status": "beta",
+    "url": "#"
+  },
+  {
+    "id": "4",
+    "name": "Forja",
+    "description": "Ferramentas de crafting, cálculos e planejamento de projetos in-game.",
+    "status": "beta",
+    "url": "#"
+  },
+  {
+    "id": "5",
+    "name": "Atlas",
+    "description": "Mapa interativo do servidor com pontos de interesse marcados pela Guilda.",
+    "status": "beta",
+    "url": "#"
+  },
+  {
+    "id": "6",
+    "name": "Arquivo",
+    "description": "Histórico de eventos passados, conquistas e registros da Guilda.",
+    "status": "ativo",
+    "url": "#"
+  }
+]

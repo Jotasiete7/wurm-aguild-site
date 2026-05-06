@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "date": "2026-05-06",
+    "type": "article",
+    "title_pt": "HUB v2 lançado em beta",
+    "title_en": "HUB v2 launched in beta",
+    "description_pt": "O novo portal central do ecossistema da Guilda está no ar, com widgets ao vivo.",
+    "description_en": "The new central ecosystem portal is live, with real-time widgets.",
+    "link": null
+  },
+  {
+    "id": "2",
+    "date": "2026-05-02",
+    "type": "badge",
+    "title_pt": "Sistema de Badges atualizado",
+    "title_en": "Badges system updated",
+    "description_pt": "Novos emblemas de conquista disponíveis para membros ativos da Guilda.",
+    "description_en": "New achievement badges available for active guild members.",
+    "link": "https://wurm-aguilda-badges.pages.dev"
+  },
+  {
+    "id": "3",
+    "date": "2026-04-28",
+    "type": "event",
+    "title_pt": "Evento de Mineração encerrado",
+    "title_en": "Mining Event concluded",
+    "description_pt": "Parabéns aos participantes. Resultados publicados no Mural.",
+    "description_en": "Congratulations to all participants. Results posted on the Board.",
+    "link": null
+  },
+  {
+    "id": "4",
+    "date": "2026-04-20",
+    "type": "maintenance",
+    "title_pt": "Manutenção programada concluída",
+    "title_en": "Scheduled maintenance completed",
+    "description_pt": "Todos os serviços restaurados. Tempo de inatividade: 12 min.",
+    "description_en": "All services restored. Downtime: 12 min.",
+    "link": null
+  },
+  {
+    "id": "5",
+    "date": "2026-04-15",
+    "type": "article",
+    "title_pt": "Novo artigo publicado no Analytics",
+    "title_en": "New article published on Analytics",
+    "description_pt": "Análise sobre a economia do servidor após última atualização.",
+    "description_en": "Analysis of the server economy after the latest update.",
+    "link": "https://wurm-analytics-journal.pages.dev"
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "1",
+    "name": "Mural da Guilda",
+    "description": "Painel de eventos ativos, badges do mês e agenda de atividades da Guilda.",
+    "status": "ativo",
+    "actionLabel": "Acessar",
+    "actionUrl": "/mural"
+  },
+  {
+    "id": "2",
+    "name": "Recrutamento",
+    "description": "Formulário e critérios para novos membros interessados em integrar a Guilda.",
+    "status": "ativo",
+    "actionLabel": "Candidatar-se",
+    "actionUrl": "#"
+  },
+  {
+    "id": "3",
+    "name": "Registro de Conquistas",
+    "description": "Histórico centralizado de conquistas, milestones e progressos dos membros.",
+    "status": "pausado",
+    "actionLabel": "Em breve",
+    "actionUrl": null
+  },
+  {
+    "id": "4",
+    "name": "Tesouro da Guilda",
+    "description": "Gestão de recursos compartilhados, doações e distribuição de itens.",
+    "status": "pausado",
+    "actionLabel": "Em breve",
+    "actionUrl": null
+  }
+]

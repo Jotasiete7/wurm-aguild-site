@@ -1,0 +1,67 @@
+@import "tailwindcss";
+@import "./ecossistema-guilda/theme/theme.css";
+
+@theme {
+  /* Colors - Canonical Wurm Palette */
+  --color-wurm-bg: #050505;
+  --color-wurm-panel: #0a0a0a;
+  --color-wurm-border: #262626;
+  --color-wurm-accent: #d4b483;
+  --color-wurm-accent-dim: #8a7453;
+  --color-wurm-success: #3e6b46;
+  --color-wurm-warning: #b45309;
+  --color-wurm-text: #e5e5e5;
+  --color-wurm-muted: #737373;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-serif: 'Playfair Display', serif;
+
+  /* Spacing / Rhythm */
+  --spacing-measure-text: 65ch;
+  --spacing-measure-wide: 120ch;
+}
+
+/* Base Styles */
+@layer base {
+  body {
+    background-color: var(--color-wurm-bg);
+    color: var(--color-wurm-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  a {
+    transition: all 0.2s ease;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background-color: var(--color-wurm-accent);
+    color: #000;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--color-wurm-border);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #fff 0%, var(--color-wurm-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
