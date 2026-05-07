@@ -53,6 +53,7 @@ export function AdminPage() {
     const [feedDescPt, setFeedDescPt] = useState('');
     const [feedDescEn, setFeedDescEn] = useState('');
     const [feedLink, setFeedLink] = useState('');
+    const [feedDate, setFeedDate] = useState('');
     const [feedMsg, setFeedMsg] = useState('');
 
     if (!auth) {
@@ -140,10 +141,11 @@ export function AdminPage() {
             description_pt: feedDescPt,
             description_en: feedDescEn || null,
             link: feedLink || null,
+            post_date: feedDate || new Date().toISOString().split('T')[0],
         });
         setFeedMsg(ok ? '✅ Post adicionado ao Feed!' : '❌ Erro ao adicionar post.');
         if (ok) {
-            setFeedTitlePt(''); setFeedTitleEn(''); setFeedDescPt(''); setFeedDescEn(''); setFeedLink('');
+            setFeedTitlePt(''); setFeedTitleEn(''); setFeedDescPt(''); setFeedDescEn(''); setFeedLink(''); setFeedDate('');
         }
     };
 
@@ -201,7 +203,7 @@ export function AdminPage() {
                         <Activity size={18} className="text-[var(--color-wurm-accent)]" /> Pulso do Ecossistema
                     </h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label className={labelCls}>Tipo de Post *</label>
                             <select
@@ -216,6 +218,10 @@ export function AdminPage() {
                                 <option value="maintenance">🔧 Manutenção</option>
                                 <option value="badge">🎖️ Badge</option>
                             </select>
+                        </div>
+                        <div>
+                            <label className={labelCls}>Data do Post/Evento</label>
+                            <input type="date" className={inputCls} value={feedDate} onChange={e => setFeedDate(e.target.value)} />
                         </div>
                         <div>
                             <label className={labelCls}>Link (Opcional)</label>
