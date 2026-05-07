@@ -49,9 +49,17 @@ export function PollWidget() {
                     <div className="h-8 bg-white/5 rounded" />
                 </div>
             ) : !poll ? (
-                <p className="text-xs text-[var(--color-wurm-muted)] m-0">
-                    {t('No active poll right now.', 'Nenhuma enquete ativa no momento.')}
-                </p>
+                <div className="flex flex-col gap-3">
+                    <p className="text-sm text-[var(--color-wurm-muted)] leading-relaxed m-0">
+                        {t(
+                            'Your opinion shapes the Guild. A new poll is on the way!',
+                            'Sua opinião constrói a Guilda. Uma nova enquete vem aí!'
+                        )}
+                    </p>
+                    <p className="text-[10px] font-mono text-[var(--color-wurm-muted)] opacity-50 m-0">
+                        {t('Check back soon.', 'Volte em breve.')}
+                    </p>
+                </div>
             ) : (
                 <div className="flex flex-col gap-3">
                     <p className="text-xs font-bold text-white m-0 leading-snug">{question}</p>

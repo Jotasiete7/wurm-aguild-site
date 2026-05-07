@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Camera, Heart, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Camera, Heart, X, ChevronLeft, ChevronRight, Link2, Download } from 'lucide-react';
 import { getGalleryPhotos, votePhoto, type HubPhoto } from '../../services/hubGallery';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { ToolWidget } from '../ecosystem/ToolWidget';
@@ -176,17 +176,43 @@ export function GalleryWidget() {
                                     </p>
                                 )}
                             </div>
-                            <button
-                                onClick={(e) => handleVote(currentLightbox.id, e)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all shrink-0 ${
-                                    voted.has(currentLightbox.id)
-                                        ? 'border-red-500/50 bg-red-500/20 text-red-400'
-                                        : 'border-white/10 hover:border-red-500/50 hover:bg-red-500/20 hover:text-red-400 text-white/60'
-                                }`}
-                            >
-                                <Heart size={20} className={voted.has(currentLightbox.id) ? 'fill-red-400' : ''} />
-                                <span className="text-lg font-bold">{currentLightbox.votes}</span>
-                            </button>
+                            <div className="flex items-center gap-2 shrink-0">
+                                {/* Copy link */}
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigator.clipboard.writeText(currentLightbox.image_url);
+                                    }}
+                                    title={t('Copy image link', 'Copiar link da imagem')}
+                                    className="p-2 rounded-lg border border-white/10 text-white/60 hover:border-white/30 hover:text-white transition-all"
+                                >
+                                    <Link2 size={18} />
+                                </button>
+                                {/* Download */}
+                                <a
+                                    href={currentLightbox.image_url}
+                                    download
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    onClick={e => e.stopPropagation()}
+                                    title={t('Download image', 'Baixar imagem')}
+                                    className="p-2 rounded-lg border border-white/10 text-white/60 hover:border-white/30 hover:text-white transition-all"
+                                >
+                                    <Download size={18} />
+                                </a>
+                                {/* Vote */}
+                                <button
+                                    onClick={(e) => handleVote(currentLightbox.id, e)}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                        voted.has(currentLightbox.id)
+                                            ? 'border-red-500/50 bg-red-500/20 text-red-400'
+                                            : 'border-white/10 hover:border-red-500/50 hover:bg-red-500/20 hover:text-red-400 text-white/60'
+                                    }`}
+                                >
+                                    <Heart size={20} className={voted.has(currentLightbox.id) ? 'fill-red-400' : ''} />
+                                    <span className="text-lg font-bold">{currentLightbox.votes}</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

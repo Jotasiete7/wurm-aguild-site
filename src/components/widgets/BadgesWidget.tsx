@@ -8,7 +8,7 @@ export function BadgesWidget() {
     const [badges, setBadges] = useState<HubBadge[]>([]);
     const [count, setCount] = useState(0);
     const [loading, setLoading] = useState(true);
-    const { t } = useLanguage();
+    const { lang, t } = useLanguage();
 
     useEffect(() => {
         Promise.all([getLatestBadges(10), getBadgeCount()]).then(([b, c]) => {
@@ -17,6 +17,11 @@ export function BadgesWidget() {
             setLoading(false);
         });
     }, []);
+
+    // Badge is "new" if created within the last 7 days
+    const isNew = (badge: HubBadge) => {
+        return Date.now() - new Date(badge.created_at).getTime() < 7 * 24 * 3600 * 1000;
+    };
 
     return (
         <ToolWidget
@@ -58,11 +63,18 @@ export function BadgesWidget() {
                                     className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-black shadow-[0_0_4px_currentColor]"
                                     style={{ backgroundColor: getRarityColor(badge.rarity), color: getRarityColor(badge.rarity) }}
                                 />
+                                {/* NEW dot for recent badges */}
+                                {isNew(badge) && (
+                                    <div className="absolute -top-1 -left-1 w-3 h-3 rounded-full bg-red-500 border border-black animate-pulse" title={lang === 'pt' ? 'Novo!' : 'New!'} />
+                                )}
                             </div>
                         ))}
                     </div>
                     <p className="text-[10px] font-mono text-[var(--color-wurm-muted)] uppercase tracking-widest">
-                        {count} {t('total badges', 'badges no total')}
+                        {lang === 'pt'
+                            ? `Descubra os ${count} emblemas da Guilda`
+                            : `Discover all ${count} Guild emblems`
+                        }
                     </p>
                 </div>
             ) : (
@@ -73,3 +85,4 @@ export function BadgesWidget() {
         </ToolWidget>
     );
 }
+
