@@ -36,7 +36,6 @@ export function MuralWidget() {
             title={t('Mural', 'Mural')}
             subtitle={t('Open Orders', 'Ordens Abertas')}
             icon={ScrollText}
-            href="https://wurm-aguild-site.pages.dev"
             accentColor="#9ab09a"
         >
             {loading ? (
@@ -47,18 +46,10 @@ export function MuralWidget() {
                 <div className="flex flex-col gap-3">
                     <p className="text-sm text-[var(--color-wurm-muted)] leading-relaxed m-0">
                         {t(
-                            'No open orders at the moment. Got something to buy or sell? Post an order!',
-                            'Nenhuma ordem aberta no momento. Tem algo pra comprar ou vender? Poste uma ordem!'
+                            'No open orders at the moment. New orders posted by the admin will appear here.',
+                            'Nenhuma ordem aberta no momento. Novas ordens publicadas pelo admin aparecerão aqui.'
                         )}
                     </p>
-                    <a
-                        href="https://wurm-aguild-site.pages.dev"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[10px] font-bold uppercase tracking-widest text-[#9ab09a] hover:brightness-125 transition-all"
-                    >
-                        {t('Open Mural →', 'Abrir Mural →')}
-                    </a>
                 </div>
             ) : (
                 <div className="flex flex-col divide-y divide-white/[0.04]">

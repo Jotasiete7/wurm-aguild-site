@@ -4,7 +4,8 @@ import { addPhoto } from '../../services/hubGallery';
 import { setStatus, clearStatus } from '../../services/hubStatus';
 import { addQuote, getAllQuotes, toggleQuote, type HubQuote } from '../../services/hubQuotes';
 import { addFeedItem, type HubFeedItem } from '../../services/hubFeed';
-import { Plus, X, Lock, Radio, Quote, Activity } from 'lucide-react';
+import { addOrder, closeOrder, getAllOrders, type ServiceOrder } from '../../services/hubMural';
+import { Plus, X, Lock, Radio, Quote, Activity, ScrollText, CheckCircle } from 'lucide-react';
 import { useEffect } from 'react';
 
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
@@ -35,8 +36,21 @@ export function AdminPage() {
     const [quoteFeedback, setQuoteFeedback] = useState('');
 
     useEffect(() => {
-        if (auth) getAllQuotes().then(setQuotes);
+        if (auth) {
+            getAllQuotes().then(setQuotes);
+            getAllOrders().then(setOrders);
+        }
     }, [auth]);
+
+    // Mural state
+    const [orders, setOrders] = useState<ServiceOrder[]>([]);
+    const [orderTitle, setOrderTitle] = useState('');
+    const [orderDesc, setOrderDesc] = useState('');
+    const [orderPrice, setOrderPrice] = useState('');
+    const [orderProvider, setOrderProvider] = useState('');
+    const [orderType, setOrderType] = useState<'service' | 'material'>('material');
+    const [orderIntent, setOrderIntent] = useState<'buy' | 'sell'>('sell');
+    const [orderMsg, setOrderMsg] = useState('');
 
     // Photo form
     const [photoUrl, setPhotoUrl] = useState('');
@@ -149,6 +163,29 @@ export function AdminPage() {
         }
     };
 
+    const handleAddOrder = async () => {
+        if (!orderTitle || !orderPrice || !orderProvider) return setOrderMsg('Título, preço e fornecedor são obrigatórios.');
+        const ok = await addOrder({
+            title: orderTitle,
+            description: orderDesc || undefined,
+            price: orderPrice,
+            provider: orderProvider,
+            type: orderType,
+            intent: orderIntent,
+            status: 'open',
+        });
+        setOrderMsg(ok ? '✅ Ordem publicada no Mural!' : '❌ Erro ao publicar ordem.');
+        if (ok) {
+            setOrderTitle(''); setOrderDesc(''); setOrderPrice(''); setOrderProvider('');
+            getAllOrders().then(setOrders);
+        }
+    };
+
+    const handleCloseOrder = async (id: string) => {
+        const ok = await closeOrder(id);
+        if (ok) getAllOrders().then(setOrders);
+    };
+
     const inputCls = "w-full bg-black/30 border border-[var(--color-wurm-border)] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[var(--color-wurm-accent)] placeholder:text-[var(--color-wurm-muted)]";
     const labelCls = "text-[10px] font-mono uppercase tracking-widest text-[var(--color-wurm-muted)] mb-1 block";
 
@@ -255,6 +292,89 @@ export function AdminPage() {
                         Publicar no Feed
                     </button>
                     {feedMsg && <p className={`text-xs ${feedMsg.startsWith('✅') ? 'text-green-400' : 'text-red-400'}`}>{feedMsg}</p>}
+                </section>
+
+                {/* ── MURAL DE ORDENS SECTION ── */}
+                <section className="glass-panel p-6 rounded-2xl space-y-4 border border-[#9ab09a]/20">
+                    <h2 className="font-serif text-xl text-white m-0 border-none pt-0 flex items-center gap-2">
+                        <ScrollText size={18} className="text-[#9ab09a]" /> Mural de Ordens
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className={labelCls}>Item / Serviço *</label>
+                            <input className={inputCls} value={orderTitle} onChange={e => setOrderTitle(e.target.value)} placeholder="Ex: 100x Iron Lump" />
+                        </div>
+                        <div>
+                            <label className={labelCls}>Preço *</label>
+                            <input className={inputCls} value={orderPrice} onChange={e => setOrderPrice(e.target.value)} placeholder="Ex: 5s 20c" />
+                        </div>
+                        <div>
+                            <label className={labelCls}>Contato / Personagem *</label>
+                            <input className={inputCls} value={orderProvider} onChange={e => setOrderProvider(e.target.value)} placeholder="Ex: Jotasiete" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className={labelCls}>Tipo</label>
+                                <select value={orderType} onChange={e => setOrderType(e.target.value as any)} className={inputCls}>
+                                    <option value="material">Material</option>
+                                    <option value="service">Serviço</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className={labelCls}>Intenção</label>
+                                <select value={orderIntent} onChange={e => setOrderIntent(e.target.value as any)} className={inputCls}>
+                                    <option value="buy">Comprar (WTS)</option>
+                                    <option value="sell">Vender (WTB)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className={labelCls}>Descrição / Notas adicionais</label>
+                            <input className={inputCls} value={orderDesc} onChange={e => setOrderDesc(e.target.value)} placeholder="Opcional. Ex: Entrega em The Howl" />
+                        </div>
+                    </div>
+
+                    <button onClick={handleAddOrder} className="bg-[#9ab09a] text-black font-bold text-sm px-6 py-2 rounded-lg hover:brightness-110 transition-all">
+                        Publicar Ordem
+                    </button>
+                    {orderMsg && <p className={`text-xs ${orderMsg.startsWith('✅') ? 'text-green-400' : 'text-red-400'}`}>{orderMsg}</p>}
+
+                    {/* Active Orders List */}
+                    {orders.length > 0 && (
+                        <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
+                            <h3 className="text-sm font-bold text-white mb-3">Ordens Abertas ({orders.filter(o => o.status === 'open').length})</h3>
+                            <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2">
+                                {orders.map(o => (
+                                    <div key={o.id} className={`flex items-center justify-between p-3 rounded-lg border text-sm ${o.status === 'open' ? 'bg-black/20 border-white/10' : 'bg-black/10 border-white/5 opacity-50'}`}>
+                                        <div className="flex flex-col gap-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${o.intent === 'buy' ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
+                                                    {o.intent === 'buy' ? 'WTS' : 'WTB'}
+                                                </span>
+                                                <span className="font-bold text-white truncate">{o.title}</span>
+                                                <span className="text-[#9ab09a] font-mono">{o.price}</span>
+                                            </div>
+                                            <div className="text-xs text-[var(--color-wurm-muted)]">
+                                                Por {o.provider} · {new Date(o.created_at).toLocaleDateString('pt-BR')}
+                                            </div>
+                                        </div>
+                                        {o.status === 'open' ? (
+                                            <button
+                                                onClick={() => handleCloseOrder(o.id)}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all text-xs shrink-0"
+                                                title="Marcar como concluída/fechada"
+                                            >
+                                                <CheckCircle size={14} /> Fechar
+                                            </button>
+                                        ) : (
+                                            <span className="text-xs text-[var(--color-wurm-muted)] italic shrink-0">Fechada</span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </section>
 
                 {/* ── POLL SECTION ── */}

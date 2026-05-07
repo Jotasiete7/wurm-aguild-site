@@ -8,7 +8,7 @@ export interface ServiceOrder {
     provider: string;
     type: 'service' | 'material';
     intent: 'buy' | 'sell';
-    status: 'open' | 'in_progress';
+    status: 'open' | 'in_progress' | 'closed';
     assigned_to?: string | null;
     created_at: string;
 }
@@ -32,6 +32,32 @@ export async function getOpenOrders(limit = 8): Promise<ServiceOrder[]> {
 
     if (error) { console.warn('Services fetch failed:', error.message); return []; }
     return (data ?? []) as ServiceOrder[];
+}
+
+export async function getAllOrders(): Promise<ServiceOrder[]> {
+    const { data, error } = await supabase
+        .from('services')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+    if (error) { console.warn('Services fetch failed:', error.message); return []; }
+    return (data ?? []) as ServiceOrder[];
+}
+
+export async function addOrder(order: Omit<ServiceOrder, 'id' | 'created_at'>): Promise<boolean> {
+    const { error } = await supabase
+        .from('services')
+        .insert(order);
+    return !error;
+}
+
+export async function closeOrder(id: string): Promise<boolean> {
+    const { error } = await supabase
+        .from('services')
+        .update({ status: 'closed' })
+        .eq('id', id);
+    return !error;
 }
 
 export async function getPublicResources(): Promise<PublicResource[]> {
