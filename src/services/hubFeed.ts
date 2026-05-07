@@ -8,6 +8,7 @@ export interface HubFeedItem {
     description_pt: string;
     description_en: string | null;
     link: string | null;
+    post_date: string;
     is_active: boolean;
     created_at: string;
 }
@@ -17,6 +18,7 @@ export async function getFeedItems(limit = 10): Promise<HubFeedItem[]> {
         .from('hub_feed')
         .select('*')
         .eq('is_active', true)
+        .order('post_date', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(limit);
 
