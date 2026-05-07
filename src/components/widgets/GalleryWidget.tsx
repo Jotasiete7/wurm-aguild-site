@@ -157,35 +157,35 @@ export function GalleryWidget() {
                     )}
 
                     <div
-                        className="max-w-3xl w-full"
+                        className="w-screen h-screen flex flex-col items-center justify-center p-0 md:p-8"
                         onClick={e => e.stopPropagation()}
                     >
                         <img
                             src={currentLightbox.image_url}
                             alt={currentLightbox.deed_name ?? ''}
-                            className="w-full max-h-[70vh] object-contain rounded-xl"
+                            className="w-full h-full object-contain"
                         />
-                        <div className="mt-4 flex items-end justify-between">
-                            <div>
-                                <h3 className="text-white font-bold text-lg m-0 border-none pt-0">
+                        <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-lg px-6 py-4 rounded-2xl flex items-center gap-8 border border-white/10 max-w-[90vw]">
+                            <div className="min-w-0">
+                                <h3 className="text-white font-bold text-xl m-0 border-none pt-0 truncate">
                                     {currentLightbox.deed_name ?? currentLightbox.title ?? t('Unnamed Deed', 'Deed Sem Nome')}
                                 </h3>
                                 {currentLightbox.author_name && (
-                                    <p className="text-[var(--color-wurm-muted)] text-xs font-mono m-0">
+                                    <p className="text-[var(--color-wurm-muted)] text-sm font-mono m-0 truncate">
                                         by {currentLightbox.author_name}
                                     </p>
                                 )}
                             </div>
                             <button
                                 onClick={(e) => handleVote(currentLightbox.id, e)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all shrink-0 ${
                                     voted.has(currentLightbox.id)
-                                        ? 'border-red-500/50 bg-red-500/10 text-red-400'
-                                        : 'border-white/10 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400 text-white/60'
+                                        ? 'border-red-500/50 bg-red-500/20 text-red-400'
+                                        : 'border-white/10 hover:border-red-500/50 hover:bg-red-500/20 hover:text-red-400 text-white/60'
                                 }`}
                             >
-                                <Heart size={16} className={voted.has(currentLightbox.id) ? 'fill-red-400' : ''} />
-                                <span className="text-sm font-bold">{currentLightbox.votes}</span>
+                                <Heart size={20} className={voted.has(currentLightbox.id) ? 'fill-red-400' : ''} />
+                                <span className="text-lg font-bold">{currentLightbox.votes}</span>
                             </button>
                         </div>
                     </div>

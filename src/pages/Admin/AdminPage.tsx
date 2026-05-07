@@ -3,7 +3,8 @@ import { createPoll } from '../../services/hubPolls';
 import { addPhoto } from '../../services/hubGallery';
 import { setStatus, clearStatus } from '../../services/hubStatus';
 import { addQuote, getAllQuotes, toggleQuote, type HubQuote } from '../../services/hubQuotes';
-import { Plus, X, Lock, Radio, Quote } from 'lucide-react';
+import { addFeedItem, type HubFeedItem } from '../../services/hubFeed';
+import { Plus, X, Lock, Radio, Quote, Activity } from 'lucide-react';
 import { useEffect } from 'react';
 
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
@@ -44,6 +45,15 @@ export function AdminPage() {
     const [photoDeed, setPhotoDeed] = useState('');
     const [photoTag, setPhotoTag] = useState('Concurso 2026');
     const [photoMsg, setPhotoMsg] = useState('');
+
+    // Feed form
+    const [feedType, setFeedType] = useState<HubFeedItem['type']>('update');
+    const [feedTitlePt, setFeedTitlePt] = useState('');
+    const [feedTitleEn, setFeedTitleEn] = useState('');
+    const [feedDescPt, setFeedDescPt] = useState('');
+    const [feedDescEn, setFeedDescEn] = useState('');
+    const [feedLink, setFeedLink] = useState('');
+    const [feedMsg, setFeedMsg] = useState('');
 
     if (!auth) {
         return (
@@ -121,6 +131,22 @@ export function AdminPage() {
         if (ok) { setPhotoUrl(''); setPhotoTitle(''); setPhotoAuthor(''); setPhotoDeed(''); }
     };
 
+    const handleAddFeed = async () => {
+        if (!feedTitlePt || !feedDescPt) return setFeedMsg('Título e Descrição em PT são obrigatórios.');
+        const ok = await addFeedItem({
+            type: feedType,
+            title_pt: feedTitlePt,
+            title_en: feedTitleEn || null,
+            description_pt: feedDescPt,
+            description_en: feedDescEn || null,
+            link: feedLink || null,
+        });
+        setFeedMsg(ok ? '✅ Post adicionado ao Feed!' : '❌ Erro ao adicionar post.');
+        if (ok) {
+            setFeedTitlePt(''); setFeedTitleEn(''); setFeedDescPt(''); setFeedDescEn(''); setFeedLink('');
+        }
+    };
+
     const inputCls = "w-full bg-black/30 border border-[var(--color-wurm-border)] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[var(--color-wurm-accent)] placeholder:text-[var(--color-wurm-muted)]";
     const labelCls = "text-[10px] font-mono uppercase tracking-widest text-[var(--color-wurm-muted)] mb-1 block";
 
@@ -167,6 +193,62 @@ export function AdminPage() {
                         </button>
                     </div>
                     {statusFeedback && <p className={`text-xs ${statusFeedback.startsWith('✅') ? 'text-green-400' : 'text-red-400'}`}>{statusFeedback}</p>}
+                </section>
+
+                {/* ── ECOSYSTEM FEED SECTION ── */}
+                <section className="glass-panel p-6 rounded-2xl space-y-4">
+                    <h2 className="font-serif text-xl text-white m-0 border-none pt-0 flex items-center gap-2">
+                        <Activity size={18} className="text-[var(--color-wurm-accent)]" /> Pulso do Ecossistema
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className={labelCls}>Tipo de Post *</label>
+                            <select
+                                value={feedType}
+                                onChange={e => setFeedType(e.target.value as any)}
+                                className={inputCls}
+                            >
+                                <option value="update">🔄 Update</option>
+                                <option value="event">📅 Evento</option>
+                                <option value="alert">🚨 Alerta</option>
+                                <option value="article">📰 Artigo</option>
+                                <option value="maintenance">🔧 Manutenção</option>
+                                <option value="badge">🎖️ Badge</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className={labelCls}>Link (Opcional)</label>
+                            <input className={inputCls} value={feedLink} onChange={e => setFeedLink(e.target.value)} placeholder="https://..." />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className={labelCls}>Título (PT) *</label>
+                            <input className={inputCls} value={feedTitlePt} onChange={e => setFeedTitlePt(e.target.value)} placeholder="Novo sistema lançado" />
+                        </div>
+                        <div>
+                            <label className={labelCls}>Title (EN)</label>
+                            <input className={inputCls} value={feedTitleEn} onChange={e => setFeedTitleEn(e.target.value)} placeholder="New system launched" />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                        <div>
+                            <label className={labelCls}>Descrição (PT) *</label>
+                            <textarea className={inputCls} value={feedDescPt} onChange={e => setFeedDescPt(e.target.value)} placeholder="Detalhes da atualização..." rows={2} />
+                        </div>
+                        <div>
+                            <label className={labelCls}>Description (EN)</label>
+                            <textarea className={inputCls} value={feedDescEn} onChange={e => setFeedDescEn(e.target.value)} placeholder="Update details..." rows={2} />
+                        </div>
+                    </div>
+
+                    <button onClick={handleAddFeed} className="bg-[var(--color-wurm-accent)] text-black font-bold text-sm px-6 py-2 rounded-lg hover:brightness-110 transition-all">
+                        Publicar no Feed
+                    </button>
+                    {feedMsg && <p className={`text-xs ${feedMsg.startsWith('✅') ? 'text-green-400' : 'text-red-400'}`}>{feedMsg}</p>}
                 </section>
 
                 {/* ── POLL SECTION ── */}
