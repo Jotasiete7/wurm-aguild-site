@@ -45,7 +45,6 @@ export function AnalyticsWidget() {
             subtitle={t('Economic Intelligence', 'Inteligência Econômica')}
             icon={LineChart}
             href="https://wurm-analytics-journal.pages.dev"
-            className="md:col-span-2 md:row-span-2"
             accentColor={accentColor}
         >
             {loading ? (

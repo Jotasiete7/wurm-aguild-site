@@ -8,11 +8,16 @@ export function GalleryWidget() {
     const [photos, setPhotos] = useState<HubPhoto[]>([]);
     const [loading, setLoading] = useState(true);
     const [lightbox, setLightbox] = useState<number | null>(null); // index
+    const [activeIndex, setActiveIndex] = useState(0); // for the carousel
     const [voted, setVoted] = useState<Set<string>>(new Set());
     const { t } = useLanguage();
 
     useEffect(() => {
-        getGalleryPhotos().then(p => { setPhotos(p); setLoading(false); });
+        getGalleryPhotos().then(p => { 
+            // Para o carrossel, pegamos até 8 fotos
+            setPhotos(p.slice(0, 8)); 
+            setLoading(false); 
+        });
     }, []);
 
     const handleVote = async (photoId: string, e: React.MouseEvent) => {
@@ -27,10 +32,13 @@ export function GalleryWidget() {
         }
     };
 
-    const prev = () => setLightbox(i => i !== null ? Math.max(0, i - 1) : null);
-    const next = () => setLightbox(i => i !== null ? Math.min(photos.length - 1, i + 1) : null);
+    const prevLightbox = () => setLightbox(i => i !== null ? Math.max(0, i - 1) : null);
+    const nextLightbox = () => setLightbox(i => i !== null ? Math.min(photos.length - 1, i + 1) : null);
 
-    const current = lightbox !== null ? photos[lightbox] : null;
+    const prevSlide = () => setActiveIndex(i => i === 0 ? photos.length - 1 : i - 1);
+    const nextSlide = () => setActiveIndex(i => i === photos.length - 1 ? 0 : i + 1);
+
+    const currentLightbox = lightbox !== null ? photos[lightbox] : null;
 
     return (
         <>
@@ -40,50 +48,85 @@ export function GalleryWidget() {
                 icon={Camera}
                 href="#"
                 status={photos.length > 0 ? 'active' : 'coming-soon'}
-                className="md:col-span-2"
+                className="md:col-span-2 md:row-span-2"
             >
                 {loading ? (
-                    <div className="grid grid-cols-4 gap-2 h-24 animate-pulse">
-                        {[1,2,3,4].map(i => <div key={i} className="rounded-lg bg-white/5" />)}
-                    </div>
+                    <div className="w-full h-[300px] animate-pulse rounded-lg bg-white/5" />
                 ) : photos.length === 0 ? (
                     <p className="text-xs text-[var(--color-wurm-muted)] m-0">
                         {t('No photos submitted yet. Be the first!', 'Nenhuma foto ainda. Seja o primeiro!')}
                     </p>
                 ) : (
-                    <div className="grid grid-cols-4 gap-2">
-                        {photos.slice(0, 8).map((photo, idx) => (
-                            <div
-                                key={photo.id}
-                                onClick={() => setLightbox(idx)}
-                                className="relative group/photo cursor-pointer rounded-lg overflow-hidden aspect-square bg-white/5"
-                            >
-                                <img
-                                    src={photo.image_url}
-                                    alt={photo.deed_name ?? 'Deed'}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover/photo:scale-110"
-                                />
-                                {/* Overlay */}
-                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/photo:opacity-100 transition-opacity flex flex-col justify-end p-2">
-                                    <p className="text-[9px] text-white font-bold leading-tight truncate">
-                                        {photo.deed_name ?? photo.title ?? '?'}
-                                    </p>
+                    <div className="relative group/carousel w-full h-full flex flex-col items-center justify-center">
+                        <div 
+                            className="relative w-full h-[300px] rounded-lg overflow-hidden bg-white/5 cursor-pointer"
+                            onClick={() => setLightbox(activeIndex)}
+                        >
+                            <img
+                                src={photos[activeIndex].image_url}
+                                alt={photos[activeIndex].deed_name ?? 'Deed'}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover/carousel:scale-105"
+                            />
+                            
+                            {/* Overlay Info */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4">
+                                <h3 className="text-white font-bold text-lg md:text-xl leading-tight truncate m-0 border-none pt-0">
+                                    {photos[activeIndex].deed_name ?? photos[activeIndex].title ?? '?'}
+                                </h3>
+                                {photos[activeIndex].author_name && (
+                                    <p className="text-xs text-white/70 m-0 mt-1 font-mono">por {photos[activeIndex].author_name}</p>
+                                )}
+                                
+                                <div className="absolute bottom-4 right-4">
                                     <button
-                                        onClick={(e) => handleVote(photo.id, e)}
-                                        className={`flex items-center gap-1 text-[9px] mt-1 transition-colors ${voted.has(photo.id) ? 'text-red-400' : 'text-white/60 hover:text-red-400'}`}
+                                        onClick={(e) => handleVote(photos[activeIndex].id, e)}
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur-md transition-colors ${
+                                            voted.has(photos[activeIndex].id) 
+                                                ? 'bg-red-500/20 text-red-400 border border-red-500/30' 
+                                                : 'bg-black/40 text-white/80 border border-white/10 hover:bg-black/60 hover:text-red-400'
+                                        }`}
                                     >
-                                        <Heart size={10} className={voted.has(photo.id) ? 'fill-red-400' : ''} />
-                                        {photo.votes}
+                                        <Heart size={14} className={voted.has(photos[activeIndex].id) ? 'fill-red-400' : ''} />
+                                        <span className="font-bold text-sm">{photos[activeIndex].votes}</span>
                                     </button>
                                 </div>
                             </div>
-                        ))}
+
+                            {/* Arrows overlay for navigation within widget */}
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); prevSlide(); }}
+                                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 p-2 rounded-full text-white/50 hover:text-white hover:bg-black/70 opacity-0 group-hover/carousel:opacity-100 transition-all"
+                            >
+                                <ChevronLeft size={24} />
+                            </button>
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); nextSlide(); }}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 p-2 rounded-full text-white/50 hover:text-white hover:bg-black/70 opacity-0 group-hover/carousel:opacity-100 transition-all"
+                            >
+                                <ChevronRight size={24} />
+                            </button>
+                        </div>
+                        
+                        {/* Dots */}
+                        <div className="flex items-center gap-2 mt-4">
+                            {photos.map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setActiveIndex(idx)}
+                                    className={`h-1.5 rounded-full transition-all ${
+                                        idx === activeIndex 
+                                            ? 'w-6 bg-[#d4b483]' 
+                                            : 'w-1.5 bg-white/20 hover:bg-white/40'
+                                    }`}
+                                />
+                            ))}
+                        </div>
                     </div>
                 )}
             </ToolWidget>
 
             {/* LIGHTBOX */}
-            {current && (
+            {currentLightbox && (
                 <div
                     className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
                     onClick={() => setLightbox(null)}
@@ -98,7 +141,7 @@ export function GalleryWidget() {
                     {lightbox! > 0 && (
                         <button
                             className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
-                            onClick={(e) => { e.stopPropagation(); prev(); }}
+                            onClick={(e) => { e.stopPropagation(); prevLightbox(); }}
                         >
                             <ChevronLeft size={40} />
                         </button>
@@ -107,7 +150,7 @@ export function GalleryWidget() {
                     {lightbox! < photos.length - 1 && (
                         <button
                             className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
-                            onClick={(e) => { e.stopPropagation(); next(); }}
+                            onClick={(e) => { e.stopPropagation(); nextLightbox(); }}
                         >
                             <ChevronRight size={40} />
                         </button>
@@ -118,31 +161,31 @@ export function GalleryWidget() {
                         onClick={e => e.stopPropagation()}
                     >
                         <img
-                            src={current.image_url}
-                            alt={current.deed_name ?? ''}
+                            src={currentLightbox.image_url}
+                            alt={currentLightbox.deed_name ?? ''}
                             className="w-full max-h-[70vh] object-contain rounded-xl"
                         />
                         <div className="mt-4 flex items-end justify-between">
                             <div>
                                 <h3 className="text-white font-bold text-lg m-0 border-none pt-0">
-                                    {current.deed_name ?? current.title ?? t('Unnamed Deed', 'Deed Sem Nome')}
+                                    {currentLightbox.deed_name ?? currentLightbox.title ?? t('Unnamed Deed', 'Deed Sem Nome')}
                                 </h3>
-                                {current.author_name && (
+                                {currentLightbox.author_name && (
                                     <p className="text-[var(--color-wurm-muted)] text-xs font-mono m-0">
-                                        by {current.author_name}
+                                        by {currentLightbox.author_name}
                                     </p>
                                 )}
                             </div>
                             <button
-                                onClick={(e) => handleVote(current.id, e)}
+                                onClick={(e) => handleVote(currentLightbox.id, e)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
-                                    voted.has(current.id)
+                                    voted.has(currentLightbox.id)
                                         ? 'border-red-500/50 bg-red-500/10 text-red-400'
                                         : 'border-white/10 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400 text-white/60'
                                 }`}
                             >
-                                <Heart size={16} className={voted.has(current.id) ? 'fill-red-400' : ''} />
-                                <span className="text-sm font-bold">{current.votes}</span>
+                                <Heart size={16} className={voted.has(currentLightbox.id) ? 'fill-red-400' : ''} />
+                                <span className="text-sm font-bold">{currentLightbox.votes}</span>
                             </button>
                         </div>
                     </div>
