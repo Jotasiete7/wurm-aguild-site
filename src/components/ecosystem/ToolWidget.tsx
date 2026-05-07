@@ -7,7 +7,7 @@ interface ToolWidgetProps {
   subtitle?: string;
   icon: LucideIcon;
   status?: 'active' | 'maintenance' | 'coming-soon';
-  href: string;
+  href?: string;
   children?: React.ReactNode;
   className?: string;
   accentColor?: string;
@@ -65,15 +65,17 @@ export function ToolWidget({
       </div>
 
       {/* Footer / Action */}
-      <a 
-        href={href}
-        target={href.startsWith('http') ? '_blank' : '_self'}
-        rel="noreferrer"
-        className="px-5 py-3 bg-white/[0.02] border-t border-[var(--color-wurm-border)]/30 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--color-wurm-muted)] hover:text-white hover:bg-[var(--widget-accent)]/10 transition-all group/btn"
-      >
-        <span>Acessar Ferramenta</span>
-        <ExternalLink size={12} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-      </a>
+      {href && (
+        <a 
+          href={href}
+          target={href.startsWith('http') ? '_blank' : '_self'}
+          rel="noreferrer"
+          className="px-5 py-3 bg-white/[0.02] border-t border-[var(--color-wurm-border)]/30 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--color-wurm-muted)] hover:text-white hover:bg-[var(--widget-accent)]/10 transition-all group/btn"
+        >
+          <span>Acessar Ferramenta</span>
+          <ExternalLink size={12} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+        </a>
+      )}
     </div>
   );
 }
