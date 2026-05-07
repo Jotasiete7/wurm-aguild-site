@@ -11,7 +11,7 @@ export function BadgesWidget() {
     const { t } = useLanguage();
 
     useEffect(() => {
-        Promise.all([getLatestBadges(5), getBadgeCount()]).then(([b, c]) => {
+        Promise.all([getLatestBadges(10), getBadgeCount()]).then(([b, c]) => {
             setBadges(b);
             setCount(c);
             setLoading(false);
@@ -26,14 +26,14 @@ export function BadgesWidget() {
             href="https://wurm-aguilda-badges.pages.dev"
         >
             {loading ? (
-                <div className="flex gap-2 animate-pulse">
-                    {[1,2,3,4,5].map(i => (
-                        <div key={i} className="w-10 h-10 rounded-lg bg-white/5" />
+                <div className="flex gap-2 flex-wrap animate-pulse">
+                    {[1,2,3,4,5,6,7,8,9,10].map(i => (
+                        <div key={i} className="w-12 h-12 rounded-lg bg-white/5" />
                     ))}
                 </div>
             ) : badges.length > 0 ? (
                 <div className="flex flex-col gap-3">
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex gap-1.5 flex-wrap">
                         {badges.map(badge => (
                             <div
                                 key={badge.id}
@@ -41,7 +41,7 @@ export function BadgesWidget() {
                                 title={`${badge.name} · ${badge.rarity}`}
                             >
                                 <div
-                                    className="w-10 h-10 rounded-lg overflow-hidden border transition-all duration-300 hover:scale-125 hover:z-10"
+                                    className="w-12 h-12 rounded-lg overflow-hidden border transition-all duration-300 hover:scale-125 hover:z-10"
                                     style={{ borderColor: getRarityColor(badge.rarity) + '40' }}
                                 >
                                     <img
@@ -55,8 +55,8 @@ export function BadgesWidget() {
                                 </div>
                                 {/* Rarity dot */}
                                 <div
-                                    className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-black"
-                                    style={{ backgroundColor: getRarityColor(badge.rarity) }}
+                                    className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-black shadow-[0_0_4px_currentColor]"
+                                    style={{ backgroundColor: getRarityColor(badge.rarity), color: getRarityColor(badge.rarity) }}
                                 />
                             </div>
                         ))}
