@@ -140,49 +140,44 @@ export function HomePage() {
                     {/* BENTO GRID — MAIN */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
 
-                        {/* ANALYTICS — real data */}
-                        <AnalyticsWidget />
-
-                        {/* BADGES — real data */}
+                        {/* ROW 1: Analytics (2 cols) + Badges (1 col) */}
+                        <AnalyticsWidget className="md:col-span-2" />
                         <BadgesWidget />
 
-                        {/* AUCTIONS */}
-                        <ToolWidget
-                            title={t('Auctions', 'Leilões')}
-                            subtitle={t('Live Marketplace', 'Mercado ao Vivo')}
-                            icon={Gavel}
-                            href="https://wurm-auction-helper.pages.dev"
-                            status="coming-soon"
-                        >
-                            <div className="flex flex-col gap-3">
-                                <p className="text-sm text-[var(--color-wurm-muted)] leading-relaxed m-0">
-                                    {t(
-                                        'Soon you\'ll see live buy & sell orders from guild members here.',
-                                        'Em breve você verá ordens de compra e venda ao vivo dos membros da Guilda aqui.'
-                                    )}
-                                </p>
-                                <a
-                                    href="https://wurm-auction-helper.pages.dev"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-wurm-accent)] hover:brightness-125 transition-all inline-flex items-center gap-1.5"
-                                >
-                                    {t('Open Auction Helper →', 'Acessar Ferramenta de Leilões →')}
-                                </a>
-                            </div>
-                        </ToolWidget>
-
-                        {/* DEED GALLERY — real data */}
+                        {/* ROW 2: Mural (2 cols) + Gallery (1 col) */}
+                        <MuralWidget className="md:col-span-2" />
                         <GalleryWidget />
 
-                        {/* COMMUNITY POLL — real data */}
+                        {/* ROW 3: Poll (1 col) + Resources (1 col) + Auctions (1 col) */}
                         <PollWidget />
-
-                        {/* MURAL — Open Orders */}
-                        <MuralWidget />
-
-                        {/* RESOURCES — Useful Links */}
                         <ResourcesWidget />
+
+                        <div className="opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                            <ToolWidget
+                                title={t('Auctions', 'Leilões')}
+                                subtitle={t('Live Marketplace', 'Mercado ao Vivo')}
+                                icon={Gavel}
+                                href="https://wurm-auction-helper.pages.dev"
+                                status="coming-soon"
+                            >
+                                <div className="flex flex-col gap-3">
+                                    <p className="text-sm text-[var(--color-wurm-muted)] leading-relaxed m-0">
+                                        {t(
+                                            'Soon you\'ll see live buy & sell orders from guild members here.',
+                                            'Em breve você verá ordens de compra e venda ao vivo dos membros da Guilda aqui.'
+                                        )}
+                                    </p>
+                                    <a
+                                        href="https://wurm-auction-helper.pages.dev"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-wurm-accent)] hover:brightness-125 transition-all inline-flex items-center gap-1.5"
+                                    >
+                                        {t('Open Auction Helper →', 'Acessar Ferramenta de Leilões →')}
+                                    </a>
+                                </div>
+                            </ToolWidget>
+                        </div>
 
                     </div>
 

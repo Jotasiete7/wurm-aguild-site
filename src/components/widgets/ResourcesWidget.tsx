@@ -39,7 +39,7 @@ export function ResourcesWidget() {
                     {t('No public resources yet.', 'Nenhum recurso público ainda.')}
                 </p>
             ) : (
-                <div className="flex flex-col gap-1.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {resources.slice(0, 6).map(res => {
                         const Icon = TYPE_ICONS[res.type];
                         return (

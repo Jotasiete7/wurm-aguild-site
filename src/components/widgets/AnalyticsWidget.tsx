@@ -12,7 +12,7 @@ const CATEGORY_COLORS: Record<string, string> = {
     lore:      '#a78bfa',
 };
 
-export function AnalyticsWidget() {
+export function AnalyticsWidget({ className }: { className?: string }) {
     const [article, setArticle] = useState<HubArticle | null>(null);
     const [count, setCount] = useState<number>(0);
     const [loading, setLoading] = useState(true);
@@ -46,6 +46,7 @@ export function AnalyticsWidget() {
             icon={LineChart}
             href="https://wurm-analytics-journal.pages.dev"
             accentColor={accentColor}
+            className={className}
         >
             {loading ? (
                 <div className="h-full flex items-end pb-2">

@@ -3,8 +3,8 @@ import { ExternalLink } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface ToolWidgetProps {
-  title: string;
-  subtitle?: string;
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
   icon: LucideIcon;
   status?: 'active' | 'maintenance' | 'coming-soon';
   href?: string;
@@ -33,8 +33,17 @@ export function ToolWidget({
 
   return (
     <div 
-      className={`glass-panel rounded-2xl overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-[0_0_30px_rgba(212,180,131,0.05)] hover:border-[var(--color-wurm-accent)]/30 ${className}`}
+      className={`glass-panel rounded-2xl overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-[0_8px_30px_rgba(212,180,131,0.15)] hover:border-[var(--color-wurm-accent)]/30 hover:-translate-y-1 ${href ? 'cursor-pointer' : ''} ${className}`}
       style={{ '--widget-accent': accentColor } as React.CSSProperties}
+      onClick={(e) => {
+        if (href && !(e.target as HTMLElement).closest('a, button')) {
+          if (href.startsWith('http')) {
+            window.open(href, '_blank', 'noreferrer');
+          } else {
+            window.location.href = href;
+          }
+        }
+      }}
     >
       {/* Header */}
       <div className="p-5 flex items-start justify-between border-b border-[var(--color-wurm-border)]/30">
