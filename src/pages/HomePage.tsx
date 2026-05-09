@@ -138,7 +138,7 @@ export function HomePage() {
                     })()}
 
                     {/* BENTO GRID — MAIN */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 grid-flow-row-dense">
 
                         {/* ROW 1: Analytics (2 cols) + Badges (1 col) */}
                         <AnalyticsWidget className="md:col-span-2" />
