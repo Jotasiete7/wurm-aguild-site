@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Camera, Heart, X, ChevronLeft, ChevronRight, Link2, Download } from 'lucide-react';
 import { getGalleryPhotos, votePhoto, type HubPhoto } from '../../services/hubGallery';
+import { getSettings } from '../../services/hubSettings';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { ToolWidget } from '../ecosystem/ToolWidget';
 
@@ -10,7 +11,8 @@ export function GalleryWidget() {
     const [lightbox, setLightbox] = useState<number | null>(null); // index
     const [activeIndex, setActiveIndex] = useState(0); // for the carousel
     const [voted, setVoted] = useState<Set<string>>(new Set());
-    const { t } = useLanguage();
+    const [settings, setSettings] = useState<Record<string, string>>({});
+    const { t, language } = useLanguage();
 
     useEffect(() => {
         getGalleryPhotos().then(p => { 
@@ -18,6 +20,8 @@ export function GalleryWidget() {
             setPhotos(p.slice(0, 8)); 
             setLoading(false); 
         });
+
+        getSettings().then(setSettings);
     }, []);
 
     const handleVote = async (photoId: string, e: React.MouseEvent) => {
@@ -43,8 +47,8 @@ export function GalleryWidget() {
     return (
         <>
             <ToolWidget
-                title={t('Deed Photography', 'Fotografia de Deeds')}
-                subtitle={t('Community Contest', 'Concurso da Comunidade')}
+                title={language === 'pt' ? (settings.gallery_card_title_pt || 'Fotografia de Deeds') : (settings.gallery_card_title_en || 'Deed Photography')}
+                subtitle={language === 'pt' ? (settings.gallery_card_subtitle_pt || 'Concurso da Comunidade') : (settings.gallery_card_subtitle_en || 'Community Contest')}
                 icon={Camera}
                 href="#"
                 status={photos.length > 0 ? 'active' : 'coming-soon'}

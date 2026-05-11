@@ -5,7 +5,8 @@ import { setStatus, clearStatus } from '../../services/hubStatus';
 import { addQuote, getAllQuotes, toggleQuote, type HubQuote } from '../../services/hubQuotes';
 import { addFeedItem, type HubFeedItem } from '../../services/hubFeed';
 import { addOrder, closeOrder, getAllOrders, type ServiceOrder } from '../../services/hubMural';
-import { Plus, X, Lock, Radio, Quote, Activity, ScrollText, CheckCircle } from 'lucide-react';
+import { getSettings, updateSettings } from '../../services/hubSettings';
+import { Plus, X, Lock, Radio, Quote, Activity, ScrollText, CheckCircle, Settings } from 'lucide-react';
 import { useEffect } from 'react';
 
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
@@ -39,6 +40,7 @@ export function AdminPage() {
         if (auth) {
             getAllQuotes().then(setQuotes);
             getAllOrders().then(setOrders);
+            getSettings().then(setHubSettings);
         }
     }, [auth]);
 
@@ -69,6 +71,15 @@ export function AdminPage() {
     const [feedLink, setFeedLink] = useState('');
     const [feedDate, setFeedDate] = useState('');
     const [feedMsg, setFeedMsg] = useState('');
+    
+    // Hub Settings
+    const [hubSettings, setHubSettings] = useState<Record<string, string>>({
+        gallery_card_title_pt: '',
+        gallery_card_title_en: '',
+        gallery_card_subtitle_pt: '',
+        gallery_card_subtitle_en: '',
+    });
+    const [settingsMsg, setSettingsMsg] = useState('');
 
     if (!auth) {
         return (
@@ -186,6 +197,14 @@ export function AdminPage() {
         if (ok) getAllOrders().then(setOrders);
     };
 
+    const handleUpdateHubSettings = async () => {
+        const ok = await updateSettings(hubSettings);
+        setSettingsMsg(ok ? '✅ Configurações salvas!' : '❌ Erro ao salvar configurações.');
+        if (ok) {
+            setTimeout(() => setSettingsMsg(''), 3000);
+        }
+    };
+
     const inputCls = "w-full bg-black/30 border border-[var(--color-wurm-border)] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[var(--color-wurm-accent)] placeholder:text-[var(--color-wurm-muted)]";
     const labelCls = "text-[10px] font-mono uppercase tracking-widest text-[var(--color-wurm-muted)] mb-1 block";
 
@@ -195,6 +214,72 @@ export function AdminPage() {
                 <h1 className="font-serif text-3xl text-white border-none pt-0 m-0">
                     Admin — HUB2
                 </h1>
+
+                {/* ── HUB SETTINGS SECTION ── */}
+                <section className="glass-panel p-6 rounded-2xl space-y-4 border border-[var(--color-wurm-accent)]/20">
+                    <h2 className="font-serif text-xl text-white m-0 border-none pt-0 flex items-center gap-2">
+                        <Settings size={18} className="text-[var(--color-wurm-accent)]" /> Configurações do HUB
+                    </h2>
+                    <p className="text-[10px] text-[var(--color-wurm-muted)] font-mono uppercase tracking-widest m-0">
+                        Personalize os títulos e subtítulos dos cards dinâmicos.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Gallery Card Config */}
+                        <div className="space-y-4">
+                            <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/5 pb-2">Card de Galeria</h3>
+                            <div className="space-y-3">
+                                <div>
+                                    <label className={labelCls}>Título (PT)</label>
+                                    <input 
+                                        className={inputCls} 
+                                        value={hubSettings.gallery_card_title_pt} 
+                                        onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_title_pt: e.target.value }))} 
+                                        placeholder="Fotografia de Deeds" 
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Title (EN)</label>
+                                    <input 
+                                        className={inputCls} 
+                                        value={hubSettings.gallery_card_title_en} 
+                                        onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_title_en: e.target.value }))} 
+                                        placeholder="Deed Photography" 
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Subtítulo (PT)</label>
+                                    <input 
+                                        className={inputCls} 
+                                        value={hubSettings.gallery_card_subtitle_pt} 
+                                        onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_subtitle_pt: e.target.value }))} 
+                                        placeholder="Concurso da Comunidade" 
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Subtitle (EN)</label>
+                                    <input 
+                                        className={inputCls} 
+                                        value={hubSettings.gallery_card_subtitle_en} 
+                                        onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_subtitle_en: e.target.value }))} 
+                                        placeholder="Community Contest" 
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Future settings can go here */}
+                        <div className="space-y-4 opacity-50 select-none">
+                            <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/5 pb-2">Outros Cards</h3>
+                            <p className="text-[10px] text-[var(--color-wurm-muted)] italic">Mais configurações em breve...</p>
+                        </div>
+                    </div>
+
+                    <button onClick={handleUpdateHubSettings} className="bg-[var(--color-wurm-accent)] text-black font-bold text-sm px-6 py-2 rounded-lg hover:brightness-110 transition-all">
+                        Salvar Configurações
+                    </button>
+                    {settingsMsg && <p className={`text-xs ${settingsMsg.startsWith('✅') ? 'text-green-400' : 'text-red-400'}`}>{settingsMsg}</p>}
+                </section>
 
                 {/* ── SYSTEM STATUS SECTION ── */}
                 <section className="glass-panel p-6 rounded-2xl space-y-4">
