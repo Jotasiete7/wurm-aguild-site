@@ -56,6 +56,9 @@ export async function deleteQuote(id: string): Promise<boolean> {
         .from('hub_quotes')
         .delete()
         .eq('id', id);
+    if (error) {
+        console.error('Erro ao excluir frase:', error.message);
+    }
     return !error;
 }
 

@@ -45,6 +45,7 @@ ALTER TABLE hub_quotes ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public read active quotes" ON hub_quotes;
 DROP POLICY IF EXISTS "Allow insert quotes" ON hub_quotes;
 DROP POLICY IF EXISTS "Allow update quotes" ON hub_quotes;
+DROP POLICY IF EXISTS "Allow delete quotes" ON hub_quotes;
 
 CREATE POLICY "Public read active quotes" ON hub_quotes
     FOR SELECT USING (is_active = true);
@@ -54,6 +55,9 @@ CREATE POLICY "Allow insert quotes" ON hub_quotes
 
 CREATE POLICY "Allow update quotes" ON hub_quotes
     FOR UPDATE USING (true);
+
+CREATE POLICY "Allow delete quotes" ON hub_quotes
+    FOR DELETE USING (true);
 
 -- Seed de Frases Iniciais
 INSERT INTO hub_quotes (text_pt, text_en, author) VALUES

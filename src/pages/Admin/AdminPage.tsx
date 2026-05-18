@@ -156,7 +156,12 @@ export function AdminPage() {
     const handleDeleteQuote = async (id: string) => {
         if (confirm('Tem certeza que deseja excluir esta frase?')) {
             const ok = await deleteQuote(id);
-            if (ok) getAllQuotes().then(setQuotes);
+            if (ok) {
+                getAllQuotes().then(setQuotes);
+                setQuoteFeedback('✅ Frase excluída com sucesso!');
+            } else {
+                setQuoteFeedback('❌ Erro ao excluir frase. Verifique as políticas do banco de dados.');
+            }
         }
     };
 
