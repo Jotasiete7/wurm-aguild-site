@@ -70,3 +70,28 @@ export async function getPublicResources(): Promise<PublicResource[]> {
     if (error) { console.warn('Resources fetch failed:', error.message); return []; }
     return (data ?? []) as PublicResource[];
 }
+
+export async function getAllResources(): Promise<PublicResource[]> {
+    const { data, error } = await supabase
+        .from('resources')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) { console.warn('Resources fetch failed:', error.message); return []; }
+    return (data ?? []) as PublicResource[];
+}
+
+export async function addResource(resource: Omit<PublicResource, 'id'>): Promise<boolean> {
+    const { error } = await supabase
+        .from('resources')
+        .insert(resource);
+    return !error;
+}
+
+export async function deleteResource(id: string): Promise<boolean> {
+    const { error } = await supabase
+        .from('resources')
+        .delete()
+        .eq('id', id);
+    return !error;
+}
