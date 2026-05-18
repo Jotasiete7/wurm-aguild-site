@@ -8,12 +8,19 @@ import { addOrder, closeOrder, getAllOrders, type ServiceOrder, getAllResources,
 import { getSettings, updateSettings } from '../../services/hubSettings';
 import { Plus, X, Lock, Radio, Quote, Activity, ScrollText, CheckCircle, Settings, Link as LinkIcon } from 'lucide-react';
 import { useEffect } from 'react';
-
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
+import { supabase } from '../../lib/supabase';
 
 export function AdminPage() {
     const [auth, setAuth] = useState(false);
-    const [pw, setPw] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [userEmail, setUserEmail] = useState<string | null>(null);
+
+    const ALLOWED_ADMINS = ['jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'];
+
+    const inputCls = "w-full bg-black/30 border border-[var(--color-wurm-border)] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[var(--color-wurm-accent)] placeholder:text-[var(--color-wurm-muted)]";
+    const labelCls = "text-[10px] font-mono uppercase tracking-widest text-[var(--color-wurm-muted)] mb-1 block";
 
     // Poll form
     const [qPt, setQPt] = useState('');
@@ -43,6 +50,34 @@ export function AdminPage() {
     const [resourceType, setResourceType] = useState<'tool' | 'map' | 'sheet' | 'doc' | 'external'>('tool');
     const [resourceAuthor, setResourceAuthor] = useState('');
     const [resourceMsg, setResourceMsg] = useState('');
+
+    useEffect(() => {
+        // Check active session on mount
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            const currentEmail = session?.user?.email;
+            if (currentEmail && ALLOWED_ADMINS.includes(currentEmail)) {
+                setAuth(true);
+                setUserEmail(currentEmail);
+            } else if (session) {
+                supabase.auth.signOut();
+                setPollMsg('Este e-mail não possui acesso administrativo.');
+            }
+        });
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            const currentEmail = session?.user?.email;
+            if (currentEmail && ALLOWED_ADMINS.includes(currentEmail)) {
+                setAuth(true);
+                setUserEmail(currentEmail);
+            } else {
+                setAuth(false);
+                setUserEmail(null);
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
 
     useEffect(() => {
         if (auth) {
@@ -90,30 +125,97 @@ export function AdminPage() {
     });
     const [settingsMsg, setSettingsMsg] = useState('');
 
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!email || !password) return setPollMsg('Por favor, preencha todos os campos.');
+        setLoading(true);
+        setPollMsg('');
+
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (error) {
+                setPollMsg(`Erro ao entrar: ${error.message}`);
+                setLoading(false);
+                return;
+            }
+
+            const currentEmail = data.user?.email;
+            if (!currentEmail || !ALLOWED_ADMINS.includes(currentEmail)) {
+                await supabase.auth.signOut();
+                setPollMsg('Acesso negado: Este e-mail não possui permissão de administrador.');
+                setLoading(false);
+                return;
+            }
+
+            setAuth(true);
+            setUserEmail(currentEmail);
+        } catch (err: any) {
+            setPollMsg('Erro desconhecido ao tentar realizar o login.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        setAuth(false);
+        setUserEmail(null);
+    };
+
     if (!auth) {
         return (
-            <div className="min-h-screen bg-[var(--color-wurm-bg)] flex items-center justify-center">
-                <div className="glass-panel p-8 rounded-2xl w-full max-w-sm space-y-4">
-                    <div className="flex items-center gap-2 text-[var(--color-wurm-accent)]">
-                        <Lock size={18} />
-                        <h1 className="font-serif text-xl m-0 border-none pt-0">Admin — HUB2</h1>
+            <div className="min-h-screen bg-[var(--color-wurm-bg)] flex items-center justify-center px-4">
+                <form onSubmit={handleLogin} className="glass-panel p-8 rounded-2xl w-full max-w-sm space-y-4 border border-[var(--color-wurm-border)]">
+                    <div className="flex items-center gap-2 text-[var(--color-wurm-accent)] mb-2">
+                        <Lock size={20} />
+                        <h1 className="font-serif text-2xl m-0 border-none pt-0 font-bold">Admin — HUB2</h1>
                     </div>
-                    <input
-                        type="password"
-                        placeholder="Senha"
-                        value={pw}
-                        onChange={e => setPw(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && pw === ADMIN_PASSWORD && setAuth(true)}
-                        className="w-full bg-black/30 border border-[var(--color-wurm-border)] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[var(--color-wurm-accent)]"
-                    />
+                    <p className="text-[10px] text-[var(--color-wurm-muted)] font-mono uppercase tracking-widest leading-relaxed">
+                        Faça login com a sua conta do ecossistema A Guilda.
+                    </p>
+                    
+                    <div className="space-y-1">
+                        <label className={labelCls}>E-mail de Acesso</label>
+                        <input
+                            type="email"
+                            placeholder="exemplo@gmail.com"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            className="w-full bg-black/30 border border-[var(--color-wurm-border)] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[var(--color-wurm-accent)] placeholder:text-[var(--color-wurm-muted)]"
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className={labelCls}>Senha</label>
+                        <input
+                            type="password"
+                            placeholder="Sua senha secreta"
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            className="w-full bg-black/30 border border-[var(--color-wurm-border)] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[var(--color-wurm-accent)] placeholder:text-[var(--color-wurm-muted)]"
+                            required
+                        />
+                    </div>
+
                     <button
-                        onClick={() => pw === ADMIN_PASSWORD ? setAuth(true) : setPollMsg('Senha incorreta')}
-                        className="w-full bg-[var(--color-wurm-accent)] text-black font-bold text-sm py-2 rounded-lg hover:brightness-110 transition-all"
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-[var(--color-wurm-accent)] text-black font-bold text-sm py-2.5 rounded-lg hover:brightness-110 disabled:brightness-50 transition-all flex items-center justify-center gap-2 mt-4"
                     >
-                        Entrar
+                        {loading ? 'Entrando...' : 'Entrar no Painel'}
                     </button>
-                    {pollMsg && <p className="text-red-400 text-xs">{pollMsg}</p>}
-                </div>
+
+                    {pollMsg && (
+                        <p className="text-red-400 text-xs mt-2 bg-red-500/10 border border-red-500/20 p-2 rounded-lg leading-relaxed">
+                            {pollMsg}
+                        </p>
+                    )}
+                </form>
             </div>
         );
     }
@@ -300,15 +402,29 @@ export function AdminPage() {
         }
     };
 
-    const inputCls = "w-full bg-black/30 border border-[var(--color-wurm-border)] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[var(--color-wurm-accent)] placeholder:text-[var(--color-wurm-muted)]";
-    const labelCls = "text-[10px] font-mono uppercase tracking-widest text-[var(--color-wurm-muted)] mb-1 block";
+
 
     return (
         <div className="min-h-screen bg-[var(--color-wurm-bg)] py-12 px-6">
             <div className="max-w-2xl mx-auto space-y-10">
-                <h1 className="font-serif text-3xl text-white border-none pt-0 m-0">
-                    Admin — HUB2
-                </h1>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10 pb-6">
+                    <div>
+                        <h1 className="font-serif text-3xl text-white border-none pt-0 m-0 font-bold">
+                            Admin — HUB2
+                        </h1>
+                        {userEmail && (
+                            <p className="text-[10px] text-[var(--color-wurm-accent)] font-mono uppercase tracking-widest mt-1.5">
+                                Logado como: <span className="text-white font-bold">{userEmail}</span>
+                            </p>
+                        )}
+                    </div>
+                    <button
+                        onClick={handleLogout}
+                        className="bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 text-[10px] font-mono uppercase tracking-widest px-4 py-2.5 rounded-lg transition-all shrink-0 sm:self-start"
+                    >
+                        🚪 Encerrar Sessão
+                    </button>
+                </div>
 
                 {/* ── HUB SETTINGS SECTION ── */}
                 <section className="glass-panel p-6 rounded-2xl space-y-4 border border-[var(--color-wurm-accent)]/20">
