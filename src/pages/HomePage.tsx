@@ -4,7 +4,7 @@ import { LanguageSwitch } from '@ecossistema-guilda/modules/LanguageSwitch';
 import agStyles from '@ecossistema-guilda/layout/Header.module.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useEffect, useState } from 'react';
-import { Gavel, Activity, Pickaxe, Hammer, BookOpen, BookMarked, CalendarClock } from 'lucide-react';
+import { Gavel, Activity, Pickaxe, Hammer, BookOpen, BookMarked, CalendarClock, Hourglass } from 'lucide-react';
 
 import { AnalyticsWidget } from '../components/widgets/AnalyticsWidget';
 import { BadgesWidget } from '../components/widgets/BadgesWidget';
@@ -37,6 +37,7 @@ const TOOL_DESCRIPTIONS: Record<string, { pt: string; en: string }> = {
     Carpentry: { pt: 'Planejar itens, materiais e grind de marcenaria', en: 'Plan items, materials & carpentry grind' },
     Recipes:   { pt: 'Encontre receitas e ingredientes de culinária', en: 'Find cooking recipes & ingredients' },
     Liturgy:   { pt: 'Rezas, favores e rituais de sacerdotes', en: 'Prayers, favors & priest rituals' },
+    'Wall Decay': { pt: 'Calculadora de queda de muralhas e deeds', en: 'Wall decay and deed collapse calculator' },
 };
 
 export function HomePage() {
@@ -182,12 +183,13 @@ export function HomePage() {
                     </div>
 
                     {/* SECONDARY TOOLS ROW */}
-                    <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="mt-5 grid grid-cols-2 md:grid-cols-5 gap-4">
                         {([
                             { title: 'Mining',    icon: Pickaxe,    href: 'https://wurm-mining-tool.pages.dev' },
                             { title: 'Carpentry', icon: Hammer,     href: 'https://wurm-carpentry-tool.pages.dev' },
                             { title: 'Recipes',   icon: BookOpen,   href: 'https://wurm-recipe-tool.pages.dev' },
                             { title: 'Liturgy',   icon: BookMarked, href: 'https://wurm-liturgy.pages.dev' },
+                            { title: 'Wall Decay',icon: Hourglass,  href: 'https://wurm-wall-decay-calculator.pages.dev' },
                         ] as const).map(tool => {
                             const desc = TOOL_DESCRIPTIONS[tool.title];
                             return (
