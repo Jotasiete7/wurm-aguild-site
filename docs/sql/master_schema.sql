@@ -199,3 +199,17 @@ EXCEPTION WHEN unique_violation THEN
     RETURN jsonb_build_object('success', false, 'reason', 'already_voted');
 END;
 $$;
+
+
+-- 8. POLÍTICAS DE SEGURANÇA PARA A TABELA RESOURCES (LINKS ÚTEIS)
+ALTER TABLE resources ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read resources" ON resources;
+DROP POLICY IF EXISTS "Allow insert resources" ON resources;
+DROP POLICY IF EXISTS "Allow delete resources" ON resources;
+DROP POLICY IF EXISTS "Allow update resources" ON resources;
+
+CREATE POLICY "Public read resources" ON resources FOR SELECT USING (true);
+CREATE POLICY "Allow insert resources" ON resources FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow delete resources" ON resources FOR DELETE USING (true);
+CREATE POLICY "Allow update resources" ON resources FOR UPDATE USING (true);
