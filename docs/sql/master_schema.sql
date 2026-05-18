@@ -1,6 +1,7 @@
 -- ============================================================
 -- ECOSSISTEMA A GUILDA — MASTER SCHEMA PORTAL V2
 -- Execute este script no SQL Editor do seu Supabase Dashboard
+-- Este script é 100% idempotente (pode ser executado várias vezes).
 -- ============================================================
 
 -- 1. STATUS DO SISTEMA
@@ -14,6 +15,10 @@ CREATE TABLE IF NOT EXISTS hub_system_status (
 );
 
 ALTER TABLE hub_system_status ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read active status" ON hub_system_status;
+DROP POLICY IF EXISTS "Allow all insert status" ON hub_system_status;
+DROP POLICY IF EXISTS "Allow all update status" ON hub_system_status;
 
 CREATE POLICY "Public read active status" ON hub_system_status
     FOR SELECT USING (is_active = true);
@@ -36,6 +41,10 @@ CREATE TABLE IF NOT EXISTS hub_quotes (
 );
 
 ALTER TABLE hub_quotes ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read active quotes" ON hub_quotes;
+DROP POLICY IF EXISTS "Allow insert quotes" ON hub_quotes;
+DROP POLICY IF EXISTS "Allow update quotes" ON hub_quotes;
 
 CREATE POLICY "Public read active quotes" ON hub_quotes
     FOR SELECT USING (is_active = true);
@@ -71,6 +80,10 @@ CREATE TABLE IF NOT EXISTS hub_feed (
 
 ALTER TABLE hub_feed ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public read active feed" ON hub_feed;
+DROP POLICY IF EXISTS "Allow insert feed" ON hub_feed;
+DROP POLICY IF EXISTS "Allow update feed" ON hub_feed;
+
 CREATE POLICY "Public read active feed" ON hub_feed
     FOR SELECT USING (is_active = true);
 
@@ -89,6 +102,10 @@ CREATE TABLE IF NOT EXISTS hub_settings (
 );
 
 ALTER TABLE hub_settings ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read settings" ON hub_settings;
+DROP POLICY IF EXISTS "Allow upsert settings" ON hub_settings;
+DROP POLICY IF EXISTS "Allow update settings" ON hub_settings;
 
 CREATE POLICY "Public read settings" ON hub_settings
     FOR SELECT USING (true);
@@ -139,6 +156,11 @@ ALTER TABLE hub_polls ENABLE ROW LEVEL SECURITY;
 ALTER TABLE hub_poll_options ENABLE ROW LEVEL SECURITY;
 ALTER TABLE hub_poll_votes ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public read active polls" ON hub_polls;
+DROP POLICY IF EXISTS "Public read poll options" ON hub_poll_options;
+DROP POLICY IF EXISTS "Public read votes" ON hub_poll_votes;
+DROP POLICY IF EXISTS "Public insert votes" ON hub_poll_votes;
+
 CREATE POLICY "Public read active polls" ON hub_polls FOR SELECT USING (is_active = true);
 CREATE POLICY "Public read poll options" ON hub_poll_options FOR SELECT USING (true);
 CREATE POLICY "Public read votes" ON hub_poll_votes FOR SELECT USING (true);
@@ -168,6 +190,10 @@ CREATE TABLE IF NOT EXISTS hub_photo_votes (
 
 ALTER TABLE hub_photos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE hub_photo_votes ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read visible photos" ON hub_photos;
+DROP POLICY IF EXISTS "Public insert photo votes" ON hub_photo_votes;
+DROP POLICY IF EXISTS "Public read photo votes" ON hub_photo_votes;
 
 CREATE POLICY "Public read visible photos" ON hub_photos FOR SELECT USING (is_visible = true);
 CREATE POLICY "Public insert photo votes" ON hub_photo_votes FOR INSERT WITH CHECK (true);
