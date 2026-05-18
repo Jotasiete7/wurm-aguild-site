@@ -4,9 +4,9 @@ import { addPhoto } from '../../services/hubGallery';
 import { setStatus, clearStatus } from '../../services/hubStatus';
 import { addQuote, getAllQuotes, toggleQuote, type HubQuote } from '../../services/hubQuotes';
 import { addFeedItem, type HubFeedItem } from '../../services/hubFeed';
-import { addOrder, closeOrder, getAllOrders, type ServiceOrder } from '../../services/hubMural';
+import { addOrder, closeOrder, getAllOrders, type ServiceOrder, getAllResources, addResource, deleteResource, type PublicResource } from '../../services/hubMural';
 import { getSettings, updateSettings } from '../../services/hubSettings';
-import { Plus, X, Lock, Radio, Quote, Activity, ScrollText, CheckCircle, Settings } from 'lucide-react';
+import { Plus, X, Lock, Radio, Quote, Activity, ScrollText, CheckCircle, Settings, Link as LinkIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
@@ -36,11 +36,20 @@ export function AdminPage() {
     const [newQuoteAuthor, setNewQuoteAuthor] = useState('');
     const [quoteFeedback, setQuoteFeedback] = useState('');
 
+    // Resources state
+    const [resources, setResources] = useState<PublicResource[]>([]);
+    const [resourceName, setResourceName] = useState('');
+    const [resourceUrl, setResourceUrl] = useState('');
+    const [resourceType, setResourceType] = useState<'tool' | 'map' | 'sheet' | 'doc' | 'external'>('tool');
+    const [resourceAuthor, setResourceAuthor] = useState('');
+    const [resourceMsg, setResourceMsg] = useState('');
+
     useEffect(() => {
         if (auth) {
             getAllQuotes().then(setQuotes);
             getAllOrders().then(setOrders);
             getSettings().then(setHubSettings);
+            getAllResources().then(setResources);
         }
     }, [auth]);
 
@@ -195,6 +204,27 @@ export function AdminPage() {
     const handleCloseOrder = async (id: string) => {
         const ok = await closeOrder(id);
         if (ok) getAllOrders().then(setOrders);
+    };
+
+    const handleAddResource = async () => {
+        if (!resourceName || !resourceUrl) return setResourceMsg('Nome e URL são obrigatórios.');
+        const ok = await addResource({
+            name: resourceName,
+            url: resourceUrl,
+            type: resourceType,
+            access: 'public',
+            author: resourceAuthor || undefined
+        });
+        setResourceMsg(ok ? '✅ Recurso adicionado com sucesso!' : '❌ Erro ao adicionar recurso.');
+        if (ok) {
+            setResourceName(''); setResourceUrl(''); setResourceAuthor('');
+            getAllResources().then(setResources);
+        }
+    };
+
+    const handleDeleteResource = async (id: string) => {
+        const ok = await deleteResource(id);
+        if (ok) getAllResources().then(setResources);
     };
 
     const handleUpdateHubSettings = async () => {
@@ -455,6 +485,81 @@ export function AdminPage() {
                                         ) : (
                                             <span className="text-xs text-[var(--color-wurm-muted)] italic shrink-0">Fechada</span>
                                         )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </section>
+
+                {/* ── RECURSOS / LINKS UTEIS SECTION ── */}
+                <section className="glass-panel p-6 rounded-2xl space-y-4 border border-[var(--color-wurm-accent)]/20">
+                    <h2 className="font-serif text-xl text-white m-0 border-none pt-0 flex items-center gap-2">
+                        <LinkIcon size={18} className="text-[var(--color-wurm-accent)]" /> Gerenciar Recursos (Links Úteis)
+                    </h2>
+                    <p className="text-[10px] text-[var(--color-wurm-muted)] font-mono uppercase tracking-widest m-0">
+                        Adicione ou remova ferramentas, calculadoras e links úteis que aparecem no card Recursos da página principal.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className={labelCls}>Nome do Link/Ferramenta *</label>
+                            <input className={inputCls} value={resourceName} onChange={e => setResourceName(e.target.value)} placeholder="Ex: Calculadora de Grind" />
+                        </div>
+                        <div>
+                            <label className={labelCls}>URL de Acesso *</label>
+                            <input className={inputCls} value={resourceUrl} onChange={e => setResourceUrl(e.target.value)} placeholder="Ex: https://..." />
+                        </div>
+                        <div>
+                            <label className={labelCls}>Tipo do Recurso</label>
+                            <select value={resourceType} onChange={e => setResourceType(e.target.value as any)} className={inputCls}>
+                                <option value="tool">🔨 Ferramenta (Tool)</option>
+                                <option value="map">🗺️ Mapa (Map)</option>
+                                <option value="sheet">📊 Planilha (Sheet)</option>
+                                <option value="doc">📜 Documento (Doc)</option>
+                                <option value="external">🔗 Link Externo (External)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className={labelCls}>Autor / Criador (opcional)</label>
+                            <input className={inputCls} value={resourceAuthor} onChange={e => setResourceAuthor(e.target.value)} placeholder="Ex: Jotasiete" />
+                        </div>
+                    </div>
+
+                    <button onClick={handleAddResource} className="bg-[var(--color-wurm-accent)] text-black font-bold text-sm px-6 py-2 rounded-lg hover:brightness-110 transition-all">
+                        Adicionar Recurso
+                    </button>
+                    {resourceMsg && <p className={`text-xs ${resourceMsg.startsWith('✅') ? 'text-green-400' : 'text-red-400'}`}>{resourceMsg}</p>}
+
+                    {/* Resources list */}
+                    {resources.length > 0 && (
+                        <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
+                            <h3 className="text-sm font-bold text-white mb-3">Links Cadastrados ({resources.length})</h3>
+                            <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2">
+                                {resources.map(r => (
+                                    <div key={r.id} className="flex items-center justify-between p-3 rounded-lg border border-white/10 bg-black/20 text-sm">
+                                        <div className="flex flex-col gap-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-mono text-[var(--color-wurm-muted)] uppercase tracking-wider">
+                                                    {r.type === 'tool' && '🔨 Ferramenta'}
+                                                    {r.type === 'map' && '🗺️ Mapa'}
+                                                    {r.type === 'sheet' && '📊 Planilha'}
+                                                    {r.type === 'doc' && '📜 Documento'}
+                                                    {r.type === 'external' && '🔗 Link'}
+                                                </span>
+                                                <span className="font-bold text-white truncate">{r.name}</span>
+                                            </div>
+                                            <div className="text-xs text-[var(--color-wurm-muted)] truncate font-mono">
+                                                {r.url} {r.author && ` · Por ${r.author}`}
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => handleDeleteResource(r.id)}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all text-xs shrink-0"
+                                            title="Deletar este recurso"
+                                        >
+                                            <X size={14} /> Excluir
+                                        </button>
                                     </div>
                                 ))}
                             </div>
