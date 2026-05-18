@@ -63,9 +63,9 @@ export function MuralWidget({ className }: { className?: string }) {
             ) : (
                 <div className="flex flex-col divide-y divide-white/[0.04]">
                     {orders.map(order => (
-                        <div key={order.id} className="flex items-center gap-2 py-1.5 text-[10px] font-mono">
+                        <div key={order.id} className="flex items-start gap-2 py-2 text-[10px] font-mono">
                             {/* Intent indicator */}
-                            <span className={`flex items-center gap-0.5 font-bold flex-shrink-0 ${
+                            <span className={`flex items-center gap-0.5 font-bold flex-shrink-0 pt-0.5 ${
                                 order.intent === 'buy' ? 'text-red-400' : 'text-green-400'
                             }`}>
                                 {order.intent === 'buy'
@@ -76,20 +76,27 @@ export function MuralWidget({ className }: { className?: string }) {
                             </span>
 
                             {/* Provider */}
-                            <span className="text-[var(--color-wurm-muted)] flex-shrink-0 w-14 truncate">
+                            <span className="text-[var(--color-wurm-muted)] flex-shrink-0 w-14 truncate pt-0.5">
                                 {order.provider}
                             </span>
 
-                            {/* Item */}
-                            <span className="text-white flex-1 truncate">{order.title}</span>
+                            {/* Item & Note */}
+                            <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                <span className="text-white truncate font-medium">{order.title}</span>
+                                {order.description && (
+                                    <span className="text-[9px] text-[var(--color-wurm-muted)]/90 italic truncate mt-0.5 block leading-normal" title={order.description}>
+                                        {order.description}
+                                    </span>
+                                )}
+                            </div>
 
                             {/* Price */}
-                            <span className="text-[#9ab09a] flex-shrink-0 font-bold">
+                            <span className="text-[#9ab09a] flex-shrink-0 font-bold pt-0.5">
                                 {order.price}
                             </span>
 
                             {/* Relative time */}
-                            <span className="text-[var(--color-wurm-muted)] flex-shrink-0 flex items-center gap-0.5 opacity-60">
+                            <span className="text-[var(--color-wurm-muted)] flex-shrink-0 flex items-center gap-0.5 opacity-60 pt-0.5">
                                 <Clock size={8} />
                                 {relativeTime(order.created_at, lang)}
                             </span>
