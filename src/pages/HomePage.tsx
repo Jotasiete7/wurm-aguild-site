@@ -4,7 +4,7 @@ import { LanguageSwitch } from '@ecossistema-guilda/modules/LanguageSwitch';
 import agStyles from '@ecossistema-guilda/layout/Header.module.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useEffect, useState } from 'react';
-import { Gavel, Activity, Pickaxe, Hammer, BookOpen, BookMarked, CalendarClock, Hourglass } from 'lucide-react';
+import { Gavel, Pickaxe, Hammer, BookOpen, BookMarked, CalendarClock, Hourglass } from 'lucide-react';
 
 import { AnalyticsWidget } from '../components/widgets/AnalyticsWidget';
 import { BadgesWidget } from '../components/widgets/BadgesWidget';

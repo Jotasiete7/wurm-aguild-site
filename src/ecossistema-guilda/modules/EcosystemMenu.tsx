@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Network, Home, BookOpen, Pickaxe, LineChart, BookMarked, Hammer, Shield, Gavel } from 'lucide-react';
+import { Network, Home, BookOpen, Pickaxe, LineChart, BookMarked, Hammer, Shield, Gavel, Hourglass } from 'lucide-react';
 
 // Common types to avoid dependencies
 interface EcosystemTool {
@@ -45,6 +45,12 @@ const ECOSYSTEM_TOOLS: EcosystemTool[] = [
         label: 'Carpentry',
         href: 'https://wurm-carpentry-tool.pages.dev',
         icon: Hammer,
+    },
+    {
+        id: 'wall-decay',
+        label: { en: 'Wall Decay', pt: 'Dano de Muralhas' },
+        href: 'https://wurm-wall-decay-calculator.pages.dev',
+        icon: Hourglass,
     },
     {
         id: 'auction',

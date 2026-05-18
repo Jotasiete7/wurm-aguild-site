@@ -12,7 +12,7 @@ export function GalleryWidget() {
     const [activeIndex, setActiveIndex] = useState(0); // for the carousel
     const [voted, setVoted] = useState<Set<string>>(new Set());
     const [settings, setSettings] = useState<Record<string, string>>({});
-    const { t, language } = useLanguage();
+    const { t, lang: language } = useLanguage();
 
     useEffect(() => {
         getGalleryPhotos().then(p => { 
