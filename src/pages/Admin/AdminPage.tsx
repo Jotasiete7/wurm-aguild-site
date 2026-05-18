@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { createPoll } from '../../services/hubPolls';
 import { addPhoto } from '../../services/hubGallery';
 import { setStatus, clearStatus } from '../../services/hubStatus';
-import { addQuote, getAllQuotes, toggleQuote, type HubQuote } from '../../services/hubQuotes';
+import { addQuote, getAllQuotes, toggleQuote, deleteQuote, addQuotesBulk, type HubQuote } from '../../services/hubQuotes';
 import { addFeedItem, type HubFeedItem } from '../../services/hubFeed';
 import { addOrder, closeOrder, getAllOrders, type ServiceOrder, getAllResources, addResource, deleteResource, type PublicResource } from '../../services/hubMural';
 import { getSettings, updateSettings } from '../../services/hubSettings';
@@ -151,6 +151,66 @@ export function AdminPage() {
     const handleToggleQuote = async (id: string, current: boolean) => {
         await toggleQuote(id, !current);
         getAllQuotes().then(setQuotes);
+    };
+
+    const handleDeleteQuote = async (id: string) => {
+        if (confirm('Tem certeza que deseja excluir esta frase?')) {
+            const ok = await deleteQuote(id);
+            if (ok) getAllQuotes().then(setQuotes);
+        }
+    };
+
+    const handleBulkUploadQuotes = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const text = e.target?.result as string;
+            if (!text) return;
+
+            const lines = text.split('\n');
+            const newQuotes: Omit<HubQuote, 'id' | 'is_active' | 'created_at'>[] = [];
+
+            for (const rawLine of lines) {
+                const line = rawLine.trim();
+                if (!line) continue;
+
+                const parts = line.split('|').map(p => p.trim());
+                if (parts.length === 3) {
+                    newQuotes.push({
+                        text_pt: parts[0],
+                        text_en: parts[1] || null,
+                        author: parts[2] || 'A Guilda'
+                    });
+                } else if (parts.length === 2) {
+                    newQuotes.push({
+                        text_pt: parts[0],
+                        text_en: null,
+                        author: parts[1] || 'A Guilda'
+                    });
+                } else {
+                    newQuotes.push({
+                        text_pt: line,
+                        text_en: null,
+                        author: 'A Guilda'
+                    });
+                }
+            }
+
+            if (newQuotes.length === 0) {
+                setQuoteFeedback('❌ Nenhuma frase válida encontrada no arquivo.');
+                return;
+            }
+
+            const ok = await addQuotesBulk(newQuotes);
+            setQuoteFeedback(ok ? `✅ ${newQuotes.length} frases importadas com sucesso!` : '❌ Erro ao importar frases.');
+            if (ok) {
+                getAllQuotes().then(setQuotes);
+                event.target.value = '';
+            }
+        };
+        reader.readAsText(file);
     };
 
     const handleAddPhoto = async () => {
@@ -673,32 +733,71 @@ export function AdminPage() {
                     </button>
                     {quoteFeedback && <p className={`text-xs ${quoteFeedback.startsWith('✅') ? 'text-green-400' : 'text-red-400'}`}>{quoteFeedback}</p>}
 
+                    {/* Importação em Lote (.txt) */}
+                    <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
+                        <h3 className="text-xs font-bold text-white uppercase tracking-wider">Importação em Lote (.txt)</h3>
+                        <p className="text-[10px] text-[var(--color-wurm-muted)] leading-relaxed">
+                            Suba um arquivo <code className="bg-black/40 px-1 py-0.5 rounded font-mono text-[var(--color-wurm-accent)]">.txt</code> com uma frase por linha.
+                            <br />
+                            Formatos aceitos por linha:
+                            <br />
+                            • <code className="bg-black/20 px-1 font-mono text-white">Frase em Português | Tradução em Inglês | Autor</code>
+                            <br />
+                            • <code className="bg-black/20 px-1 font-mono text-white">Frase em Português | Autor</code>
+                            <br />
+                            • <code className="bg-black/20 px-1 font-mono text-white">Apenas a Frase em Português</code> (Autor padrão será "A Guilda")
+                        </p>
+                        <div className="relative flex items-center justify-center border border-dashed border-white/20 hover:border-[var(--color-wurm-accent)]/50 rounded-lg p-4 bg-black/20 transition-all cursor-pointer">
+                            <input 
+                                type="file" 
+                                accept=".txt" 
+                                onChange={handleBulkUploadQuotes} 
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                            />
+                            <div className="text-center text-xs text-white/60">
+                                📤 Selecione ou arraste o arquivo <span className="text-[var(--color-wurm-accent)] font-bold">.txt</span>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Lista de quotes */}
                     {quotes.length > 0 && (
-                        <div className="mt-4 space-y-2 border-t border-white/5 pt-4">
-                            <p className={labelCls}>{quotes.length} frase(s) cadastradas</p>
-                            {quotes.map(q => (
-                                <div key={q.id} className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
-                                    q.is_active
-                                        ? 'border-white/10 bg-white/[0.02]'
-                                        : 'border-white/5 bg-white/[0.01] opacity-40'
-                                }`}>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs text-white m-0 font-serif italic leading-relaxed">"{q.text_pt}"</p>
-                                        <p className="text-[9px] font-mono text-[var(--color-wurm-muted)] mt-1 m-0">— {q.author}</p>
+                        <div className="mt-6 space-y-2 border-t border-white/10 pt-4">
+                            <p className={labelCls}>{quotes.length} frase(s) cadastrada(s)</p>
+                            <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-2">
+                                {quotes.map(q => (
+                                    <div key={q.id} className={`flex items-start gap-3 p-3 rounded-lg border transition-all ${
+                                        q.is_active
+                                            ? 'border-white/10 bg-white/[0.02]'
+                                            : 'border-white/5 bg-white/[0.01] opacity-40'
+                                    }`}>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-xs text-white m-0 font-serif italic leading-relaxed">"{q.text_pt}"</p>
+                                            {q.text_en && <p className="text-[11px] text-[var(--color-wurm-muted)] m-0 font-serif italic leading-relaxed mt-1">"{q.text_en}"</p>}
+                                            <p className="text-[9px] font-mono text-[var(--color-wurm-muted)] mt-1.5 m-0">— {q.author}</p>
+                                        </div>
+                                        <div className="flex gap-2 flex-shrink-0">
+                                            <button
+                                                onClick={() => handleToggleQuote(q.id, q.is_active)}
+                                                className={`text-[9px] font-mono uppercase px-2 py-1 rounded border flex-shrink-0 transition-all ${
+                                                    q.is_active
+                                                        ? 'border-green-500/30 text-green-400 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30'
+                                                        : 'border-white/10 text-[var(--color-wurm-muted)] hover:border-green-500/30 hover:text-green-400'
+                                                }`}
+                                            >
+                                                {q.is_active ? 'ativa' : 'inativa'}
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteQuote(q.id)}
+                                                className="text-[9px] font-mono uppercase px-2 py-1 rounded border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all flex-shrink-0"
+                                                title="Excluir frase permanentemente"
+                                            >
+                                                Excluir
+                                            </button>
+                                        </div>
                                     </div>
-                                    <button
-                                        onClick={() => handleToggleQuote(q.id, q.is_active)}
-                                        className={`text-[9px] font-mono uppercase px-2 py-1 rounded border flex-shrink-0 transition-all ${
-                                            q.is_active
-                                                ? 'border-green-500/30 text-green-400 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30'
-                                                : 'border-white/10 text-[var(--color-wurm-muted)] hover:border-green-500/30 hover:text-green-400'
-                                        }`}
-                                    >
-                                        {q.is_active ? 'ativa' : 'inativa'}
-                                    </button>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     )}
                 </section>

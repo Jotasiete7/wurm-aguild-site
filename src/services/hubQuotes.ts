@@ -50,3 +50,18 @@ export async function toggleQuote(id: string, is_active: boolean): Promise<boole
         .eq('id', id);
     return !error;
 }
+
+export async function deleteQuote(id: string): Promise<boolean> {
+    const { error } = await supabase
+        .from('hub_quotes')
+        .delete()
+        .eq('id', id);
+    return !error;
+}
+
+export async function addQuotesBulk(quotes: Omit<HubQuote, 'id' | 'is_active' | 'created_at'>[]): Promise<boolean> {
+    const { error } = await supabase
+        .from('hub_quotes')
+        .insert(quotes);
+    return !error;
+}
