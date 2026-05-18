@@ -24,10 +24,10 @@ CREATE POLICY "Public read active status" ON hub_system_status
     FOR SELECT USING (is_active = true);
 
 CREATE POLICY "Allow all insert status" ON hub_system_status
-    FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+    FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
 
 CREATE POLICY "Allow all update status" ON hub_system_status
-    FOR UPDATE TO authenticated USING (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+    FOR UPDATE TO authenticated USING (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
 
 
 -- 2. FRASES DO DIA (QUOTES)
@@ -51,13 +51,13 @@ CREATE POLICY "Public read active quotes" ON hub_quotes
     FOR SELECT USING (is_active = true);
 
 CREATE POLICY "Allow insert quotes" ON hub_quotes
-    FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+    FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
 
 CREATE POLICY "Allow update quotes" ON hub_quotes
-    FOR UPDATE TO authenticated USING (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+    FOR UPDATE TO authenticated USING (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
 
 CREATE POLICY "Allow delete quotes" ON hub_quotes
-    FOR DELETE TO authenticated USING (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+    FOR DELETE TO authenticated USING (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
 
 -- Seed de Frases Iniciais
 INSERT INTO hub_quotes (text_pt, text_en, author) VALUES
@@ -92,10 +92,10 @@ CREATE POLICY "Public read active feed" ON hub_feed
     FOR SELECT USING (is_active = true);
 
 CREATE POLICY "Allow insert feed" ON hub_feed
-    FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+    FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
 
 CREATE POLICY "Allow update feed" ON hub_feed
-    FOR UPDATE TO authenticated USING (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+    FOR UPDATE TO authenticated USING (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
 
 
 -- 4. HUB SETTINGS (CONFIGURAÇÕES DINÂMICAS DOS CARDS)
@@ -115,10 +115,10 @@ CREATE POLICY "Public read settings" ON hub_settings
     FOR SELECT USING (true);
 
 CREATE POLICY "Allow upsert settings" ON hub_settings
-    FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+    FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
 
 CREATE POLICY "Allow update settings" ON hub_settings
-    FOR UPDATE TO authenticated USING (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+    FOR UPDATE TO authenticated USING (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
 
 -- Seed de Configurações Iniciais da Galeria
 INSERT INTO hub_settings (key, value) VALUES
@@ -172,8 +172,8 @@ CREATE POLICY "Public read poll options" ON hub_poll_options FOR SELECT USING (t
 CREATE POLICY "Public read votes" ON hub_poll_votes FOR SELECT USING (true);
 CREATE POLICY "Public insert votes" ON hub_poll_votes FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Allow insert polls" ON hub_polls FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
-CREATE POLICY "Allow insert options" ON hub_poll_options FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+CREATE POLICY "Allow insert polls" ON hub_polls FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
+CREATE POLICY "Allow insert options" ON hub_poll_options FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
 
 
 -- 6. GALERIA DE FOTOS (PHOTOS)
@@ -209,7 +209,7 @@ CREATE POLICY "Public read visible photos" ON hub_photos FOR SELECT USING (is_vi
 CREATE POLICY "Public insert photo votes" ON hub_photo_votes FOR INSERT WITH CHECK (true);
 CREATE POLICY "Public read photo votes" ON hub_photo_votes FOR SELECT USING (true);
 
-CREATE POLICY "Allow insert photos" ON hub_photos FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+CREATE POLICY "Allow insert photos" ON hub_photos FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
 
 
 -- 7. FUNÇÕES RPC (VOTAÇÃO SEGURA)
@@ -248,6 +248,6 @@ DROP POLICY IF EXISTS "Allow delete resources" ON resources;
 DROP POLICY IF EXISTS "Allow update resources" ON resources;
 
 CREATE POLICY "Public read resources" ON resources FOR SELECT USING (true);
-CREATE POLICY "Allow insert resources" ON resources FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
-CREATE POLICY "Allow delete resources" ON resources FOR DELETE TO authenticated USING (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
-CREATE POLICY "Allow update resources" ON resources FOR UPDATE TO authenticated USING (auth.jwt() ->> 'email' = 'jaimeengelmann@gmail.com');
+CREATE POLICY "Allow insert resources" ON resources FOR INSERT TO authenticated WITH CHECK (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
+CREATE POLICY "Allow delete resources" ON resources FOR DELETE TO authenticated USING (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
+CREATE POLICY "Allow update resources" ON resources FOR UPDATE TO authenticated USING (auth.jwt() ->> 'email' IN ('jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'));
