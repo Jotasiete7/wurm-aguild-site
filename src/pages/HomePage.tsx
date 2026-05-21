@@ -4,7 +4,7 @@ import { LanguageSwitch } from '@ecossistema-guilda/modules/LanguageSwitch';
 import agStyles from '@ecossistema-guilda/layout/Header.module.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useEffect, useState } from 'react';
-import { Gavel, Pickaxe, Hammer, BookOpen, BookMarked, CalendarClock, Hourglass } from 'lucide-react';
+import { Gavel, Pickaxe, Hammer, BookOpen, BookMarked, CalendarClock, Hourglass, Wrench } from 'lucide-react';
 
 import { AnalyticsWidget } from '../components/widgets/AnalyticsWidget';
 import { BadgesWidget } from '../components/widgets/BadgesWidget';
@@ -38,6 +38,7 @@ const TOOL_DESCRIPTIONS: Record<string, { pt: string; en: string }> = {
     Recipes:   { pt: 'Encontre receitas e ingredientes de culinária', en: 'Find cooking recipes & ingredients' },
     Liturgy:   { pt: 'Rezas, favores e rituais de sacerdotes', en: 'Prayers, favors & priest rituals' },
     'Wall Decay': { pt: 'Calculadora de queda de muralhas e deeds', en: 'Wall decay and deed collapse calculator' },
+    Auctions:  { pt: 'Mercado ao vivo de compra e venda', en: 'Live buy & sell marketplace' },
 };
 
 export function HomePage() {
@@ -149,33 +150,31 @@ export function HomePage() {
                         <MuralWidget className="md:col-span-2" />
                         <GalleryWidget />
 
-                        {/* ROW 3: Poll (1 col) + Resources (1 col) + Auctions (1 col) */}
+                        {/* ROW 3: Poll (1 col) + Resources (1 col) + Guild Utilities (1 col) */}
                         <PollWidget />
                         <ResourcesWidget />
 
-                        <div className="opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                        <div className="transition-all duration-500">
                             <ToolWidget
-                                title={t('Auctions', 'Leilões')}
-                                subtitle={t('Live Marketplace', 'Mercado ao Vivo')}
-                                icon={Gavel}
-                                href="https://wurm-auction-helper.pages.dev"
-                                status="coming-soon"
+                                title="Guild Utilities"
+                                subtitle={t('Micro Tools Suite', 'Suíte de Microferramentas')}
+                                icon={Wrench}
+                                href="/guildutilities"
+                                status="active"
                             >
                                 <div className="flex flex-col gap-3">
                                     <p className="text-sm text-[var(--color-wurm-muted)] leading-relaxed m-0">
                                         {t(
-                                            'Soon you\'ll see live buy & sell orders from guild members here.',
-                                            'Em breve você verá ordens de compra e venda ao vivo dos membros da Guilda aqui.'
+                                            'A collection of operational micro-tools, timers and widgets for your daily grind.',
+                                            'Uma coleção de microferramentas operacionais, timers e widgets para o seu dia a dia.'
                                         )}
                                     </p>
-                                    <a
-                                        href="https://wurm-auction-helper.pages.dev"
-                                        target="_blank"
-                                        rel="noreferrer"
+                                    <NavLink
+                                        to="/guildutilities"
                                         className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-wurm-accent)] hover:brightness-125 transition-all inline-flex items-center gap-1.5"
                                     >
-                                        {t('Open Auction Helper →', 'Acessar Ferramenta de Leilões →')}
-                                    </a>
+                                        {t('Access Suite →', 'Acessar Suíte →')}
+                                    </NavLink>
                                 </div>
                             </ToolWidget>
                         </div>
@@ -183,26 +182,29 @@ export function HomePage() {
                     </div>
 
                     {/* SECONDARY TOOLS ROW */}
-                    <div className="mt-5 grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div className="mt-5 grid grid-cols-2 md:grid-cols-3 gap-4">
                         {([
                             { title: 'Mining',    icon: Pickaxe,    href: 'https://wurm-mining-tool.pages.dev' },
                             { title: 'Carpentry', icon: Hammer,     href: 'https://wurm-carpentry-tool.pages.dev' },
                             { title: 'Recipes',   icon: BookOpen,   href: 'https://wurm-recipe-tool.pages.dev' },
                             { title: 'Liturgy',   icon: BookMarked, href: 'https://wurm-liturgy.pages.dev' },
                             { title: 'Wall Decay',icon: Hourglass,  href: 'https://wurm-wall-decay-calculator.pages.dev' },
+                            { title: 'Auctions',  icon: Gavel,      href: 'https://wurm-auction-helper.pages.dev' },
                         ] as const).map(tool => {
                             const desc = TOOL_DESCRIPTIONS[tool.title];
                             return (
-                                <ToolWidget
-                                    key={tool.title}
-                                    title={tool.title}
-                                    icon={tool.icon}
-                                    href={tool.href}
-                                >
-                                    <p className="text-xs text-[var(--color-wurm-muted)] m-0 leading-relaxed">
-                                        {lang === 'pt' ? desc.pt : desc.en}
-                                    </p>
-                                </ToolWidget>
+                                <div key={tool.title} className={tool.title === 'Auctions' ? "opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500" : ""}>
+                                    <ToolWidget
+                                        title={tool.title}
+                                        icon={tool.icon}
+                                        href={tool.href}
+                                        status={tool.title === 'Auctions' ? 'coming-soon' : 'active'}
+                                    >
+                                        <p className="text-xs text-[var(--color-wurm-muted)] m-0 leading-relaxed">
+                                            {lang === 'pt' ? desc.pt : desc.en}
+                                        </p>
+                                    </ToolWidget>
+                                </div>
                             );
                         })}
                     </div>
