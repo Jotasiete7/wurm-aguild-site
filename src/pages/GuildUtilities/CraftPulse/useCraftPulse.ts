@@ -26,9 +26,9 @@ export function useCraftPulse() {
             cycles: 0,
             flashIntensity: 3,
             warnAt: 5,
-            alertMode: 'flash',
+            alertMode: 'both',
             soundType: 'beep',
-            soundVolume: 5,
+            soundVolume: 10,
             autoRepeat: true,
             showMs: true,
             showBadge: true
