@@ -6,7 +6,7 @@ import { addQuote, getAllQuotes, toggleQuote, deleteQuote, addQuotesBulk, type H
 import { addFeedItem, type HubFeedItem } from '../../services/hubFeed';
 import { addOrder, closeOrder, getAllOrders, type ServiceOrder, getAllResources, addResource, deleteResource, type PublicResource } from '../../services/hubMural';
 import { getSettings, updateSettings } from '../../services/hubSettings';
-import { Plus, X, Lock, Radio, Quote, Activity, ScrollText, CheckCircle, Settings, Link as LinkIcon, Camera } from 'lucide-react';
+import { Plus, X, Lock, Radio, Quote, Activity, ScrollText, CheckCircle, Link as LinkIcon, Camera } from 'lucide-react';
 import { useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 
@@ -810,6 +810,7 @@ export function AdminPage() {
                         Adicionar Foto
                     </button>
                     {photoMsg && <p className={`text-xs ${photoMsg.startsWith('✅') ? 'text-green-400' : 'text-red-400'}`}>{photoMsg}</p>}
+                    </div>
 
                     {/* Lista de fotos */}
                     {photos.length > 0 && (
