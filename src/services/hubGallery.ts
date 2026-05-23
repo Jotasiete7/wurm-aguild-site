@@ -16,7 +16,7 @@ export async function getGalleryPhotos(event_tag?: string): Promise<HubPhoto[]> 
         .from('hub_photos')
         .select('*')
         .eq('is_visible', true)
-        .order('votes', { ascending: false });
+        .order('created_at', { ascending: false });
 
     if (event_tag) query = query.eq('event_tag', event_tag);
 

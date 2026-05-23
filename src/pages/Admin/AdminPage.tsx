@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createPoll } from '../../services/hubPolls';
-import { addPhoto } from '../../services/hubGallery';
+import { addPhoto, getGalleryPhotos, hidePhoto, type HubPhoto } from '../../services/hubGallery';
 import { setStatus, clearStatus } from '../../services/hubStatus';
 import { addQuote, getAllQuotes, toggleQuote, deleteQuote, addQuotesBulk, type HubQuote } from '../../services/hubQuotes';
 import { addFeedItem, type HubFeedItem } from '../../services/hubFeed';
@@ -85,6 +85,7 @@ export function AdminPage() {
             getAllOrders().then(setOrders);
             getSettings().then(setHubSettings);
             getAllResources().then(setResources);
+            getGalleryPhotos().then(setPhotos);
         }
     }, [auth]);
 
@@ -105,6 +106,7 @@ export function AdminPage() {
     const [photoDeed, setPhotoDeed] = useState('');
     const [photoTag, setPhotoTag] = useState('Concurso 2026');
     const [photoMsg, setPhotoMsg] = useState('');
+    const [photos, setPhotos] = useState<HubPhoto[]>([]);
 
     // Feed form
     const [feedType, setFeedType] = useState<HubFeedItem['type']>('update');
@@ -330,7 +332,22 @@ export function AdminPage() {
             event_tag: photoTag || 'Concurso 2026',
         } as any);
         setPhotoMsg(ok ? '✅ Foto adicionada!' : '❌ Erro ao adicionar foto.');
-        if (ok) { setPhotoUrl(''); setPhotoTitle(''); setPhotoAuthor(''); setPhotoDeed(''); }
+        if (ok) { 
+            setPhotoUrl(''); setPhotoTitle(''); setPhotoAuthor(''); setPhotoDeed(''); 
+            getGalleryPhotos().then(setPhotos);
+        }
+    };
+
+    const handleHidePhoto = async (id: string) => {
+        if (confirm('Deseja ocultar esta foto da galeria?')) {
+            const ok = await hidePhoto(id);
+            if (ok) {
+                setPhotoMsg('✅ Foto ocultada com sucesso!');
+                getGalleryPhotos().then(setPhotos);
+            } else {
+                setPhotoMsg('❌ Erro ao ocultar foto.');
+            }
+        }
     };
 
     const handleAddFeed = async () => {
@@ -826,6 +843,44 @@ export function AdminPage() {
                         Adicionar Foto
                     </button>
                     {photoMsg && <p className={`text-xs ${photoMsg.startsWith('✅') ? 'text-green-400' : 'text-red-400'}`}>{photoMsg}</p>}
+
+                    {/* Lista de fotos */}
+                    {photos.length > 0 && (
+                        <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
+                            <h3 className="text-sm font-bold text-white mb-3">Fotos Publicadas ({photos.length})</h3>
+                            <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-2">
+                                {photos.map(p => (
+                                    <div key={p.id} className="flex items-center justify-between p-3 rounded-lg border border-white/10 bg-black/20 text-sm">
+                                        <div className="flex items-center gap-4 min-w-0">
+                                            <img src={p.image_url} alt="Thumbnail" className="w-16 h-10 object-cover rounded opacity-80" onError={e => (e.target as HTMLImageElement).style.display = 'none'} />
+                                            <div className="flex flex-col gap-1 min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white px-1.5 py-0.5 rounded">
+                                                        {p.event_tag}
+                                                    </span>
+                                                    <span className="font-bold text-white truncate">{p.deed_name || p.title || 'Sem título'}</span>
+                                                </div>
+                                                <div className="text-xs text-[var(--color-wurm-muted)] truncate font-mono flex gap-2">
+                                                    <span>Por {p.author_name || 'Desconhecido'}</span>
+                                                    <span>·</span>
+                                                    <span className="text-red-400">♥ {p.votes}</span>
+                                                    <span>·</span>
+                                                    <span>{new Date(p.created_at).toLocaleDateString('pt-BR')}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => handleHidePhoto(p.id)}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all text-xs shrink-0"
+                                            title="Ocultar foto da galeria"
+                                        >
+                                            <X size={14} /> Ocultar
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </section>
 
                 {/* ── QUOTES SECTION ── */}

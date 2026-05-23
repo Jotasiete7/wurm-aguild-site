@@ -73,9 +73,15 @@ export function GalleryWidget() {
                             />
                             
                             {/* Overlay Info */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-4">
+                                {photos[activeIndex].event_tag && (
+                                    <span className="self-start text-[9px] font-bold uppercase tracking-wider bg-white/20 text-white px-2 py-0.5 rounded backdrop-blur-sm mb-1.5">
+                                        {photos[activeIndex].event_tag}
+                                    </span>
+                                )}
                                 <h3 className="text-white font-bold text-lg md:text-xl leading-tight truncate m-0 border-none pt-0">
-                                    {photos[activeIndex].deed_name ?? photos[activeIndex].title ?? '?'}
+                                    {photos[activeIndex].deed_name || photos[activeIndex].title || '?'}
+                                    {photos[activeIndex].deed_name && photos[activeIndex].title && <span className="opacity-80 font-normal text-sm md:text-base ml-2">— {photos[activeIndex].title}</span>}
                                 </h3>
                                 {photos[activeIndex].author_name && (
                                     <p className="text-xs text-white/70 m-0 mt-1 font-mono">por {photos[activeIndex].author_name}</p>
@@ -171,8 +177,14 @@ export function GalleryWidget() {
                         />
                         <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-lg px-6 py-4 rounded-2xl flex items-center gap-8 border border-white/10 max-w-[90vw]">
                             <div className="min-w-0">
+                                {currentLightbox.event_tag && (
+                                    <span className="inline-block text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white px-2 py-0.5 rounded backdrop-blur-sm mb-1">
+                                        {currentLightbox.event_tag}
+                                    </span>
+                                )}
                                 <h3 className="text-white font-bold text-xl m-0 border-none pt-0 truncate">
-                                    {currentLightbox.deed_name ?? currentLightbox.title ?? t('Unnamed Deed', 'Deed Sem Nome')}
+                                    {currentLightbox.deed_name || currentLightbox.title || t('Unnamed Deed', 'Deed Sem Nome')}
+                                    {currentLightbox.deed_name && currentLightbox.title && <span className="opacity-80 font-normal text-base ml-2">— {currentLightbox.title}</span>}
                                 </h3>
                                 {currentLightbox.author_name && (
                                     <p className="text-[var(--color-wurm-muted)] text-sm font-mono m-0 truncate">
