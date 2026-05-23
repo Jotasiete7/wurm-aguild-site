@@ -6,7 +6,7 @@ import { addQuote, getAllQuotes, toggleQuote, deleteQuote, addQuotesBulk, type H
 import { addFeedItem, type HubFeedItem } from '../../services/hubFeed';
 import { addOrder, closeOrder, getAllOrders, type ServiceOrder, getAllResources, addResource, deleteResource, type PublicResource } from '../../services/hubMural';
 import { getSettings, updateSettings } from '../../services/hubSettings';
-import { Plus, X, Lock, Radio, Quote, Activity, ScrollText, CheckCircle, Settings, Link as LinkIcon } from 'lucide-react';
+import { Plus, X, Lock, Radio, Quote, Activity, ScrollText, CheckCircle, Settings, Link as LinkIcon, Camera } from 'lucide-react';
 import { useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 
@@ -443,71 +443,6 @@ export function AdminPage() {
                     </button>
                 </div>
 
-                {/* ── HUB SETTINGS SECTION ── */}
-                <section className="glass-panel p-6 rounded-2xl space-y-4 border border-[var(--color-wurm-accent)]/20">
-                    <h2 className="font-serif text-xl text-white m-0 border-none pt-0 flex items-center gap-2">
-                        <Settings size={18} className="text-[var(--color-wurm-accent)]" /> Configurações do HUB
-                    </h2>
-                    <p className="text-[10px] text-[var(--color-wurm-muted)] font-mono uppercase tracking-widest m-0">
-                        Personalize os títulos e subtítulos dos cards dinâmicos.
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Gallery Card Config */}
-                        <div className="space-y-4">
-                            <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/5 pb-2">Card de Galeria</h3>
-                            <div className="space-y-3">
-                                <div>
-                                    <label className={labelCls}>Título (PT)</label>
-                                    <input 
-                                        className={inputCls} 
-                                        value={hubSettings.gallery_card_title_pt} 
-                                        onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_title_pt: e.target.value }))} 
-                                        placeholder="Fotografia de Deeds" 
-                                    />
-                                </div>
-                                <div>
-                                    <label className={labelCls}>Title (EN)</label>
-                                    <input 
-                                        className={inputCls} 
-                                        value={hubSettings.gallery_card_title_en} 
-                                        onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_title_en: e.target.value }))} 
-                                        placeholder="Deed Photography" 
-                                    />
-                                </div>
-                                <div>
-                                    <label className={labelCls}>Subtítulo (PT)</label>
-                                    <input 
-                                        className={inputCls} 
-                                        value={hubSettings.gallery_card_subtitle_pt} 
-                                        onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_subtitle_pt: e.target.value }))} 
-                                        placeholder="Concurso da Comunidade" 
-                                    />
-                                </div>
-                                <div>
-                                    <label className={labelCls}>Subtitle (EN)</label>
-                                    <input 
-                                        className={inputCls} 
-                                        value={hubSettings.gallery_card_subtitle_en} 
-                                        onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_subtitle_en: e.target.value }))} 
-                                        placeholder="Community Contest" 
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        {/* Future settings can go here */}
-                        <div className="space-y-4 opacity-50 select-none">
-                            <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/5 pb-2">Outros Cards</h3>
-                            <p className="text-[10px] text-[var(--color-wurm-muted)] italic">Mais configurações em breve...</p>
-                        </div>
-                    </div>
-
-                    <button onClick={handleUpdateHubSettings} className="bg-[var(--color-wurm-accent)] text-black font-bold text-sm px-6 py-2 rounded-lg hover:brightness-110 transition-all">
-                        Salvar Configurações
-                    </button>
-                    {settingsMsg && <p className={`text-xs ${settingsMsg.startsWith('✅') ? 'text-green-400' : 'text-red-400'}`}>{settingsMsg}</p>}
-                </section>
 
                 {/* ── SYSTEM STATUS SECTION ── */}
                 <section className="glass-panel p-6 rounded-2xl space-y-4">
@@ -807,8 +742,40 @@ export function AdminPage() {
                 </section>
 
                 {/* ── GALLERY SECTION ── */}
-                <section className="glass-panel p-6 rounded-2xl space-y-4">
-                    <h2 className="font-serif text-xl text-white m-0 border-none pt-0">Adicionar Foto</h2>
+                <section className="glass-panel p-6 rounded-2xl space-y-4 border border-[var(--color-wurm-accent)]/20">
+                    <h2 className="font-serif text-xl text-white m-0 border-none pt-0 flex items-center gap-2">
+                        <Camera size={18} className="text-[var(--color-wurm-accent)]" /> Gerenciar Galeria de Fotos
+                    </h2>
+
+                    {/* Gallery Card Configs */}
+                    <div className="bg-black/20 p-4 rounded-xl border border-white/5 space-y-3 mb-6">
+                        <h3 className="text-[10px] font-bold text-[var(--color-wurm-muted)] uppercase tracking-wider">Configurações do Card Principal</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className={labelCls}>Título (PT / EN)</label>
+                                <div className="flex gap-2">
+                                    <input className={inputCls} value={hubSettings.gallery_card_title_pt} onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_title_pt: e.target.value }))} placeholder="Fotografia de Deeds" />
+                                    <input className={inputCls} value={hubSettings.gallery_card_title_en} onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_title_en: e.target.value }))} placeholder="Deed Photography" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className={labelCls}>Subtítulo (PT / EN)</label>
+                                <div className="flex gap-2">
+                                    <input className={inputCls} value={hubSettings.gallery_card_subtitle_pt} onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_subtitle_pt: e.target.value }))} placeholder="Concurso da Comunidade" />
+                                    <input className={inputCls} value={hubSettings.gallery_card_subtitle_en} onChange={e => setHubSettings(prev => ({ ...prev, gallery_card_subtitle_en: e.target.value }))} placeholder="Community Contest" />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 pt-2">
+                            <button onClick={handleUpdateHubSettings} className="bg-white/10 text-white font-bold text-[10px] uppercase tracking-wider px-4 py-2 rounded hover:bg-white/20 transition-all">
+                                Salvar Títulos do Card
+                            </button>
+                            {settingsMsg && <span className={`text-[10px] ${settingsMsg.startsWith('✅') ? 'text-green-400' : 'text-red-400'}`}>{settingsMsg}</span>}
+                        </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-white/10">
+                        <h3 className="text-sm font-bold text-white mb-3">Adicionar Nova Foto</h3>
 
                     <div>
                         <label className={labelCls}>URL da Imagem *</label>
