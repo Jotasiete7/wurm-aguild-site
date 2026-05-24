@@ -69,7 +69,10 @@ export function GalleryWidget() {
                             <img
                                 src={photos[activeIndex].image_url}
                                 alt={photos[activeIndex].deed_name ?? 'Deed'}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover/carousel:scale-105"
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover/carousel:scale-105 select-none"
+                                loading="lazy"
+                                onContextMenu={(e) => e.preventDefault()}
+                                draggable={false}
                             />
                             
                             {/* Overlay Info */}
@@ -173,7 +176,10 @@ export function GalleryWidget() {
                         <img
                             src={currentLightbox.image_url}
                             alt={currentLightbox.deed_name ?? ''}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain select-none"
+                            loading="lazy"
+                            onContextMenu={(e) => e.preventDefault()}
+                            draggable={false}
                         />
                         <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-lg px-6 py-4 rounded-2xl flex items-center gap-8 border border-white/10 max-w-[90vw]">
                             <div className="min-w-0">

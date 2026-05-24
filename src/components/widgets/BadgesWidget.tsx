@@ -52,7 +52,10 @@ export function BadgesWidget() {
                                     <img
                                         src={badge.image_url}
                                         alt={badge.name}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover select-none"
+                                        loading="lazy"
+                                        onContextMenu={(e) => e.preventDefault()}
+                                        draggable={false}
                                         onError={(e) => {
                                             (e.target as HTMLImageElement).style.display = 'none';
                                         }}
