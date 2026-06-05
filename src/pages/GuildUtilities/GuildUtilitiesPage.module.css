@@ -1,62 +1,32 @@
-.container {
-    padding: 2rem;
-    max-width: 800px;
-    margin: 0 auto;
-    font-family: sans-serif;
-    color: #eee;
-    background-color: #111;
+/* ─── Page Shell ─────────────────────────────────────────────────────────── */
+.page {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.header {
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #333;
-    padding-bottom: 1rem;
+/* ─── Card Wrapper ───────────────────────────────────────────────────────── */
+/*
+ * CSS variables are set inline per card (tool.glowColor / tool.borderColor).
+ * They cascade down to the ToolWidget child automatically — no dynamic classes needed.
+ */
+.toolCardWrapper {
+    --tool-glow:   rgba(212, 180, 131, 0.15); /* fallback: wurm-accent */
+    --tool-border: rgba(212, 180, 131, 0.30); /* fallback: wurm-accent */
+    height: 100%;
 }
 
-.title {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    font-weight: 300;
-    letter-spacing: 0.05em;
+/* ─── Themed Hover Override ──────────────────────────────────────────────── */
+/*
+ * This single static selector picks up the inherited CSS variable from the
+ * wrapper and overrides ToolWidget's default Tailwind shadow on hover.
+ * Static class → always included in Tailwind's JIT output → safe in production.
+ */
+.toolCard:hover {
+    box-shadow:   0 8px 32px var(--tool-glow)   !important;
+    border-color: var(--tool-border)             !important;
 }
 
-.subtitle {
-    color: #888;
-    font-size: 0.9rem;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
-}
-
-.card {
-    display: block;
-    padding: 1.5rem;
-    background-color: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 4px;
-    text-decoration: none;
-    color: inherit;
-    transition: border-color 0.2s, transform 0.2s;
-}
-
-.card:hover {
-    border-color: #b8a87a;
-    transform: translateY(-2px);
-}
-
-.card h2 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #b8a87a;
-}
-
-.card p {
-    font-size: 0.85rem;
-    color: #aaa;
-    line-height: 1.4;
+.toolCard {
+    height: 100%;
 }

@@ -157,8 +157,8 @@ export function HomePage() {
 
                         <div className="transition-all duration-500">
                             <ToolWidget
-                                title="Guild Utilities"
-                                subtitle={t('Micro Tools Suite', 'Suíte de Microferramentas')}
+                                title="Tools Hub"
+                                subtitle={t('All Tools in One Place', 'Central de Ferramentas')}
                                 icon={Wrench}
                                 href="/guildutilities"
                                 status="active"
@@ -166,15 +166,15 @@ export function HomePage() {
                                 <div className="flex flex-col gap-3">
                                     <p className="text-sm text-[var(--color-wurm-muted)] leading-relaxed m-0">
                                         {t(
-                                            'A collection of operational micro-tools, timers and widgets for your daily grind.',
-                                            'Uma coleção de microferramentas operacionais, timers e widgets para o seu dia a dia.'
+                                            'Browse all ecosystem tools and local utilities with search and category filters.',
+                                            'Explore todas as ferramentas do ecossistema com busca e filtros por categoria.'
                                         )}
                                     </p>
                                     <NavLink
                                         to="/guildutilities"
                                         className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-wurm-accent)] hover:brightness-125 transition-all inline-flex items-center gap-1.5"
                                     >
-                                        {t('Access Suite →', 'Acessar Suíte →')}
+                                        {t('Explore →', 'Explorar →')}
                                     </NavLink>
                                 </div>
                             </ToolWidget>
