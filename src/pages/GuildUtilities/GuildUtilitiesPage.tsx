@@ -8,6 +8,7 @@ import { ToolWidget } from '../../components/ecosystem/ToolWidget';
 import {
     Gavel, Pickaxe, Hammer, BookOpen, BookMarked,
     Hourglass, Gem, Shield, Map, LineChart, Clock, Search, Wrench,
+    Telescope, ScrollText,
 } from 'lucide-react';
 import styles from './GuildUtilitiesPage.module.css';
 
@@ -23,11 +24,30 @@ interface ToolMeta {
     borderColor: string;
     status?: 'active' | 'maintenance' | 'coming-soon';
     isInternal?: boolean;
+    featured?: boolean;   // spans 2 columns in the grid
+    isLive?: boolean;     // shows pulsing LIVE badge inside card
     subtitle: { pt: string; en: string };
     description: { pt: string; en: string };
 }
 
 const TOOLS: ToolMeta[] = [
+    // ─── FEATURED ────────────────────────────────────────────────────────────
+    {
+        id: 'market-observatory',
+        title: 'Market Observatory',
+        icon: Telescope,
+        href: 'https://wurm-market-observatory.pages.dev',
+        accentColor: '#00d4aa',
+        glowColor: 'rgba(0, 212, 170, 0.25)',
+        borderColor: 'rgba(0, 212, 170, 0.40)',
+        featured: true,
+        isLive: true,
+        subtitle: { en: 'Live Market Intelligence', pt: 'Inteligência de Mercado ao Vivo' },
+        description: {
+            pt: 'Observatório de mercado em tempo real — monitore preços, tendências e movimentações econômicas de Wurm Online com dados ao vivo.',
+            en: 'Real-time market observatory — track prices, trends and economic movements across Wurm Online with live data feeds.',
+        },
+    },
     {
         id: 'mining',
         title: 'Mining',
@@ -138,6 +158,21 @@ const TOOLS: ToolMeta[] = [
         description: {
             pt: 'Jornal analítico com dados operacionais e econômicos do ecossistema.',
             en: 'Analytical journal tracking ecosystem economic & operational data.',
+        },
+    },
+    // ─── HISTORICAL ARCHIVE ───────────────────────────────────────────────────
+    {
+        id: 'historical-archive',
+        title: 'Historical Archive',
+        icon: ScrollText,
+        href: 'https://wurm-online-historical-archive.pages.dev',
+        accentColor: '#c9a84c',
+        glowColor: 'rgba(201, 168, 76, 0.25)',
+        borderColor: 'rgba(201, 168, 76, 0.38)',
+        subtitle: { en: 'Wurm Chronicles', pt: 'Crônicas de Wurm' },
+        description: {
+            pt: 'Acervo arqueológico digital de Wurm Online — registros históricos, pergaminhos de eventos passados e memória do servidor.',
+            en: 'Digital archaeological vault of Wurm Online — historical records, past event scrolls, and server memory preserved in amber.',
         },
     },
     {
@@ -320,7 +355,7 @@ export function GuildUtilitiesPage() {
                             {filtered.map(tool => (
                                 <div
                                     key={tool.id}
-                                    className={styles.toolCardWrapper}
+                                    className={`${styles.toolCardWrapper} ${tool.featured ? 'md:col-span-2' : ''}`}
                                     style={{
                                         '--tool-glow':   tool.glowColor,
                                         '--tool-border': tool.borderColor,
@@ -336,9 +371,17 @@ export function GuildUtilitiesPage() {
                                         className={styles.toolCard}
                                     >
                                         <div className="flex flex-col gap-3 h-full">
+                                            {/* LIVE badge — Market Observatory */}
+                                            {tool.isLive && (
+                                                <span className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest w-fit px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                                    {t('Live Data Feed', 'Dados em Tempo Real')}
+                                                </span>
+                                            )}
                                             <p className="text-xs text-[var(--color-wurm-muted)] m-0 leading-relaxed flex-1">
                                                 {lang === 'pt' ? tool.description.pt : tool.description.en}
                                             </p>
+                                            {/* Local badge — Craft Pulse */}
                                             {tool.isInternal && (
                                                 <span className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-[var(--color-wurm-muted)] bg-white/5 border border-white/10 px-2 py-1 rounded-md w-fit">
                                                     <span className="w-1 h-1 rounded-full bg-pink-400 animate-pulse" />
