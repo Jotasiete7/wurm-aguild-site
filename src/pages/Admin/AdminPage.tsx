@@ -17,7 +17,18 @@ export function AdminPage() {
     const [loading, setLoading] = useState(false);
     const [userEmail, setUserEmail] = useState<string | null>(null);
 
-    const ALLOWED_ADMINS = ['jaimeengelmann@gmail.com', 'rafaelcalvetti@gmail.com'];
+    const checkAdminAccess = async (currentEmail: string): Promise<boolean> => {
+        try {
+            const { data, error } = await supabase
+                .from('hub_admins')
+                .select('email')
+                .eq('email', currentEmail)
+                .maybeSingle();
+            return !!data && !error;
+        } catch {
+            return false;
+        }
+    };
 
     const inputCls = "w-full bg-black/30 border border-[var(--color-wurm-border)] rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[var(--color-wurm-accent)] placeholder:text-[var(--color-wurm-muted)]";
     const labelCls = "text-[10px] font-mono uppercase tracking-widest text-[var(--color-wurm-muted)] mb-1 block";
@@ -53,23 +64,32 @@ export function AdminPage() {
 
     useEffect(() => {
         // Check active session on mount
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        supabase.auth.getSession().then(async ({ data: { session } }) => {
             const currentEmail = session?.user?.email;
-            if (currentEmail && ALLOWED_ADMINS.includes(currentEmail)) {
-                setAuth(true);
-                setUserEmail(currentEmail);
-            } else if (session) {
-                supabase.auth.signOut();
-                setPollMsg('Este e-mail não possui acesso administrativo.');
+            if (currentEmail) {
+                const isAdmin = await checkAdminAccess(currentEmail);
+                if (isAdmin) {
+                    setAuth(true);
+                    setUserEmail(currentEmail);
+                } else {
+                    supabase.auth.signOut();
+                    setPollMsg('Este e-mail não possui acesso administrativo.');
+                }
             }
         });
 
         // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             const currentEmail = session?.user?.email;
-            if (currentEmail && ALLOWED_ADMINS.includes(currentEmail)) {
-                setAuth(true);
-                setUserEmail(currentEmail);
+            if (currentEmail) {
+                const isAdmin = await checkAdminAccess(currentEmail);
+                if (isAdmin) {
+                    setAuth(true);
+                    setUserEmail(currentEmail);
+                } else {
+                    setAuth(false);
+                    setUserEmail(null);
+                }
             } else {
                 setAuth(false);
                 setUserEmail(null);
@@ -146,15 +166,21 @@ export function AdminPage() {
             }
 
             const currentEmail = data.user?.email;
-            if (!currentEmail || !ALLOWED_ADMINS.includes(currentEmail)) {
+            if (currentEmail) {
+                const isAdmin = await checkAdminAccess(currentEmail);
+                if (!isAdmin) {
+                    await supabase.auth.signOut();
+                    setPollMsg('Acesso negado: Este e-mail não possui permissão de administrador.');
+                    setLoading(false);
+                    return;
+                }
+                setAuth(true);
+                setUserEmail(currentEmail);
+            } else {
                 await supabase.auth.signOut();
-                setPollMsg('Acesso negado: Este e-mail não possui permissão de administrador.');
+                setPollMsg('Erro ao recuperar e-mail do usuário.');
                 setLoading(false);
-                return;
             }
-
-            setAuth(true);
-            setUserEmail(currentEmail);
         } catch (err: any) {
             setPollMsg('Erro desconhecido ao tentar realizar o login.');
         } finally {
