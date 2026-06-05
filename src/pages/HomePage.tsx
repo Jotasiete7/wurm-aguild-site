@@ -4,7 +4,7 @@ import { LanguageSwitch } from '@ecossistema-guilda/modules/LanguageSwitch';
 import agStyles from '@ecossistema-guilda/layout/Header.module.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useEffect, useState } from 'react';
-import { Gavel, Pickaxe, Hammer, BookOpen, BookMarked, CalendarClock, Hourglass, Wrench } from 'lucide-react';
+import { Gavel, Pickaxe, Hammer, BookOpen, BookMarked, CalendarClock, Hourglass, Wrench, Gem } from 'lucide-react';
 
 import { AnalyticsWidget } from '../components/widgets/AnalyticsWidget';
 import { BadgesWidget } from '../components/widgets/BadgesWidget';
@@ -39,6 +39,7 @@ const TOOL_DESCRIPTIONS: Record<string, { pt: string; en: string }> = {
     Liturgy:   { pt: 'Rezas, favores e rituais de sacerdotes', en: 'Prayers, favors & priest rituals' },
     'Wall Decay': { pt: 'Calculadora de queda de muralhas e deeds', en: 'Wall decay and deed collapse calculator' },
     Auctions:  { pt: 'Mercado ao vivo de compra e venda', en: 'Live buy & sell marketplace' },
+    'Relic Appraiser': { pt: 'Avalie e classifique relíquias e itens raros de Wurm', en: 'Appraise and rank Wurm relics and rare items' },
 };
 
 export function HomePage() {
@@ -189,6 +190,7 @@ export function HomePage() {
                             { title: 'Recipes',   icon: BookOpen,   href: 'https://wurm-recipe-tool.pages.dev' },
                             { title: 'Liturgy',   icon: BookMarked, href: 'https://wurm-liturgy.pages.dev' },
                             { title: 'Wall Decay',icon: Hourglass,  href: 'https://wurm-wall-decay-calculator.pages.dev' },
+                            { title: 'Relic Appraiser', icon: Gem,  href: 'https://wurm-relic-appraiser.pages.dev' },
                             { title: 'Auctions',  icon: Gavel,      href: 'https://wurm-auction-helper.pages.dev' },
                         ] as const).map(tool => {
                             const desc = TOOL_DESCRIPTIONS[tool.title];
