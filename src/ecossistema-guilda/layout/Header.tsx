@@ -47,8 +47,13 @@ export const Header: React.FC<HeaderProps> = ({
     // Apply dynamic accent color if provided
     const headerStyle = accentColor ? ({ '--ag-accent': accentColor } as React.CSSProperties) : {};
 
-    const BrandLink = LinkComponent;
-    const NavLink = LinkComponent;
+    const SmartLink = ({ href, children, ...props }: any) => {
+        const Comp = LinkComponent as any;
+        if (typeof Comp === 'string') {
+            return <Comp href={href} {...props}>{children}</Comp>;
+        }
+        return <Comp to={href} {...props}>{children}</Comp>;
+    };
 
     return (
         <header className={`${styles.header} ag-reset`} style={headerStyle}>
@@ -79,13 +84,13 @@ export const Header: React.FC<HeaderProps> = ({
             <div className={styles.brandContainer}>
                 <EcosystemMenu currentId={currentToolId} lang={lang} styles={styles} />
                 <div className={styles.divider}></div>
-                <BrandLink href="/" className={styles.brand}>
+                <SmartLink href="/" className={styles.brand}>
                     {logo || (
                         <>
                             {brandName} {brandSubName && <span>{brandSubName}</span>}
                         </>
                     )}
-                </BrandLink>
+                </SmartLink>
             </div>
 
             {variant !== 'minimal' && (
@@ -95,13 +100,13 @@ export const Header: React.FC<HeaderProps> = ({
                             {navigation.map((item, idx) => {
                                 if (item.adminOnly && !auth?.isAdmin) return null;
                                 return (
-                                    <NavLink 
+                                    <SmartLink 
                                         key={idx} 
                                         href={item.href} 
                                         className={`${styles.navLink} ${item.adminOnly ? styles.navLinkAdmin : ''}`}
                                     >
                                         {item.label}
-                                    </NavLink>
+                                    </SmartLink>
                                 );
                             })}
                         </nav>
