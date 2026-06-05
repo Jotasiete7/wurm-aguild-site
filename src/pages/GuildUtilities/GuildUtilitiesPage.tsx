@@ -10,6 +10,7 @@ import {
     Hourglass, Gem, Shield, Map, LineChart, Clock, Search, Wrench,
     Telescope, ScrollText,
 } from 'lucide-react';
+import { trackToolClick } from '../../utils/toolTracker';
 import styles from './GuildUtilitiesPage.module.css';
 
 type FilterType = 'all' | 'ecosystem' | 'utilities';
@@ -358,6 +359,7 @@ export function GuildUtilitiesPage() {
                             {filtered.map(tool => (
                                 <div
                                     key={tool.id}
+                                    onClick={() => trackToolClick(tool.id)}
                                     className={`${styles.toolCardWrapper} ${tool.featured ? 'md:col-span-2' : ''}`}
                                     style={{
                                         '--tool-glow':   tool.glowColor,

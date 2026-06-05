@@ -4,7 +4,11 @@ import { LanguageSwitch } from '@ecossistema-guilda/modules/LanguageSwitch';
 import agStyles from '@ecossistema-guilda/layout/Header.module.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useEffect, useState } from 'react';
-import { Gavel, Pickaxe, Hammer, BookOpen, BookMarked, CalendarClock, Hourglass, Wrench, Gem } from 'lucide-react';
+import {
+    Gavel, Pickaxe, Hammer, BookOpen, BookMarked,
+    CalendarClock, Hourglass, Wrench, Gem,
+    Telescope, ScrollText, Map, Clock
+} from 'lucide-react';
 
 import { AnalyticsWidget } from '../components/widgets/AnalyticsWidget';
 import { BadgesWidget } from '../components/widgets/BadgesWidget';
@@ -17,6 +21,7 @@ import { EcosystemFeed } from '../components/ecosystem/EcosystemFeed';
 import { SystemStatusBanner } from '../components/SystemStatusBanner';
 import { QuoteWidget } from '../components/widgets/QuoteWidget';
 import { getFeedItems, type HubFeedItem } from '../services/hubFeed';
+import { trackToolClick, getPopularTools } from '../utils/toolTracker';
 import styles from './HomePage.module.css';
 
 function getGreeting(lang: string): string {
@@ -33,18 +38,39 @@ function getGreeting(lang: string): string {
 }
 
 const TOOL_DESCRIPTIONS: Record<string, { pt: string; en: string }> = {
-    Mining:    { pt: 'Calcule minério, veias e qualidade por habilidade', en: 'Ore, veins & quality calculator' },
-    Carpentry: { pt: 'Planejar itens, materiais e grind de marcenaria', en: 'Plan items, materials & carpentry grind' },
-    Recipes:   { pt: 'Encontre receitas e ingredientes de culinária', en: 'Find cooking recipes & ingredients' },
-    Liturgy:   { pt: 'Rezas, favores e rituais de sacerdotes', en: 'Prayers, favors & priest rituals' },
-    'Wall Decay': { pt: 'Calculadora de queda de muralhas e deeds', en: 'Wall decay and deed collapse calculator' },
-    Auctions:  { pt: 'Mercado ao vivo de compra e venda', en: 'Live buy & sell marketplace' },
-    'Relic Appraiser': { pt: 'Avalie e classifique relíquias e itens raros de Wurm', en: 'Appraise and rank Wurm relics and rare items' },
+    Mining:             { pt: 'Calcule minério, veias e qualidade por habilidade', en: 'Ore, veins & quality calculator' },
+    Carpentry:          { pt: 'Planejar itens, materiais e grind de marcenaria', en: 'Plan items, materials & carpentry grind' },
+    Recipes:            { pt: 'Encontre receitas e ingredientes de culinária', en: 'Find cooking recipes & ingredients' },
+    Liturgy:            { pt: 'Rezas, favores e rituais de sacerdotes', en: 'Prayers, favors & priest rituals' },
+    'Wall Decay':       { pt: 'Calculadora de queda de muralhas e deeds', en: 'Wall decay and deed collapse calculator' },
+    Auctions:           { pt: 'Mercado ao vivo de compra e venda', en: 'Live buy & sell marketplace' },
+    'Relic Appraiser':  { pt: 'Avalie e classifique relíquias e itens raros de Wurm', en: 'Appraise and rank Wurm relics and rare items' },
+    Prospect:           { pt: 'Rastreamento de prospecção e mapeador de veias', en: 'Ore prospecting tracker and vein mapper' },
+    Analytics:          { pt: 'Dados operacionais e econômicos do ecossistema', en: 'Operational & economic ecosystem data' },
+    'Historical Archive': { pt: 'Preservação imutável de logs históricos de Wurm', en: 'Immutable preservation of historical Wurm logs' },
+    'Market Observatory': { pt: 'Observatório analítico dos logs do Archive', en: 'Analytical observatory for historical Archive logs' },
+    'Guilda Badges':    { pt: 'Galeria de conquistas e medalhas dos membros', en: 'Guild achievements and badge showcase' },
+    'Craft Pulse':      { pt: 'Timer operacional voltado para eficiência de craft', en: 'Operational crafting timer for efficiency' }
 };
+
+const TOOLS = [
+    { id: 'mining', title: 'Mining', icon: Pickaxe, href: 'https://wurm-mining-tool.pages.dev' },
+    { id: 'carpentry', title: 'Carpentry', icon: Hammer, href: 'https://wurm-carpentry-tool.pages.dev' },
+    { id: 'recipes', title: 'Recipes', icon: BookOpen, href: 'https://wurm-recipe-tool.pages.dev' },
+    { id: 'liturgy', title: 'Liturgy', icon: BookMarked, href: 'https://wurm-liturgy.pages.dev' },
+    { id: 'wall-decay', title: 'Wall Decay', icon: Hourglass, href: 'https://wurm-wall-decay-calculator.pages.dev' },
+    { id: 'relic-appraiser', title: 'Relic Appraiser', icon: Gem, href: 'https://wurm-relic-appraiser.pages.dev' },
+    { id: 'prospect', title: 'Prospect', icon: Map, href: 'https://wurm-prospect-tool.pages.dev' },
+    { id: 'historical-archive', title: 'Historical Archive', icon: ScrollText, href: 'https://wurm-online-historical-archive.pages.dev' },
+    { id: 'market-observatory', title: 'Market Observatory', icon: Telescope, href: 'https://wurm-market-observatory.pages.dev' },
+    { id: 'auction', title: 'Auctions', icon: Gavel, href: 'https://wurm-auction-helper.pages.dev', comingSoon: true },
+    { id: 'craft-pulse', title: 'Craft Pulse', icon: Clock, href: '/guildutilities/craft-pulse' }
+];
 
 export function HomePage() {
     const { lang, setLang, t } = useLanguage();
     const [nextEvent, setNextEvent] = useState<HubFeedItem | null>(null);
+    const [popularTools, setPopularTools] = useState<any[]>([]);
 
     useEffect(() => {
         // Fetch feed and find the soonest upcoming event
@@ -60,6 +86,9 @@ export function HomePage() {
                 });
             setNextEvent(upcoming ?? null);
         });
+
+        // Load dynamic popular tools from tracker
+        setPopularTools(getPopularTools(TOOLS, 3));
     }, []);
 
     const greeting = getGreeting(lang);
@@ -182,34 +211,37 @@ export function HomePage() {
 
                     </div>
 
-                    {/* SECONDARY TOOLS ROW */}
-                    <div className="mt-5 grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {([
-                            { title: 'Mining',    icon: Pickaxe,    href: 'https://wurm-mining-tool.pages.dev' },
-                            { title: 'Carpentry', icon: Hammer,     href: 'https://wurm-carpentry-tool.pages.dev' },
-                            { title: 'Recipes',   icon: BookOpen,   href: 'https://wurm-recipe-tool.pages.dev' },
-                            { title: 'Liturgy',   icon: BookMarked, href: 'https://wurm-liturgy.pages.dev' },
-                            { title: 'Wall Decay',icon: Hourglass,  href: 'https://wurm-wall-decay-calculator.pages.dev' },
-                            { title: 'Relic Appraiser', icon: Gem,  href: 'https://wurm-relic-appraiser.pages.dev' },
-                            { title: 'Auctions',  icon: Gavel,      href: 'https://wurm-auction-helper.pages.dev' },
-                        ] as const).map(tool => {
-                            const desc = TOOL_DESCRIPTIONS[tool.title];
-                            return (
-                                <div key={tool.title} className={tool.title === 'Auctions' ? "opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500" : ""}>
-                                    <ToolWidget
-                                        title={tool.title}
-                                        icon={tool.icon}
-                                        href={tool.href}
-                                        status={tool.title === 'Auctions' ? 'coming-soon' : 'active'}
-                                    >
-                                        <p className="text-xs text-[var(--color-wurm-muted)] m-0 leading-relaxed">
-                                            {lang === 'pt' ? desc.pt : desc.en}
-                                        </p>
-                                    </ToolWidget>
-                                </div>
-                            );
-                        })}
-                    </div>
+                    {/* POPULAR TOOLS SECTION */}
+                    {popularTools.length > 0 && (
+                        <div className="mt-8">
+                            <h3 className="text-xs font-mono text-[var(--color-wurm-muted)] uppercase tracking-widest mb-4">
+                                {t('Frequently Used', 'Ferramentas Frequentes')}
+                            </h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                {popularTools.map(tool => {
+                                    const desc = TOOL_DESCRIPTIONS[tool.title];
+                                    return (
+                                        <div 
+                                            key={tool.title} 
+                                            onClick={() => trackToolClick(tool.id)}
+                                            className={tool.comingSoon ? "opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500" : ""}
+                                        >
+                                            <ToolWidget
+                                                title={tool.title}
+                                                icon={tool.icon}
+                                                href={tool.href}
+                                                status={tool.comingSoon ? 'coming-soon' : 'active'}
+                                            >
+                                                <p className="text-xs text-[var(--color-wurm-muted)] m-0 leading-relaxed">
+                                                    {lang === 'pt' ? desc.pt : desc.en}
+                                                </p>
+                                            </ToolWidget>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     {/* QUOTE DO DIA */}
                     <div className="mt-8">
