@@ -26,6 +26,8 @@ interface ToolMeta {
     isInternal?: boolean;
     featured?: boolean;   // spans 2 columns in the grid
     isLive?: boolean;     // shows pulsing LIVE badge inside card
+    isArchive?: boolean;  // shows Archive source badge
+    poweredBy?: string;   // shows "Powered by X" note
     subtitle: { pt: string; en: string };
     description: { pt: string; en: string };
 }
@@ -41,11 +43,11 @@ const TOOLS: ToolMeta[] = [
         glowColor: 'rgba(0, 212, 170, 0.25)',
         borderColor: 'rgba(0, 212, 170, 0.40)',
         featured: true,
-        isLive: true,
-        subtitle: { en: 'Live Market Intelligence', pt: 'Inteligência de Mercado ao Vivo' },
+        poweredBy: 'Historical Archive',
+        subtitle: { en: 'Economic Archaeology', pt: 'Arqueologia Econômica' },
         description: {
-            pt: 'Observatório de mercado em tempo real — monitore preços, tendências e movimentações econômicas de Wurm Online com dados ao vivo.',
-            en: 'Real-time market observatory — track prices, trends and economic movements across Wurm Online with live data feeds.',
+            pt: 'Plataforma de análise de logs históricos de comércio de Wurm Online. Trata cada corpus como uma "amostra de escavação" — sem interpolações, sem dados ao vivo. Alimentado pelo Historical Archive.',
+            en: 'Analysis platform for historical Wurm Online trade logs. Treats each corpus as a "site sample" — no guessing, no live data. Powered by the Historical Archive.',
         },
     },
     {
@@ -169,10 +171,11 @@ const TOOLS: ToolMeta[] = [
         accentColor: '#c9a84c',
         glowColor: 'rgba(201, 168, 76, 0.25)',
         borderColor: 'rgba(201, 168, 76, 0.38)',
-        subtitle: { en: 'Wurm Chronicles', pt: 'Crônicas de Wurm' },
+        isArchive: true,
+        subtitle: { en: 'Digital Archaeology', pt: 'Arqueologia Digital' },
         description: {
-            pt: 'Acervo arqueológico digital de Wurm Online — registros históricos, pergaminhos de eventos passados e memória do servidor.',
-            en: 'Digital archaeological vault of Wurm Online — historical records, past event scrolls, and server memory preserved in amber.',
+            pt: 'Preservação imutável de logs históricos de Wurm Online. Logs de jogadores como fragmentos arqueológicos de uma civilização virtual — antes que desapareçam para sempre.',
+            en: 'Immutable preservation of Wurm Online historical logs. Player logs as archaeological fragments of a virtual civilization — before they are lost forever.',
         },
     },
     {
@@ -371,11 +374,25 @@ export function GuildUtilitiesPage() {
                                         className={styles.toolCard}
                                     >
                                         <div className="flex flex-col gap-3 h-full">
-                                            {/* LIVE badge — Market Observatory */}
+                                            {/* LIVE badge — reserved for future live tools */}
                                             {tool.isLive && (
                                                 <span className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest w-fit px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                                                     {t('Live Data Feed', 'Dados em Tempo Real')}
+                                                </span>
+                                            )}
+                                            {/* Powered by Archive — Market Observatory */}
+                                            {tool.poweredBy && (
+                                                <span className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest w-fit px-2 py-1 rounded-md bg-[#c9a84c]/10 border border-[#c9a84c]/25 text-[#c9a84c]">
+                                                    <ScrollText size={10} />
+                                                    {t(`Powered by ${tool.poweredBy}`, `Alimentado pelo ${tool.poweredBy}`)}
+                                                </span>
+                                            )}
+                                            {/* Archive badge — Historical Archive */}
+                                            {tool.isArchive && (
+                                                <span className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest w-fit px-2 py-1 rounded-md bg-[#c9a84c]/10 border border-[#c9a84c]/25 text-[#c9a84c]">
+                                                    <ScrollText size={10} />
+                                                    {t('Source · Powers Market Observatory', 'Fonte · Alimenta o Market Observatory')}
                                                 </span>
                                             )}
                                             <p className="text-xs text-[var(--color-wurm-muted)] m-0 leading-relaxed flex-1">
