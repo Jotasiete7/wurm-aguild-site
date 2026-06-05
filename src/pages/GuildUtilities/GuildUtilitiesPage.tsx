@@ -51,6 +51,22 @@ const TOOLS: ToolMeta[] = [
             en: 'Analysis platform for historical Wurm Online trade logs. Treats each corpus as a "site sample" — no guessing, no live data. Powered by the Historical Archive.',
         },
     },
+    // ─── HISTORICAL ARCHIVE ───────────────────────────────────────────────────
+    {
+        id: 'historical-archive',
+        title: 'Historical Archive',
+        icon: ScrollText,
+        href: 'https://wurm-online-historical-archive.pages.dev',
+        accentColor: '#c9a84c',
+        glowColor: 'rgba(201, 168, 76, 0.25)',
+        borderColor: 'rgba(201, 168, 76, 0.38)',
+        isArchive: true,
+        subtitle: { en: 'Digital Archaeology', pt: 'Arqueologia Digital' },
+        description: {
+            pt: 'Preservação imutável de logs históricos de Wurm Online. Logs de jogadores como fragmentos arqueológicos de uma civilização virtual — antes que desapareçam para sempre.',
+            en: 'Immutable preservation of Wurm Online historical logs. Player logs as archaeological fragments of a virtual civilization — before they are lost forever.',
+        },
+    },
     {
         id: 'mining',
         title: 'Mining',
@@ -163,22 +179,7 @@ const TOOLS: ToolMeta[] = [
             en: 'Analytical journal tracking ecosystem economic & operational data.',
         },
     },
-    // ─── HISTORICAL ARCHIVE ───────────────────────────────────────────────────
-    {
-        id: 'historical-archive',
-        title: 'Historical Archive',
-        icon: ScrollText,
-        href: 'https://wurm-online-historical-archive.pages.dev',
-        accentColor: '#c9a84c',
-        glowColor: 'rgba(201, 168, 76, 0.25)',
-        borderColor: 'rgba(201, 168, 76, 0.38)',
-        isArchive: true,
-        subtitle: { en: 'Digital Archaeology', pt: 'Arqueologia Digital' },
-        description: {
-            pt: 'Preservação imutável de logs históricos de Wurm Online. Logs de jogadores como fragmentos arqueológicos de uma civilização virtual — antes que desapareçam para sempre.',
-            en: 'Immutable preservation of Wurm Online historical logs. Player logs as archaeological fragments of a virtual civilization — before they are lost forever.',
-        },
-    },
+
     {
         id: 'badges',
         title: 'Guilda Badges',
