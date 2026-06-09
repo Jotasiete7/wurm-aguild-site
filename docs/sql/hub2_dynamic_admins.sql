@@ -16,9 +16,15 @@ ALTER TABLE hub_admins ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow authenticated read admins" ON hub_admins
     FOR SELECT TO authenticated USING (true);
 
--- Permitir que apenas administradores cadastrem novos administradores
-CREATE POLICY "Allow admin manage admins" ON hub_admins
-    FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM hub_admins WHERE email = auth.jwt() ->> 'email'));
+-- Permitir que apenas administradores cadastrem/gerenciem novos administradores (dividido para evitar recursão infinita de SELECT)
+CREATE POLICY "Allow admin insert admins" ON hub_admins
+    FOR INSERT TO authenticated WITH CHECK (EXISTS (SELECT 1 FROM hub_admins WHERE email = auth.jwt() ->> 'email'));
+
+CREATE POLICY "Allow admin update admins" ON hub_admins
+    FOR UPDATE TO authenticated USING (EXISTS (SELECT 1 FROM hub_admins WHERE email = auth.jwt() ->> 'email'));
+
+CREATE POLICY "Allow admin delete admins" ON hub_admins
+    FOR DELETE TO authenticated USING (EXISTS (SELECT 1 FROM hub_admins WHERE email = auth.jwt() ->> 'email'));
 
 -- Seed inicial de administradores
 INSERT INTO hub_admins (email) VALUES
