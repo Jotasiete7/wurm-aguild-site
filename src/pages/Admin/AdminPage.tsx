@@ -91,17 +91,18 @@ export function AdminPage() {
         });
 
         // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             const currentEmail = session?.user?.email;
             if (currentEmail) {
-                const isAdmin = await checkAdminAccess(currentEmail);
-                if (isAdmin) {
-                    setAuth(true);
-                    setUserEmail(currentEmail);
-                } else {
-                    setAuth(false);
-                    setUserEmail(null);
-                }
+                checkAdminAccess(currentEmail).then((isAdmin) => {
+                    if (isAdmin) {
+                        setAuth(true);
+                        setUserEmail(currentEmail);
+                    } else {
+                        setAuth(false);
+                        setUserEmail(null);
+                    }
+                });
             } else {
                 setAuth(false);
                 setUserEmail(null);
