@@ -96,9 +96,17 @@ CREATE POLICY "Allow insert options" ON hub_poll_options
 
 -- 2.6 GALERIA DE FOTOS (PHOTOS)
 DROP POLICY IF EXISTS "Allow insert photos" ON hub_photos;
+DROP POLICY IF EXISTS "Allow admin update photos" ON hub_photos;
+DROP POLICY IF EXISTS "Allow admin delete photos" ON hub_photos;
 
 CREATE POLICY "Allow insert photos" ON hub_photos
     FOR INSERT TO authenticated WITH CHECK (EXISTS (SELECT 1 FROM hub_admins WHERE email = auth.jwt() ->> 'email'));
+
+CREATE POLICY "Allow admin update photos" ON hub_photos
+    FOR UPDATE TO authenticated USING (EXISTS (SELECT 1 FROM hub_admins WHERE email = auth.jwt() ->> 'email'));
+
+CREATE POLICY "Allow admin delete photos" ON hub_photos
+    FOR DELETE TO authenticated USING (EXISTS (SELECT 1 FROM hub_admins WHERE email = auth.jwt() ->> 'email'));
 
 
 -- 2.7 RESOURCES (LINKS ÚTEIS)
