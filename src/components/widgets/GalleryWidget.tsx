@@ -73,6 +73,17 @@ export function GalleryWidget() {
                                 loading="lazy"
                                 onContextMenu={(e) => e.preventDefault()}
                                 draggable={false}
+                                onError={(e) => {
+                                    const img = e.target as HTMLImageElement;
+                                    img.style.display = 'none';
+                                    const parent = img.parentElement;
+                                    if (parent && !parent.querySelector('.img-error-placeholder')) {
+                                        const placeholder = document.createElement('div');
+                                        placeholder.className = 'img-error-placeholder w-full h-full flex flex-col items-center justify-center gap-2 bg-white/5';
+                                        placeholder.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg><span style="font-size:10px;color:rgba(255,255,255,0.2);font-family:monospace;letter-spacing:0.1em;text-transform:uppercase">Imagem indisponível</span>';
+                                        parent.appendChild(placeholder);
+                                    }
+                                }}
                             />
                             
                             {/* Overlay Info */}

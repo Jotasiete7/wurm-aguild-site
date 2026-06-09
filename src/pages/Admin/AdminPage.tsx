@@ -15,6 +15,7 @@ export function AdminPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [initializing, setInitializing] = useState(true);
     const [userEmail, setUserEmail] = useState<string | null>(null);
 
     const checkAdminAccess = async (currentEmail: string): Promise<boolean> => {
@@ -63,8 +64,14 @@ export function AdminPage() {
     const [resourceMsg, setResourceMsg] = useState('');
 
     useEffect(() => {
+        // Timeout fallback — se o Supabase não responder em 8s, libera o formulário de login
+        const timeout = setTimeout(() => {
+            setInitializing(false);
+        }, 8000);
+
         // Check active session on mount
         supabase.auth.getSession().then(async ({ data: { session } }) => {
+            clearTimeout(timeout);
             const currentEmail = session?.user?.email;
             if (currentEmail) {
                 const isAdmin = await checkAdminAccess(currentEmail);
@@ -76,6 +83,11 @@ export function AdminPage() {
                     setPollMsg('Este e-mail não possui acesso administrativo.');
                 }
             }
+            setInitializing(false);
+        }).catch(() => {
+            clearTimeout(timeout);
+            setInitializing(false);
+            setPollMsg('⚠️ Não foi possível conectar ao servidor. Verifique sua conexão.');
         });
 
         // Listen for auth changes
@@ -96,7 +108,10 @@ export function AdminPage() {
             }
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            clearTimeout(timeout);
+            subscription.unsubscribe();
+        };
     }, []);
 
     useEffect(() => {
@@ -194,6 +209,17 @@ export function AdminPage() {
         setUserEmail(null);
     };
 
+    if (initializing) {
+        return (
+            <div className="min-h-screen bg-[var(--color-wurm-bg)] flex items-center justify-center px-4">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-8 h-8 border-2 border-[var(--color-wurm-accent)] border-t-transparent rounded-full animate-spin" />
+                    <p className="text-[10px] font-mono text-[var(--color-wurm-muted)] uppercase tracking-widest">Verificando sessão...</p>
+                </div>
+            </div>
+        );
+    }
+
     if (!auth) {
         return (
             <div className="min-h-screen bg-[var(--color-wurm-bg)] flex items-center justify-center px-4">
@@ -239,7 +265,11 @@ export function AdminPage() {
                     </button>
 
                     {pollMsg && (
-                        <p className="text-red-400 text-xs mt-2 bg-red-500/10 border border-red-500/20 p-2 rounded-lg leading-relaxed">
+                        <p className={`text-xs mt-2 p-2 rounded-lg leading-relaxed border ${
+                            pollMsg.startsWith('⚠️')
+                                ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
+                                : 'text-red-400 bg-red-500/10 border-red-500/20'
+                        }`}>
                             {pollMsg}
                         </p>
                     )}
