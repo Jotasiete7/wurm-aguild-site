@@ -56,3 +56,8 @@ export async function hidePhoto(photoId: string): Promise<boolean> {
     const { error } = await supabase.from('hub_photos').update({ is_visible: false }).eq('id', photoId);
     return !error;
 }
+
+export async function deletePhoto(photoId: string): Promise<boolean> {
+    const { error } = await supabase.from('hub_photos').delete().eq('id', photoId);
+    return !error;
+}

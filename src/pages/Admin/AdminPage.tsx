@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createPoll } from '../../services/hubPolls';
-import { addPhoto, getGalleryPhotos, hidePhoto, type HubPhoto } from '../../services/hubGallery';
+import { addPhoto, getGalleryPhotos, hidePhoto, deletePhoto, type HubPhoto } from '../../services/hubGallery';
 import { setStatus, clearStatus } from '../../services/hubStatus';
 import { addQuote, getAllQuotes, toggleQuote, deleteQuote, addQuotesBulk, type HubQuote } from '../../services/hubQuotes';
 import { addFeedItem, type HubFeedItem } from '../../services/hubFeed';
@@ -403,6 +403,18 @@ export function AdminPage() {
                 getGalleryPhotos().then(setPhotos);
             } else {
                 setPhotoMsg('❌ Erro ao ocultar foto.');
+            }
+        }
+    };
+
+    const handleDeletePhoto = async (id: string) => {
+        if (confirm('Tem certeza que deseja excluir esta foto permanentemente da galeria?')) {
+            const ok = await deletePhoto(id);
+            if (ok) {
+                setPhotoMsg('✅ Foto excluída permanentemente!');
+                getGalleryPhotos().then(setPhotos);
+            } else {
+                setPhotoMsg('❌ Erro ao excluir foto. Verifique as políticas do banco.');
             }
         }
     };
@@ -894,13 +906,22 @@ export function AdminPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <button
-                                            onClick={() => handleHidePhoto(p.id)}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all text-xs shrink-0"
-                                            title="Ocultar foto da galeria"
-                                        >
-                                            <X size={14} /> Ocultar
-                                        </button>
+                                        <div className="flex gap-2 shrink-0">
+                                            <button
+                                                onClick={() => handleHidePhoto(p.id)}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all text-xs"
+                                                title="Ocultar foto da galeria"
+                                            >
+                                                <X size={14} /> Ocultar
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeletePhoto(p.id)}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-all text-xs"
+                                                title="Excluir foto permanentemente"
+                                            >
+                                                Excluir
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
