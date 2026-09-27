@@ -153,7 +153,6 @@ export const ECOSYSTEM_TOOLS: ToolItem[] = [
         accentColor: '#10b981',
         glowColor: 'rgba(16, 185, 129, 0.25)',
         borderColor: 'rgba(16, 185, 129, 0.38)',
-        status: 'maintenance',
         isExternal: true,
         subtitle: { pt: 'Receitas & Culinária', en: 'Cooking Guide & Buffs' },
         description: {
@@ -243,7 +242,6 @@ export const ECOSYSTEM_TOOLS: ToolItem[] = [
         accentColor: '#3b82f6',
         glowColor: 'rgba(59, 130, 246, 0.25)',
         borderColor: 'rgba(59, 130, 246, 0.38)',
-        status: 'maintenance',
         isExternal: true,
         subtitle: { pt: 'Jornal & Inteligência Econômica', en: 'Ecosystem Economic Intel' },
         description: {
