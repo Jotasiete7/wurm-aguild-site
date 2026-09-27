@@ -1,4 +1,4 @@
-import { ExternalLink } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import type { ToolItem } from '../../data/tools';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { trackToolClick } from '../../utils/toolTracker';
@@ -26,24 +26,18 @@ export function BentoToolCard({ tool, className = '' }: BentoToolCardProps) {
     const isComingSoon = status === 'coming-soon';
 
     const handleCardClick = (e: React.MouseEvent) => {
-        // Prevent click if user clicked directly on link (which already handles it)
         if ((e.target as HTMLElement).closest('a')) return;
 
         trackToolClick(tool.id);
-        if (tool.isExternal || tool.href.startsWith('http')) {
-            window.open(tool.href, '_blank', 'noopener,noreferrer');
-        } else {
-            // Even for internal routes, if user prefers new tab or navigate:
-            window.open(tool.href, '_blank', 'noopener,noreferrer');
-        }
+        window.open(tool.href, '_blank', 'noopener,noreferrer');
     };
 
     return (
         <article
             onClick={handleCardClick}
-            className={`group relative flex flex-col justify-between rounded-2xl bg-[#0a0a0c]/90 border border-[var(--color-wurm-border)]/70 backdrop-blur-md overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-[var(--card-accent)]/60 hover:shadow-[0_12px_32px_rgba(0,0,0,0.5),0_0_24px_var(--card-glow)] ${
-                isComingSoon ? 'opacity-70 grayscale-[30%] hover:grayscale-0 hover:opacity-100' : ''
-            } ${tool.featured ? 'md:col-span-2' : 'col-span-1'} ${className}`}
+            className={`group relative flex flex-col justify-between rounded-2xl bg-[#0d0e12]/90 border border-[var(--color-wurm-border)]/80 backdrop-blur-md overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-[var(--card-accent)]/60 hover:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_var(--card-glow)] col-span-1 ${
+                isComingSoon ? 'opacity-70 grayscale-[25%] hover:grayscale-0 hover:opacity-100' : ''
+            } ${className}`}
             style={{
                 '--card-accent': tool.accentColor,
                 '--card-glow': tool.glowColor,
@@ -56,12 +50,12 @@ export function BentoToolCard({ tool, className = '' }: BentoToolCardProps) {
             />
 
             {/* CARD HEADER */}
-            <div className="p-5 flex items-start justify-between border-b border-white/[0.05]">
-                <div className="flex items-center gap-3.5">
+            <div className="p-5 pb-3 flex items-start justify-between">
+                <div className="flex items-center gap-3.5 min-w-0">
                     <div
                         className="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 flex-shrink-0"
                         style={{
-                            backgroundColor: `${tool.accentColor}18`,
+                            backgroundColor: `${tool.accentColor}15`,
                             color: tool.accentColor,
                             border: `1px solid ${tool.accentColor}30`,
                         }}
@@ -79,46 +73,52 @@ export function BentoToolCard({ tool, className = '' }: BentoToolCardProps) {
                     </div>
                 </div>
 
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold tracking-wider border uppercase flex-shrink-0 ${currentStatus.bg} ${currentStatus.color} ${currentStatus.border}`}>
-                    {currentStatus.label}
-                </span>
+                <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wider border uppercase ${currentStatus.bg} ${currentStatus.color} ${currentStatus.border}`}>
+                        {currentStatus.label}
+                    </span>
+
+                    <a
+                        href={tool.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            trackToolClick(tool.id);
+                        }}
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-[var(--color-wurm-muted)] group-hover:text-[var(--card-accent)] group-hover:bg-white/[0.04] transition-all"
+                        title={t('Abrir em nova aba', 'Open in new tab')}
+                    >
+                        <ArrowUpRight size={17} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </a>
+                </div>
             </div>
 
             {/* CARD BODY */}
-            <div className="p-5 flex-1 flex flex-col justify-between">
+            <div className="px-5 py-2 flex-1 flex flex-col justify-between">
                 <p className="text-sm text-[var(--color-wurm-muted)] leading-relaxed m-0 text-left line-clamp-3 group-hover:text-[var(--color-wurm-text)]/90 transition-colors">
                     {description}
                 </p>
-
-                {tool.poweredBy && (
-                    <div className="mt-3 text-[10px] font-mono text-[var(--color-wurm-muted)]/70 flex items-center gap-1">
-                        <span>{t('Fonte:', 'Powered by:')}</span>
-                        <span className="text-[var(--card-accent)] font-semibold">{tool.poweredBy}</span>
-                    </div>
-                )}
             </div>
 
             {/* CARD FOOTER */}
-            <div className="px-5 py-3.5 bg-white/[0.015] border-t border-white/[0.04] flex items-center justify-between text-xs font-mono font-medium text-[var(--color-wurm-muted)] group-hover:text-white group-hover:bg-[var(--card-accent)]/10 transition-all">
-                <span className="tracking-wider uppercase text-[11px]">
-                    {isComingSoon
-                        ? t('Em desenvolvimento', 'In development')
-                        : t('Acessar ferramenta', 'Open tool')}
-                </span>
+            <div className="px-5 py-3 mt-2 border-t border-white/[0.04] flex items-center justify-between text-xs font-mono text-[var(--color-wurm-muted)]">
+                <div className="flex items-center gap-2">
+                    {tool.poweredBy ? (
+                        <span className="text-[10px] text-[var(--color-wurm-muted)]/70">
+                            {t('Fonte:', 'By:')} <span className="text-[var(--card-accent)] font-semibold">{tool.poweredBy}</span>
+                        </span>
+                    ) : (
+                        <span className="text-[10px] text-[var(--color-wurm-muted)]/50 uppercase tracking-widest">
+                            Wurm Online
+                        </span>
+                    )}
+                </div>
 
-                <a
-                    href={tool.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        trackToolClick(tool.id);
-                    }}
-                    className="p-1 rounded-md text-[var(--card-accent)] hover:scale-125 transition-transform"
-                    title={t('Abrir em nova aba', 'Open in new tab')}
-                >
-                    <ExternalLink size={14} />
-                </a>
+                <span className="text-[11px] font-medium tracking-wider text-[var(--color-wurm-muted)] group-hover:text-[var(--card-accent)] flex items-center gap-1 transition-colors">
+                    {isComingSoon ? t('Em breve', 'Coming soon') : t('Acessar', 'Launch')}
+                    <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                </span>
             </div>
         </article>
     );

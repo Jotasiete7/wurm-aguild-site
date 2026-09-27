@@ -27,11 +27,11 @@ export interface ToolItem {
 
 export const CATEGORIES: { id: ToolCategory; label: { pt: string; en: string }; icon?: string }[] = [
     { id: 'all',         label: { pt: 'Todas', en: 'All' } },
-    { id: 'crafting',    label: { pt: 'Craft & Profissões', en: 'Crafting & Skills' } },
-    { id: 'economy',     label: { pt: 'Economia & Mercado', en: 'Economy & Trade' } },
-    { id: 'exploration', label: { pt: 'Mapas & Exploração', en: 'Maps & Exploration' } },
-    { id: 'community',   label: { pt: 'Comunidade & Conquistas', en: 'Community & Achievements' } },
-    { id: 'data',        label: { pt: 'Dados & Arqueologia', en: 'Data & Archaeology' } },
+    { id: 'crafting',    label: { pt: 'Craft & Ofícios', en: 'Crafting & Skills' } },
+    { id: 'economy',     label: { pt: 'Economia & Trade', en: 'Economy & Trade' } },
+    { id: 'exploration', label: { pt: 'Mapas & Minas', en: 'Maps & Mining' } },
+    { id: 'community',   label: { pt: 'Comunidade', en: 'Community' } },
+    { id: 'data',        label: { pt: 'Histórico & Dados', en: 'History & Data' } },
 ];
 
 export const ECOSYSTEM_TOOLS: ToolItem[] = [

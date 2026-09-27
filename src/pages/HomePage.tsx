@@ -4,7 +4,7 @@ import { LanguageSwitch } from '@ecossistema-guilda/modules/LanguageSwitch';
 import agStyles from '@ecossistema-guilda/layout/Header.module.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useEffect, useMemo, useState } from 'react';
-import { CalendarClock, Sparkles, LayoutGrid, RotateCcw } from 'lucide-react';
+import { CalendarClock, Sparkles, RotateCcw } from 'lucide-react';
 
 import { HubSearch } from '../components/search/HubSearch';
 import { BentoToolCard } from '../components/ecosystem/BentoToolCard';
@@ -108,8 +108,8 @@ export function HomePage() {
                 <div className="container mx-auto max-w-[var(--spacing-measure-wide)] px-4 sm:px-6">
 
                     {/* HERO HEADER */}
-                    <header className="text-center mb-8">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-wurm-accent)]/10 border border-[var(--color-wurm-accent)]/20 text-[var(--color-wurm-accent)] text-xs font-mono tracking-wider mb-4">
+                    <header className="text-center mb-6 pt-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-wurm-accent)]/10 border border-[var(--color-wurm-accent)]/20 text-[var(--color-wurm-accent)] text-xs font-mono tracking-wider mb-3">
                             <Sparkles size={13} />
                             <span>{t('PORTAL CENTRAL DA GUILDA', 'GUILD CENTRAL PORTAL')}</span>
                         </div>
@@ -118,17 +118,17 @@ export function HomePage() {
                             {t('Ecosystem Hub', 'Hub do Ecossistema')}
                         </h1>
 
-                        <p className="text-sm md:text-base text-[var(--color-wurm-muted)] m-0 leading-relaxed max-w-2xl mx-auto">
+                        <p className="text-sm md:text-base text-[var(--color-wurm-muted)] m-0 leading-relaxed max-w-xl mx-auto">
                             {greeting}
                         </p>
 
-                        <div className="flex items-center justify-center gap-4 text-[10px] font-mono text-[var(--color-wurm-muted)] uppercase tracking-widest mt-4">
-                            <span className="flex items-center gap-1.5 text-green-500">
-                                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                        <div className="inline-flex items-center gap-3 text-[10px] font-mono text-[var(--color-wurm-muted)] uppercase tracking-widest mt-3 px-3 py-1 rounded-full bg-white/[0.02] border border-white/[0.05]">
+                            <span className="flex items-center gap-1.5 text-emerald-400">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                                 {t('Todos os sistemas operacionais', 'All systems operational')}
                             </span>
-                            <span className="opacity-20">|</span>
-                            <span>v2.1 • Wurm Online</span>
+                            <span className="opacity-20">•</span>
+                            <span>v2.1 Wurm Online</span>
                         </div>
                     </header>
 
@@ -140,7 +140,7 @@ export function HomePage() {
                         const dateStr = d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', { day: '2-digit', month: 'long', year: 'numeric' });
                         const isToday = new Date().toDateString() === d.toDateString();
                         return (
-                            <div className="mb-8 glass-panel rounded-2xl p-4 border border-blue-500/20 flex items-center gap-4">
+                            <div className="mb-6 glass-panel rounded-2xl p-4 border border-blue-500/20 flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
                                     <CalendarClock size={20} className="text-blue-400" />
                                 </div>
@@ -178,15 +178,16 @@ export function HomePage() {
                         onPressEnter={handlePressEnter}
                     />
 
-                    {/* SECTION: FERRAMENTAS & BENTO GRID */}
-                    <section className="mt-8 mb-12">
-                        <div className="flex items-center justify-between mb-5">
-                            <h2 className="text-lg md:text-xl font-serif font-bold text-white m-0 flex items-center gap-2">
-                                <LayoutGrid size={18} className="text-[var(--color-wurm-accent)]" />
-                                <span>{t('Ferramentas & Utilitários', 'Tools & Utilities')}</span>
-                            </h2>
-
-                            {(searchQuery || activeCategory !== 'all') && (
+                    {/* BENTO GRID OF TOOLS */}
+                    <section className="mt-6 mb-12">
+                        {(searchQuery || activeCategory !== 'all') && (
+                            <div className="flex items-center justify-between pb-4 mb-2 border-b border-white/[0.05]">
+                                <span className="text-xs font-mono text-[var(--color-wurm-muted)]">
+                                    {t(
+                                        `Filtrando por: ${activeCategory !== 'all' ? activeCategory : ''} ${searchQuery ? `"${searchQuery}"` : ''}`,
+                                        `Filtering by: ${activeCategory !== 'all' ? activeCategory : ''} ${searchQuery ? `"${searchQuery}"` : ''}`
+                                    )}
+                                </span>
                                 <button
                                     type="button"
                                     onClick={handleResetSearch}
@@ -195,8 +196,8 @@ export function HomePage() {
                                     <RotateCcw size={12} />
                                     <span>{t('Limpar filtros', 'Clear filters')}</span>
                                 </button>
-                            )}
-                        </div>
+                            </div>
+                        )}
 
                         {filteredTools.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
