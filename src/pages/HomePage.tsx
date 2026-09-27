@@ -4,21 +4,12 @@ import { LanguageSwitch } from '@ecossistema-guilda/modules/LanguageSwitch';
 import agStyles from '@ecossistema-guilda/layout/Header.module.css';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useEffect, useMemo, useState } from 'react';
-import { CalendarClock, Sparkles, LayoutGrid, Users, RotateCcw } from 'lucide-react';
+import { CalendarClock, Sparkles, LayoutGrid, RotateCcw } from 'lucide-react';
 
 import { HubSearch } from '../components/search/HubSearch';
 import { BentoToolCard } from '../components/ecosystem/BentoToolCard';
 import { ECOSYSTEM_TOOLS, type ToolCategory } from '../data/tools';
-
-import { AnalyticsWidget } from '../components/widgets/AnalyticsWidget';
-import { BadgesWidget } from '../components/widgets/BadgesWidget';
-import { PollWidget } from '../components/widgets/PollWidget';
-import { GalleryWidget } from '../components/widgets/GalleryWidget';
-import { MuralWidget } from '../components/widgets/MuralWidget';
-import { ResourcesWidget } from '../components/widgets/ResourcesWidget';
-import { EcosystemFeed } from '../components/ecosystem/EcosystemFeed';
 import { SystemStatusBanner } from '../components/SystemStatusBanner';
-import { QuoteWidget } from '../components/widgets/QuoteWidget';
 import { getFeedItems, type HubFeedItem } from '../services/hubFeed';
 import styles from './HomePage.module.css';
 
@@ -54,6 +45,8 @@ export function HomePage() {
                     return d >= today;
                 });
             setNextEvent(upcoming ?? null);
+        }).catch(() => {
+            // Silently fail if feed cannot be fetched
         });
     }, []);
 
@@ -190,7 +183,7 @@ export function HomePage() {
                     />
 
                     {/* SECTION: FERRAMENTAS & BENTO GRID */}
-                    <section className="mt-8 mb-16">
+                    <section className="mt-8 mb-12">
                         <div className="flex items-center justify-between mb-5">
                             <h2 className="text-lg md:text-xl font-serif font-bold text-white m-0 flex items-center gap-2">
                                 <LayoutGrid size={18} className="text-[var(--color-wurm-accent)]" />
@@ -229,7 +222,7 @@ export function HomePage() {
                                 <button
                                     type="button"
                                     onClick={handleResetSearch}
-                                    className="px-4 py-2 rounded-xl bg-[var(--color-wurm-accent)]/15 border border-[var(--color-wurm-accent)]/40 text-[var(--color-wurm-accent)] text-xs font-semibold uppercase tracking-wider hover:bg-[var(--color-wurm-accent)]/25 transition-all"
+                                    className="px-4 py-2 rounded-xl bg-[var(--color-wurm-accent)]/15 border border-[var(--color-wurm-accent)]/40 text-[var(--color-wurm-accent)] text-xs font-semibold uppercase tracking-wider hover:bg-[var(--color-wurm-accent)]/25 transition-all cursor-pointer"
                                 >
                                     {t('Ver todas as ferramentas', 'View all tools')}
                                 </button>
@@ -237,40 +230,10 @@ export function HomePage() {
                         )}
                     </section>
 
-                    {/* SECTION: VIDA DA GUILDA & WIDGETS COMUNITÁRIOS */}
-                    <section className="mt-14 pt-10 border-t border-[var(--color-wurm-border)]/40">
-                        <div className="flex items-center gap-2 mb-6">
-                            <Users size={20} className="text-[var(--color-wurm-accent)]" />
-                            <h2 className="text-xl md:text-2xl font-serif font-bold text-white m-0">
-                                {t('Vida da Guilda & Painéis', 'Guild Life & Dashboards')}
-                            </h2>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 grid-flow-row-dense">
-                            {/* ROW 1: Analytics (2 cols) + Badges (1 col) */}
-                            <AnalyticsWidget className="md:col-span-2" />
-                            <BadgesWidget />
-
-                            {/* ROW 2: Mural (2 cols) + Gallery (1 col) */}
-                            <MuralWidget className="md:col-span-2" />
-                            <GalleryWidget />
-
-                            {/* ROW 3: Poll (1 col) + Resources (1 col) + Quote (1 col) */}
-                            <PollWidget />
-                            <ResourcesWidget />
-                            <QuoteWidget />
-                        </div>
-                    </section>
-
-                    {/* ACTIVITY FEED — LIVE PULSE */}
-                    <div className="mt-12">
-                        <EcosystemFeed />
-                    </div>
-
                 </div>
             </main>
 
-            <footer className="py-10 border-t border-[var(--color-wurm-border)]/30 mt-16">
+            <footer className="py-10 border-t border-[var(--color-wurm-border)]/30 mt-12">
                 <div className="container mx-auto px-6 text-center text-[10px] font-mono text-[var(--color-wurm-muted)] uppercase tracking-widest">
                     A Guilda · {new Date().getFullYear()} · Wurm Online Hub Central
                 </div>
