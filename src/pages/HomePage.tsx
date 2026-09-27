@@ -9,7 +9,6 @@ import { CalendarClock, Sparkles, LayoutGrid, RotateCcw } from 'lucide-react';
 import { HubSearch } from '../components/search/HubSearch';
 import { BentoToolCard } from '../components/ecosystem/BentoToolCard';
 import { ECOSYSTEM_TOOLS, type ToolCategory } from '../data/tools';
-import { SystemStatusBanner } from '../components/SystemStatusBanner';
 import { getFeedItems, type HubFeedItem } from '../services/hubFeed';
 import styles from './HomePage.module.css';
 
@@ -104,9 +103,6 @@ export function HomePage() {
                     />
                 }
             />
-
-            {/* GLOBAL STATUS BANNER */}
-            <SystemStatusBanner />
 
             <main className="flex-1 py-10">
                 <div className="container mx-auto max-w-[var(--spacing-measure-wide)] px-4 sm:px-6">
