@@ -31,6 +31,10 @@ export function HomePage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState<ToolCategory>('all');
 
+    const maintenanceCount = useMemo(() => {
+        return ECOSYSTEM_TOOLS.filter(item => item.status === 'maintenance').length;
+    }, []);
+
     useEffect(() => {
         // Fetch feed and find the soonest upcoming event
         getFeedItems(20).then(items => {
@@ -122,13 +126,23 @@ export function HomePage() {
                             {greeting}
                         </p>
 
-                        <div className="inline-flex items-center gap-3 text-[10px] font-mono text-[var(--color-wurm-muted)] uppercase tracking-widest mt-3 px-3 py-1 rounded-full bg-white/[0.02] border border-white/[0.05]">
-                            <span className="flex items-center gap-1.5 text-emerald-400">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                {t('Todos os sistemas operacionais', 'All systems operational')}
-                            </span>
-                            <span className="opacity-20">•</span>
-                            <span>v2.1 Wurm Online</span>
+                        <div className="inline-flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest mt-3 px-3 py-1 rounded-full bg-white/[0.02] border border-white/[0.05]">
+                            {maintenanceCount > 0 ? (
+                                <span className="flex items-center gap-1.5 text-amber-400">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                                    {t(
+                                        `${maintenanceCount} sistemas em manutenção`,
+                                        `${maintenanceCount} systems in maintenance`
+                                    )}
+                                </span>
+                            ) : (
+                                <span className="flex items-center gap-1.5 text-emerald-400">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                    {t('Todos os sistemas operacionais', 'All systems operational')}
+                                </span>
+                            )}
+                            <span className="opacity-20 text-[var(--color-wurm-muted)]">•</span>
+                            <span className="text-[var(--color-wurm-muted)]">v2.1 Wurm Online</span>
                         </div>
                     </header>
 

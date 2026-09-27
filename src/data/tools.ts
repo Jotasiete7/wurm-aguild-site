@@ -63,7 +63,7 @@ export const ECOSYSTEM_TOOLS: ToolItem[] = [
         accentColor: '#00d4aa',
         glowColor: 'rgba(0, 212, 170, 0.25)',
         borderColor: 'rgba(0, 212, 170, 0.40)',
-        featured: true,
+        status: 'maintenance',
         isExternal: true,
         poweredBy: 'Historical Archive',
         subtitle: { pt: 'Arqueologia Econômica', en: 'Economic Archaeology' },
@@ -82,6 +82,7 @@ export const ECOSYSTEM_TOOLS: ToolItem[] = [
         accentColor: '#c9a84c',
         glowColor: 'rgba(201, 168, 76, 0.25)',
         borderColor: 'rgba(201, 168, 76, 0.38)',
+        status: 'maintenance',
         isExternal: true,
         subtitle: { pt: 'Arquivo Histórico Imutável', en: 'Digital Archaeology Archive' },
         description: {
@@ -152,6 +153,7 @@ export const ECOSYSTEM_TOOLS: ToolItem[] = [
         accentColor: '#10b981',
         glowColor: 'rgba(16, 185, 129, 0.25)',
         borderColor: 'rgba(16, 185, 129, 0.38)',
+        status: 'maintenance',
         isExternal: true,
         subtitle: { pt: 'Receitas & Culinária', en: 'Cooking Guide & Buffs' },
         description: {
@@ -241,6 +243,7 @@ export const ECOSYSTEM_TOOLS: ToolItem[] = [
         accentColor: '#3b82f6',
         glowColor: 'rgba(59, 130, 246, 0.25)',
         borderColor: 'rgba(59, 130, 246, 0.38)',
+        status: 'maintenance',
         isExternal: true,
         subtitle: { pt: 'Jornal & Inteligência Econômica', en: 'Ecosystem Economic Intel' },
         description: {

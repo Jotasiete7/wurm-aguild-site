@@ -24,6 +24,7 @@ export function BentoToolCard({ tool, className = '' }: BentoToolCardProps) {
     const status = tool.status ?? 'active';
     const currentStatus = statusConfig[status];
     const isComingSoon = status === 'coming-soon';
+    const isMaintenance = status === 'maintenance';
 
     const handleCardClick = (e: React.MouseEvent) => {
         if ((e.target as HTMLElement).closest('a')) return;
@@ -37,7 +38,7 @@ export function BentoToolCard({ tool, className = '' }: BentoToolCardProps) {
             onClick={handleCardClick}
             className={`group relative flex flex-col justify-between rounded-2xl bg-[#0d0e12]/90 border border-[var(--color-wurm-border)]/80 backdrop-blur-md overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-[var(--card-accent)]/60 hover:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_var(--card-glow)] col-span-1 ${
                 isComingSoon ? 'opacity-70 grayscale-[25%] hover:grayscale-0 hover:opacity-100' : ''
-            } ${className}`}
+            } ${isMaintenance ? 'border-amber-500/30 hover:border-amber-400/60' : ''} ${className}`}
             style={{
                 '--card-accent': tool.accentColor,
                 '--card-glow': tool.glowColor,
@@ -115,8 +116,18 @@ export function BentoToolCard({ tool, className = '' }: BentoToolCardProps) {
                     )}
                 </div>
 
-                <span className="text-[11px] font-medium tracking-wider text-[var(--color-wurm-muted)] group-hover:text-[var(--card-accent)] flex items-center gap-1 transition-colors">
-                    {isComingSoon ? t('Em breve', 'Coming soon') : t('Acessar', 'Launch')}
+                <span className={`text-[11px] font-medium tracking-wider flex items-center gap-1 transition-colors ${
+                    isMaintenance
+                        ? 'text-amber-400 group-hover:text-amber-300'
+                        : isComingSoon
+                        ? 'text-sky-400 group-hover:text-sky-300'
+                        : 'text-[var(--color-wurm-muted)] group-hover:text-[var(--card-accent)]'
+                }`}>
+                    {isComingSoon
+                        ? t('Em breve', 'Coming soon')
+                        : isMaintenance
+                        ? t('Manutenção', 'Maintenance')
+                        : t('Acessar', 'Launch')}
                     <span className="transition-transform group-hover:translate-x-0.5">→</span>
                 </span>
             </div>
