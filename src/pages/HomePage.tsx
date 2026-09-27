@@ -3,12 +3,12 @@ import { Header as AgHeader } from '@ecossistema-guilda/layout/Header';
 import { LanguageSwitch } from '@ecossistema-guilda/modules/LanguageSwitch';
 import agStyles from '@ecossistema-guilda/layout/Header.module.css';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useEffect, useState } from 'react';
-import {
-    Gavel, Pickaxe, Hammer, BookOpen, BookMarked,
-    CalendarClock, Hourglass, Wrench, Gem,
-    Telescope, ScrollText, Map, Clock
-} from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { CalendarClock, Sparkles, LayoutGrid, Users, RotateCcw } from 'lucide-react';
+
+import { HubSearch } from '../components/search/HubSearch';
+import { BentoToolCard } from '../components/ecosystem/BentoToolCard';
+import { ECOSYSTEM_TOOLS, type ToolCategory } from '../data/tools';
 
 import { AnalyticsWidget } from '../components/widgets/AnalyticsWidget';
 import { BadgesWidget } from '../components/widgets/BadgesWidget';
@@ -16,61 +16,30 @@ import { PollWidget } from '../components/widgets/PollWidget';
 import { GalleryWidget } from '../components/widgets/GalleryWidget';
 import { MuralWidget } from '../components/widgets/MuralWidget';
 import { ResourcesWidget } from '../components/widgets/ResourcesWidget';
-import { ToolWidget } from '../components/ecosystem/ToolWidget';
 import { EcosystemFeed } from '../components/ecosystem/EcosystemFeed';
 import { SystemStatusBanner } from '../components/SystemStatusBanner';
 import { QuoteWidget } from '../components/widgets/QuoteWidget';
 import { getFeedItems, type HubFeedItem } from '../services/hubFeed';
-import { trackToolClick, getPopularTools } from '../utils/toolTracker';
 import styles from './HomePage.module.css';
 
 function getGreeting(lang: string): string {
     const hour = new Date().getHours();
     if (lang === 'pt') {
         if (hour < 12) return 'Bom dia, aventureiro. O quartel-general da Guilda está de pé.';
-        if (hour < 18) return 'Boa tarde. O que a Guilda tem pra você hoje?';
-        return 'Boa noite. A Guilda nunca dorme — o hub está no ar.';
+        if (hour < 18) return 'Boa tarde. Encontre qualquer ferramenta, cálculo ou utilitário da Guilda.';
+        return 'Boa noite. A Guilda nunca dorme — explore o ecossistema.';
     } else {
         if (hour < 12) return 'Good morning, adventurer. The Guild HQ is standing.';
-        if (hour < 18) return 'Good afternoon. What does the Guild have for you today?';
-        return 'Good evening. The Guild never sleeps — hub is live.';
+        if (hour < 18) return 'Good afternoon. Find any Guild tool, calculator or utility.';
+        return 'Good evening. The Guild never sleeps — explore the ecosystem.';
     }
 }
-
-const TOOL_DESCRIPTIONS: Record<string, { pt: string; en: string }> = {
-    Mining:             { pt: 'Calcule minério, veias e qualidade por habilidade', en: 'Ore, veins & quality calculator' },
-    Carpentry:          { pt: 'Planejar itens, materiais e grind de marcenaria', en: 'Plan items, materials & carpentry grind' },
-    Recipes:            { pt: 'Encontre receitas e ingredientes de culinária', en: 'Find cooking recipes & ingredients' },
-    Liturgy:            { pt: 'Rezas, favores e rituais de sacerdotes', en: 'Prayers, favors & priest rituals' },
-    'Wall Decay':       { pt: 'Calculadora de queda de muralhas e deeds', en: 'Wall decay and deed collapse calculator' },
-    Auctions:           { pt: 'Mercado ao vivo de compra e venda', en: 'Live buy & sell marketplace' },
-    'Relic Appraiser':  { pt: 'Avalie e classifique relíquias e itens raros de Wurm', en: 'Appraise and rank Wurm relics and rare items' },
-    Prospect:           { pt: 'Rastreamento de prospecção e mapeador de veias', en: 'Ore prospecting tracker and vein mapper' },
-    Analytics:          { pt: 'Dados operacionais e econômicos do ecossistema', en: 'Operational & economic ecosystem data' },
-    'Historical Archive': { pt: 'Preservação imutável de logs históricos de Wurm', en: 'Immutable preservation of historical Wurm logs' },
-    'Market Observatory': { pt: 'Observatório analítico dos logs do Archive', en: 'Analytical observatory for historical Archive logs' },
-    'Guilda Badges':    { pt: 'Galeria de conquistas e medalhas dos membros', en: 'Guild achievements and badge showcase' },
-    'Craft Pulse':      { pt: 'Timer operacional voltado para eficiência de craft', en: 'Operational crafting timer for efficiency' }
-};
-
-const TOOLS = [
-    { id: 'mining', title: 'Mining', icon: Pickaxe, href: 'https://wurm-mining-tool.pages.dev' },
-    { id: 'carpentry', title: 'Carpentry', icon: Hammer, href: 'https://wurm-carpentry-tool.pages.dev' },
-    { id: 'recipes', title: 'Recipes', icon: BookOpen, href: 'https://wurm-recipe-tool.pages.dev' },
-    { id: 'liturgy', title: 'Liturgy', icon: BookMarked, href: 'https://wurm-liturgy.pages.dev' },
-    { id: 'wall-decay', title: 'Wall Decay', icon: Hourglass, href: 'https://wurm-wall-decay-calculator.pages.dev' },
-    { id: 'relic-appraiser', title: 'Relic Appraiser', icon: Gem, href: 'https://wurm-relic-appraiser.pages.dev' },
-    { id: 'prospect', title: 'Prospect', icon: Map, href: 'https://wurm-prospect-tool.pages.dev' },
-    { id: 'historical-archive', title: 'Historical Archive', icon: ScrollText, href: 'https://wurm-online-historical-archive.pages.dev' },
-    { id: 'market-observatory', title: 'Market Observatory', icon: Telescope, href: 'https://wurm-market-observatory.pages.dev' },
-    { id: 'auction', title: 'Auctions', icon: Gavel, href: 'https://wurm-auction-helper.pages.dev', comingSoon: true },
-    { id: 'craft-pulse', title: 'Craft Pulse', icon: Clock, href: '/guildutilities/craft-pulse' }
-];
 
 export function HomePage() {
     const { lang, setLang, t } = useLanguage();
     const [nextEvent, setNextEvent] = useState<HubFeedItem | null>(null);
-    const [popularTools, setPopularTools] = useState<any[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeCategory, setActiveCategory] = useState<ToolCategory>('all');
 
     useEffect(() => {
         // Fetch feed and find the soonest upcoming event
@@ -86,10 +55,44 @@ export function HomePage() {
                 });
             setNextEvent(upcoming ?? null);
         });
-
-        // Load dynamic popular tools from tracker
-        setPopularTools(getPopularTools(TOOLS, 3));
     }, []);
+
+    // Filter tools based on query & category
+    const filteredTools = useMemo(() => {
+        const query = searchQuery.trim().toLowerCase();
+
+        return ECOSYSTEM_TOOLS.filter(tool => {
+            // Category filter
+            if (activeCategory !== 'all' && tool.category !== activeCategory) {
+                return false;
+            }
+
+            // Text search filter
+            if (!query) return true;
+
+            const titleMatch = tool.title.toLowerCase().includes(query);
+            const subPtMatch = tool.subtitle.pt.toLowerCase().includes(query);
+            const subEnMatch = tool.subtitle.en.toLowerCase().includes(query);
+            const descPtMatch = tool.description.pt.toLowerCase().includes(query);
+            const descEnMatch = tool.description.en.toLowerCase().includes(query);
+            const tagMatch = tool.tags.some(tag => tag.toLowerCase().includes(query));
+
+            return titleMatch || subPtMatch || subEnMatch || descPtMatch || descEnMatch || tagMatch;
+        });
+    }, [searchQuery, activeCategory]);
+
+    // Press Enter to open the first tool match in a new tab
+    const handlePressEnter = () => {
+        if (filteredTools.length > 0) {
+            const firstTool = filteredTools[0];
+            window.open(firstTool.href, '_blank', 'noopener,noreferrer');
+        }
+    };
+
+    const handleResetSearch = () => {
+        setSearchQuery('');
+        setActiveCategory('all');
+    };
 
     const greeting = getGreeting(lang);
 
@@ -109,31 +112,38 @@ export function HomePage() {
                 }
             />
 
-            {/* GLOBAL STATUS BANNER — Visible to all */}
+            {/* GLOBAL STATUS BANNER */}
             <SystemStatusBanner />
 
-            <main className="flex-1 py-12">
-                <div className="container mx-auto max-w-[var(--spacing-measure-wide)] px-6">
+            <main className="flex-1 py-10">
+                <div className="container mx-auto max-w-[var(--spacing-measure-wide)] px-4 sm:px-6">
 
-                    {/* PAGE HEADER */}
-                    <header className="mb-10">
-                        <h1 className="text-4xl md:text-5xl font-serif font-bold mb-3 tracking-tight text-gradient">
+                    {/* HERO HEADER */}
+                    <header className="text-center mb-8">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-wurm-accent)]/10 border border-[var(--color-wurm-accent)]/20 text-[var(--color-wurm-accent)] text-xs font-mono tracking-wider mb-4">
+                            <Sparkles size={13} />
+                            <span>{t('PORTAL CENTRAL DA GUILDA', 'GUILD CENTRAL PORTAL')}</span>
+                        </div>
+
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold mb-3 tracking-tight text-gradient">
                             {t('Ecosystem Hub', 'Hub do Ecossistema')}
                         </h1>
-                        <p className="text-sm text-[var(--color-wurm-muted)] m-0 leading-relaxed max-w-xl">
+
+                        <p className="text-sm md:text-base text-[var(--color-wurm-muted)] m-0 leading-relaxed max-w-2xl mx-auto">
                             {greeting}
                         </p>
-                        <div className="flex items-center gap-4 text-[10px] font-mono text-[var(--color-wurm-muted)] uppercase tracking-widest mt-3">
+
+                        <div className="flex items-center justify-center gap-4 text-[10px] font-mono text-[var(--color-wurm-muted)] uppercase tracking-widest mt-4">
                             <span className="flex items-center gap-1.5 text-green-500">
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                {t('All systems operational', 'Todos os sistemas operacionais')}
+                                {t('Todos os sistemas operacionais', 'All systems operational')}
                             </span>
                             <span className="opacity-20">|</span>
-                            <span>v2.0 Beta</span>
+                            <span>v2.1 • Wurm Online</span>
                         </div>
                     </header>
 
-                    {/* NEXT EVENT BANNER */}
+                    {/* NEXT EVENT BANNER (IF ANY) */}
                     {nextEvent && (() => {
                         const title = lang === 'pt' ? nextEvent.title_pt : (nextEvent.title_en || nextEvent.title_pt);
                         const desc  = lang === 'pt' ? nextEvent.description_pt : (nextEvent.description_en || nextEvent.description_pt);
@@ -159,97 +169,101 @@ export function HomePage() {
                                     <a
                                         href={nextEvent.link}
                                         target="_blank"
-                                        rel="noreferrer"
+                                        rel="noopener noreferrer"
                                         className="text-[10px] font-bold uppercase tracking-widest text-blue-400 hover:text-blue-300 transition-colors flex-shrink-0"
                                     >
-                                        {t('Details →', 'Ver detalhes →')}
+                                        {t('Ver detalhes →', 'Details →')}
                                     </a>
                                 )}
                             </div>
                         );
                     })()}
 
-                    {/* BENTO GRID — MAIN */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 grid-flow-row-dense">
+                    {/* CENTRAL GOOGLE-STYLE SEARCH */}
+                    <HubSearch
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        activeCategory={activeCategory}
+                        onCategoryChange={setActiveCategory}
+                        totalResults={filteredTools.length}
+                        onPressEnter={handlePressEnter}
+                    />
 
-                        {/* ROW 1: Analytics (2 cols) + Badges (1 col) */}
-                        <AnalyticsWidget className="md:col-span-2" />
-                        <BadgesWidget />
+                    {/* SECTION: FERRAMENTAS & BENTO GRID */}
+                    <section className="mt-8 mb-16">
+                        <div className="flex items-center justify-between mb-5">
+                            <h2 className="text-lg md:text-xl font-serif font-bold text-white m-0 flex items-center gap-2">
+                                <LayoutGrid size={18} className="text-[var(--color-wurm-accent)]" />
+                                <span>{t('Ferramentas & Utilitários', 'Tools & Utilities')}</span>
+                            </h2>
 
-                        {/* ROW 2: Mural (2 cols) + Gallery (1 col) */}
-                        <MuralWidget className="md:col-span-2" />
-                        <GalleryWidget />
-
-                        {/* ROW 3: Poll (1 col) + Resources (1 col) + Guild Utilities (1 col) */}
-                        <PollWidget />
-                        <ResourcesWidget />
-
-                        <div className="transition-all duration-500">
-                            <ToolWidget
-                                title="Tools Hub"
-                                subtitle={t('All Tools in One Place', 'Central de Ferramentas')}
-                                icon={Wrench}
-                                href="/guildutilities"
-                                status="active"
-                            >
-                                <div className="flex flex-col gap-3">
-                                    <p className="text-sm text-[var(--color-wurm-muted)] leading-relaxed m-0">
-                                        {t(
-                                            'Browse all ecosystem tools and local utilities with search and category filters.',
-                                            'Explore todas as ferramentas do ecossistema com busca e filtros por categoria.'
-                                        )}
-                                    </p>
-                                    <NavLink
-                                        to="/guildutilities"
-                                        className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-wurm-accent)] hover:brightness-125 transition-all inline-flex items-center gap-1.5"
-                                    >
-                                        {t('Explore →', 'Explorar →')}
-                                    </NavLink>
-                                </div>
-                            </ToolWidget>
+                            {(searchQuery || activeCategory !== 'all') && (
+                                <button
+                                    type="button"
+                                    onClick={handleResetSearch}
+                                    className="flex items-center gap-1.5 text-xs font-mono text-[var(--color-wurm-accent)] hover:underline cursor-pointer"
+                                >
+                                    <RotateCcw size={12} />
+                                    <span>{t('Limpar filtros', 'Clear filters')}</span>
+                                </button>
+                            )}
                         </div>
 
-                    </div>
-
-                    {/* POPULAR TOOLS SECTION */}
-                    {popularTools.length > 0 && (
-                        <div className="mt-8">
-                            <h3 className="text-xs font-mono text-[var(--color-wurm-muted)] uppercase tracking-widest mb-4">
-                                {t('Frequently Used', 'Ferramentas Frequentes')}
-                            </h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                {popularTools.map(tool => {
-                                    const desc = TOOL_DESCRIPTIONS[tool.title];
-                                    return (
-                                        <div 
-                                            key={tool.title} 
-                                            onClick={() => trackToolClick(tool.id)}
-                                            className={tool.comingSoon ? "opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500" : ""}
-                                        >
-                                            <ToolWidget
-                                                title={tool.title}
-                                                icon={tool.icon}
-                                                href={tool.href}
-                                                status={tool.comingSoon ? 'coming-soon' : 'active'}
-                                            >
-                                                <p className="text-xs text-[var(--color-wurm-muted)] m-0 leading-relaxed">
-                                                    {lang === 'pt' ? desc.pt : desc.en}
-                                                </p>
-                                            </ToolWidget>
-                                        </div>
-                                    );
-                                })}
+                        {filteredTools.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                                {filteredTools.map((tool) => (
+                                    <BentoToolCard key={tool.id} tool={tool} />
+                                ))}
                             </div>
+                        ) : (
+                            <div className="text-center py-16 px-6 glass-panel rounded-2xl border border-dashed border-[var(--color-wurm-border)]">
+                                <p className="text-lg font-semibold text-white mb-2">
+                                    {t('Nenhuma ferramenta encontrada', 'No tools found')}
+                                </p>
+                                <p className="text-sm text-[var(--color-wurm-muted)] max-w-md mx-auto mb-6">
+                                    {t(
+                                        `Não encontramos nada para "${searchQuery}". Tente pesquisar por termos como "minério", "madeira", "culinária", "relic", "badges" ou explore todas as categorias.`,
+                                        `We couldn't find anything for "${searchQuery}". Try searching for keywords like "mining", "wood", "cooking", "relic", "badges" or clear filters.`
+                                    )}
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={handleResetSearch}
+                                    className="px-4 py-2 rounded-xl bg-[var(--color-wurm-accent)]/15 border border-[var(--color-wurm-accent)]/40 text-[var(--color-wurm-accent)] text-xs font-semibold uppercase tracking-wider hover:bg-[var(--color-wurm-accent)]/25 transition-all"
+                                >
+                                    {t('Ver todas as ferramentas', 'View all tools')}
+                                </button>
+                            </div>
+                        )}
+                    </section>
+
+                    {/* SECTION: VIDA DA GUILDA & WIDGETS COMUNITÁRIOS */}
+                    <section className="mt-14 pt-10 border-t border-[var(--color-wurm-border)]/40">
+                        <div className="flex items-center gap-2 mb-6">
+                            <Users size={20} className="text-[var(--color-wurm-accent)]" />
+                            <h2 className="text-xl md:text-2xl font-serif font-bold text-white m-0">
+                                {t('Vida da Guilda & Painéis', 'Guild Life & Dashboards')}
+                            </h2>
                         </div>
-                    )}
 
-                    {/* QUOTE DO DIA */}
-                    <div className="mt-8">
-                        <QuoteWidget />
-                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 grid-flow-row-dense">
+                            {/* ROW 1: Analytics (2 cols) + Badges (1 col) */}
+                            <AnalyticsWidget className="md:col-span-2" />
+                            <BadgesWidget />
 
-                    {/* ACTIVITY FEED — rendered by EcosystemFeed itself (includes its own heading) */}
-                    <div className="mt-4">
+                            {/* ROW 2: Mural (2 cols) + Gallery (1 col) */}
+                            <MuralWidget className="md:col-span-2" />
+                            <GalleryWidget />
+
+                            {/* ROW 3: Poll (1 col) + Resources (1 col) + Quote (1 col) */}
+                            <PollWidget />
+                            <ResourcesWidget />
+                            <QuoteWidget />
+                        </div>
+                    </section>
+
+                    {/* ACTIVITY FEED — LIVE PULSE */}
+                    <div className="mt-12">
                         <EcosystemFeed />
                     </div>
 
@@ -258,11 +272,9 @@ export function HomePage() {
 
             <footer className="py-10 border-t border-[var(--color-wurm-border)]/30 mt-16">
                 <div className="container mx-auto px-6 text-center text-[10px] font-mono text-[var(--color-wurm-muted)] uppercase tracking-widest">
-                    A Guilda · {new Date().getFullYear()} · Wurm Online
+                    A Guilda · {new Date().getFullYear()} · Wurm Online Hub Central
                 </div>
             </footer>
         </div>
     );
 }
-
-
