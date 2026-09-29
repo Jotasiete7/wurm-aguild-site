@@ -19,21 +19,24 @@
 | **Wall Decay & Upkeep** | 🟢 Online | [wurm-wall-decay-calculator.pages.dev](https://wurm-wall-decay-calculator.pages.dev) | [Jotasiete7/wurm-wall-decay-calculator](https://github.com/Jotasiete7) | Client-side formulas |
 | **Liturgy & Priests** | 🟢 Online | [wurm-liturgy.pages.dev](https://wurm-liturgy.pages.dev) | [Jotasiete7/wurm-liturgy](https://github.com/Jotasiete7) | Client-side Priest DB |
 | **Craft Pulse Timer** | 🟢 Online | [wurm-aguild-site.pages.dev/guildutilities/craft-pulse](https://wurm-aguild-site.pages.dev/guildutilities/craft-pulse) | Interno no Hub (`wurm-aguild-site`) | Web Audio API / Internal timer |
-| **Market Observatory** | 🟡 Manutenção | [wurm-market-observatory.pages.dev](https://wurm-market-observatory.pages.dev) | [Jotasiete7/Wurm-Market-Observatory](https://github.com/Jotasiete7/Wurm-Market-Observatory) | ⚠️ Supabase atual está dormente |
-| **Historical Archive** | 🟡 Manutenção | [wurm-online-historical-archive.pages.dev](https://wurm-online-historical-archive.pages.dev) | [Jotasiete7/Wurm-Online-Historical-Archive](https://github.com/Jotasiete7/Wurm-Online-Historical-Archive) | ⚠️ Supabase atual está dormente |
+| **Market Observatory** | 🟢 Online | [wurm-market-observatory.pages.dev](https://wurm-market-observatory.pages.dev) | [Jotasiete7/Wurm-Market-Observatory](https://github.com/Jotasiete7/Wurm-Market-Observatory) | Supabase `grkqxztxxelebdflhnlv` (Healthy) |
+| **Historical Archive** | 🟢 Online | [wurm-online-historical-archive.pages.dev](https://wurm-online-historical-archive.pages.dev) | [Jotasiete7/Wurm-Online-Historical-Archive](https://github.com/Jotasiete7/Wurm-Online-Historical-Archive) | Supabase `grkqxztxxelebdflhnlv` (`raw_logs`, Storage) |
 | **Auction House Helper** | 🔵 Em breve | [wurm-auction-helper.pages.dev](https://wurm-auction-helper.pages.dev) | [Jotasiete7/wurm-auction-helper](https://github.com/Jotasiete7/wurm-auction-helper) | Em desenvolvimento |
 
 ---
 
-## 🎯 2. Próximos Capítulos — Plano de Ação
+## 🎯 2. Arquitetura de Bancos de Dados (2 Projetos Ativos)
 
-### 🟡 Market Observatory & Historical Archive
-* **Cenário:** Ambas as ferramentas dependem de dados históricos de trocas e logs arqueológicos do Wurm Online.
-* **Problema Identificado:** A instância do Supabase configurada nas variáveis de ambiente deles atualmente aponta para um projeto que entrou em estado dormente/pausado.
-* **Passos para o Retorno:**
-  1. Identificar a nova instância ativa do Supabase (ou migrar a estrutura de tabelas e dados para o Supabase principal `gzhvqprdrtudyokhgxlj`).
-  2. Atualizar as variáveis de ambiente (`VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`) no Cloudflare Pages dos dois projetos.
-  3. No repositório `wurm-aguild-site`, alterar o status de ambos em `src/data/tools.ts` de `'maintenance'` de volta para `'active'`.
+Atualmente a conta utiliza os 2 slots ativos permitidos no plano gratuito do Supabase:
+1. **Projeto 1 (`gzhvqprdrtudyokhgxlj` — `wurm-guild`):**
+   * HUB Central (`wurm-aguild-site`)
+   * Cooking & Recipes (`wurm-recipe-tool`)
+   * Ecosystem Analytics (`wurm-analytics-journal`)
+   * Guilda Badges & Conquistas (`wurm-aguilda-badges`)
+2. **Projeto 2 (`grkqxztxxelebdflhnlv` — `Wurm Online Historical Archive`):**
+   * Historical Archive (`wurm-online-historical-archive`)
+   * Market Observatory (`wurm-market-observatory`)
+   * Bucket de Storage `logs-archive` e tabela `raw_logs`
 
 ---
 
