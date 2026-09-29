@@ -2,7 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
     Pickaxe, Hammer, BookOpen, BookMarked,
     Hourglass, Gem, Shield, Map, LineChart, Clock,
-    Telescope, ScrollText, Gavel
+    Telescope, ScrollText, Gavel, Sparkles
 } from 'lucide-react';
 
 export type ToolCategory = 'all' | 'crafting' | 'economy' | 'exploration' | 'community' | 'data';
@@ -158,6 +158,23 @@ export const ECOSYSTEM_TOOLS: ToolItem[] = [
             en: 'Culinary recipes database, ingredients, complexity, and nutrition/affinity buffs.',
         },
         tags: ['culinaria', 'cooking', 'receitas', 'recipes', 'comida', 'food', 'buff', 'nutricao', 'ingredientes'],
+    },
+    {
+        id: 'affinity',
+        title: 'Affinity & Moonshine',
+        category: 'crafting',
+        icon: Sparkles,
+        href: 'https://italocf.github.io/wurm-affinity/',
+        accentColor: '#f59e0b',
+        glowColor: 'rgba(245, 158, 11, 0.25)',
+        borderColor: 'rgba(245, 158, 11, 0.38)',
+        isExternal: true,
+        subtitle: { pt: 'Calculadora de Afinidades', en: 'Affinity & Moonshine Calc' },
+        description: {
+            pt: 'Gerador automático de receitas de afinidade e moonshine sem repetição de ingredientes, com filtros de despensa.',
+            en: 'Automatic affinity and moonshine recipe generator with zero ingredient repetition and pantry filters.',
+        },
+        tags: ['afinidade', 'affinity', 'moonshine', 'cooking', 'culinaria', 'receita', 'recipe', 'comida', 'buff', 'ingredientes', 'kaligola'],
     },
     {
         id: 'liturgy',
