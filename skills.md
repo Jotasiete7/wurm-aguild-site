@@ -15,3 +15,4 @@
 ## Shared Memory / Current Focus
 - Arquivo skills.md inicializado.
 - **[25 de Maio de 2026]**: Ferramenta "Prospect" adicionada ao `EcosystemMenu` unificado do ecossistema.
+- **[Setembro de 2026]**: Ferramentas "Affinity & Moonshine" (`wurm-affinity`) e "Animal Husbandry Ledger" (`wurm-husbandry-tool`) adicionadas ao `tools.ts` e `EcosystemMenu` global.

@@ -2,7 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
     Pickaxe, Hammer, BookOpen, BookMarked,
     Hourglass, Gem, Shield, Map, LineChart, Clock,
-    Telescope, ScrollText, Gavel, Sparkles
+    Telescope, ScrollText, Gavel, Sparkles, PawPrint
 } from 'lucide-react';
 
 export type ToolCategory = 'all' | 'crafting' | 'economy' | 'exploration' | 'community' | 'data';
@@ -209,6 +209,23 @@ export const ECOSYSTEM_TOOLS: ToolItem[] = [
             en: 'Precision timer and audio chimes for rare item craft spam and fatigue-free synchronization.',
         },
         tags: ['timer', 'craft', 'pulse', 'relogio', 'raro', 'spam', 'alarme', 'tempo', 'acao'],
+    },
+    {
+        id: 'husbandry',
+        title: 'Animal Husbandry Ledger',
+        category: 'crafting',
+        icon: PawPrint,
+        href: 'https://wurm-husbandry-tool.pages.dev',
+        accentColor: '#10b981',
+        glowColor: 'rgba(16, 185, 129, 0.25)',
+        borderColor: 'rgba(16, 185, 129, 0.38)',
+        isExternal: true,
+        subtitle: { pt: 'Gestão de Rebanho & Linhagem', en: 'Herd Ledger & Breeding Tracker' },
+        description: {
+            pt: 'Cadastre criaturas, controle traits genéticos (4D2M), gerencie prenhezes com contagem regressiva e organize a linhagem do seu rebanho.',
+            en: 'Keep a herd ledger, scan and track genetic traits, manage pregnancies with countdown timers, and optimize breeding pairs.',
+        },
+        tags: ['husbandry', 'pecuaria', 'criacao', 'animais', 'animals', 'breeding', 'cruzamento', 'traits', 'prenhez', 'pregnancy', 'cavalo', 'horse', 'rebanho', 'herd'],
     },
 
     // ─── EXPLORATION & MAPS ───────────────────────────────────────────────────
